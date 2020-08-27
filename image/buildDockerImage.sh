@@ -4,6 +4,6 @@ time docker image build \
   --network=host \
   --build-arg USERNAME=${USER} \
   --build-arg USERID=$(id -u ${USER}) \
-  --file ubuntu_18.04.dockerfile \
+  --file centos7.dockerfile \
   --tag buildpro:v1 .
 docker image ls
