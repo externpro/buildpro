@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
+cd "$( dirname "$0" )"
+gtag=`git describe --tags`
+if [ -n "$(git status --porcelain)" ]; then
+  gtag=${gtag}-dr
+fi
 docker container run \
   --volume $(pwd)/image/scripts:/scripts \
   --volume $1:/srcdir \
   --user $(id -u ${USER}):$(id -g ${USER}) \
-  --rm -it --name build_buildpro buildpro:v1 \
+  --hostname buildpro_${gtag} \
+  --rm -it --name buildpro_build buildpro:${gtag} \
   build
