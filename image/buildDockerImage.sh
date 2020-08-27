@@ -8,6 +8,6 @@ time docker image build \
   --network=host \
   --build-arg USERNAME=${USER} \
   --build-arg USERID=$(id -u ${USER}) \
-  --file centos7.dockerfile \
+  --file centos6.dockerfile \
   --tag buildpro:${gtag} .
 docker image ls
