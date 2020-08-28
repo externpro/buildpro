@@ -33,11 +33,15 @@ RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-
 RUN mkdir /opt/extern
 RUN wget -qO- "https://github.com/smanders/externpro/releases/download/20.08.1/externpro-20.08.1-gcc731-64-Linux.tar.xz" \
   | tar -xJ -C /opt/extern/
-# run container as non-root user from here onwards
-# so that build output files have the correct owner
-USER ${USERNAME}
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
+# enable scl binaries
+ENV BASH_ENV="/scripts/scl_enable" \
+    ENV="/scripts/scl_enable" \
+    PROMPT_COMMAND=". /scripts/scl_enable"
+# run container as non-root user from here onwards
+# so that build output files have the correct owner
+USER ${USERNAME}
 # run bash script and process the input command
 ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
