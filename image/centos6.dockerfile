@@ -33,6 +33,10 @@ RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-
 RUN mkdir /opt/extern
 RUN wget -qO- "https://github.com/smanders/externpro/releases/download/20.08.1/externpro-20.08.1-gcc731-64-Linux.tar.xz" \
   | tar -xJ -C /opt/extern/
+RUN printf "lsb_release %s\n" "`lsb_release --description`" >> /opt/extern/externpro-20.08.1-gcc731-64-Linux/externpro_20.08.1-gcc731-64.txt
+RUN wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/releases/download/20.08.1/internpro-20.08.1-gcc731-64-Linux.tar.xz" \
+  | tar -xJ -C /opt/extern/
+RUN printf "lsb_release %s\n" "`lsb_release --description`" >> /opt/extern/internpro-20.08.1-gcc731-64-Linux/internpro_20.08.1-gcc731-64.txt
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
