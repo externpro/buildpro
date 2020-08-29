@@ -5,9 +5,10 @@ if [ -n "$(git status --porcelain)" ]; then
   gtag=${gtag}-dr
 fi
 docker container run \
-  --volume $(pwd)/image/scripts:/scripts \
-  --volume $1:/srcdir \
-  --user $(id -u ${USER}):$(id -g ${USER}) \
-  --hostname buildpro_${gtag} \
-  --rm -it --name buildpro_shell buildpro:${gtag} \
+  --volume=$(pwd)/image/scripts:/scripts \
+  --volume=$1:/srcdir \
+  --user=$(id -u ${USER}):$(id -g ${USER}) \
+  --hostname=buildpro_${gtag} \
+  --name=buildpro_shell \
+  --rm -it buildpro:${gtag} \
   shell
