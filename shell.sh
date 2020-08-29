@@ -7,6 +7,9 @@ fi
 docker container run \
   --volume=$(pwd)/image/scripts:/scripts \
   --volume=$1:/srcdir \
+  --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+  --env="DISPLAY" \
+  --net=host \
   --user=$(id -u ${USER}):$(id -g ${USER}) \
   --hostname=buildpro_${gtag} \
   --name=buildpro_shell \
