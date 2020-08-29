@@ -11,6 +11,7 @@ RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
      centos-release-scl \
+     graphviz \
      gtk2-devel.x86_64 \
      libSM-devel.x86_64 \
      mesa-libGL-devel.x86_64 \
@@ -20,6 +21,7 @@ RUN yum -y update \
      wget \
      https://repo.ius.io/ius-release-el6.rpm \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm \
+     https://dl.fedoraproject.org/pub/epel/6/x86_64/Packages/l/lcov-1.10-4.el6.noarch.rpm \
   # https://www.softwarecollections.org/en/ and https://ius.io/
   && yum -y install --setopt=tsflags=nodocs \
      devtoolset-7-binutils \
