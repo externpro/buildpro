@@ -8,6 +8,7 @@ docker container run \
   --volume=$(pwd)/image/scripts:/scripts \
   --volume=$1:/srcdir \
   --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+  --volume="$HOME/.ssh:/home/${USER}/.ssh" \
   --env="DISPLAY" \
   --net=host \
   --user=$(id -u ${USER}):$(id -g ${USER}) \
