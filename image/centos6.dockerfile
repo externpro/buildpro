@@ -18,34 +18,57 @@ RUN yum -y update \
      mesa-libGLU-devel.x86_64 \
      ncurses-devel \
      redhat-lsb-core \
+     rpm-build \
+     unixODBC-devel \
      wget \
-     https://repo.ius.io/ius-release-el6.rpm \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm \
-     https://dl.fedoraproject.org/pub/epel/6/x86_64/Packages/l/lcov-1.10-4.el6.noarch.rpm \
-  # https://www.softwarecollections.org/en/ and https://ius.io/
+     https://repo.ius.io/ius-release-el6.rpm \
+  # https://www.softwarecollections.org/en/ : devtoolset-7-*, python27
+  # https://ius.io/ : git
+  # epel-release : cppcheck, lcov
   && yum -y install --setopt=tsflags=nodocs \
+     cppcheck \
      devtoolset-7-binutils \
      devtoolset-7-gcc \
      devtoolset-7-gcc-c++ \
+     lcov \
      python27 \
      https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm \
   && yum clean all
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-Linux-x86_64.tar.gz" \
   | tar --strip-components=1 -xz -C /usr/
-RUN mkdir /opt/extern
-RUN wget -qO- "https://github.com/smanders/externpro/releases/download/20.08.1/externpro-20.08.1-gcc731-64-Linux.tar.xz" \
+# CRTool
+RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
+  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
+  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/20.05.2/CRToolImpl-20.05.2.sh" \
+  && chmod 755 CRTool*.sh \
+  && /CRTool-20.07.1.sh --prefix=/opt/extern/CRTool --exclude-subdir \
+  && /CRToolImpl-20.05.2.sh --prefix=/opt/extern --include-subdir \
+  && rm /CRTool-20.07.1.sh \
+  && rm /CRToolImpl-20.05.2.sh
+# pros
+ENV XP_VER 20.08.1
+ENV IP_VER 20.09.1
+ENV WP_VER 20.06.1
+# externpro
+RUN wget -qO- "https://github.com/smanders/externpro/releases/download/$XP_VER/externpro-$XP_VER-gcc731-64-Linux.tar.xz" \
+  | tar -xJ -C /opt/extern/ \
+  && printf "lsb_release %s\n" "`lsb_release --description`" \
+     >> /opt/extern/externpro-$XP_VER-gcc731-64-Linux/externpro_$XP_VER-gcc731-64.txt
+# internpro
+RUN wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/releases/download/$IP_VER/internpro-$IP_VER-gcc731-64-Linux.tar.xz" \
   | tar -xJ -C /opt/extern/
-RUN printf "lsb_release %s\n" "`lsb_release --description`" >> /opt/extern/externpro-20.08.1-gcc731-64-Linux/externpro_20.08.1-gcc731-64.txt
-RUN wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/releases/download/20.08.1/internpro-20.08.1-gcc731-64-Linux.tar.xz" \
+# webpro
+RUN wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/releases/download/$WP_VER/webpro-$WP_VER-gcc731-64-Linux.tar.xz" \
   | tar -xJ -C /opt/extern/
-RUN printf "lsb_release %s\n" "`lsb_release --description`" >> /opt/extern/internpro-20.08.1-gcc731-64-Linux/internpro_20.08.1-gcc731-64.txt
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
-# enable scl binaries
+# enable scl binaries, add CRTool to PATH
 ENV BASH_ENV="/scripts/scl_enable" \
     ENV="/scripts/scl_enable" \
-    PROMPT_COMMAND=". /scripts/scl_enable"
+    PROMPT_COMMAND=". /scripts/scl_enable" \
+    PATH=/opt/extern/CRTool:$PATH
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
