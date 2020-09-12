@@ -47,9 +47,10 @@ RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
   && rm /CRTool-20.07.1.sh \
   && rm /CRToolImpl-20.05.2.sh
 # pros
-ENV XP_VER 20.08.1
-ENV IP_VER 20.09.1
-ENV WP_VER 20.06.1
+ENV \
+  XP_VER=20.08.1 \
+  IP_VER=20.09.1 \
+  WP_VER=20.06.1
 # externpro
 RUN wget -qO- "https://github.com/smanders/externpro/releases/download/$XP_VER/externpro-$XP_VER-gcc731-64-Linux.tar.xz" \
   | tar -xJ -C /opt/extern/ \
