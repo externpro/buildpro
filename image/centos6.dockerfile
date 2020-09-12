@@ -65,11 +65,12 @@ RUN wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/releases/download/$WP_
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
-# enable scl binaries, add CRTool to PATH
+# enable scl binaries, add CRTool to PATH, set USER
 ENV BASH_ENV="/scripts/scl_enable" \
     ENV="/scripts/scl_enable" \
     PROMPT_COMMAND=". /scripts/scl_enable" \
-    PATH=/opt/extern/CRTool:$PATH
+    PATH=/opt/extern/CRTool:$PATH \
+    USER=$USERNAME
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
