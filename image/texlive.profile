@@ -1,7 +1,7 @@
-# texlive.profile written on Mon Sep 14 19:55:03 2020 UTC
+# texlive.profile written on Fri Sep 11 21:37:11 2020 UTC
 # It will NOT be updated and reflects only the
 # installation profile at installation time.
-selected_scheme scheme-full
+selected_scheme scheme-custom
 TEXDIR /usr/local/texlive/2017
 TEXMFCONFIG ~/.texlive2017/texmf-config
 TEXMFHOME ~/texmf
@@ -10,9 +10,16 @@ TEXMFSYSCONFIG /usr/local/texlive/2017/texmf-config
 TEXMFSYSVAR /usr/local/texlive/2017/texmf-var
 TEXMFVAR ~/.texlive2017/texmf-var
 binary_x86_64-linux 1
-instopt_adjustpath 0
+collection-basic 1
+collection-fontsextra 1
+collection-fontsrecommended 1
+collection-fontutils 1
+collection-latex 1
+collection-latexextra 1
+collection-latexrecommended 1
+instopt_adjustpath 1
 instopt_adjustrepo 1
-instopt_letter 0
+instopt_letter 1
 instopt_portable 0
 instopt_write18_restricted 1
 tlpdbopt_autobackup 1
@@ -25,6 +32,6 @@ tlpdbopt_install_docfiles 1
 tlpdbopt_install_srcfiles 1
 tlpdbopt_post_code 1
 tlpdbopt_sys_bin /usr/local/bin
-tlpdbopt_sys_info /usr/local/share/info
-tlpdbopt_sys_man /usr/local/share/man
+tlpdbopt_sys_info /usr/local/info
+tlpdbopt_sys_man /usr/local/man
 tlpdbopt_w32_multi_user 1
