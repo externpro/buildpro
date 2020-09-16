@@ -43,10 +43,11 @@ RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
   && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
   && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/20.05.2/CRToolImpl-20.05.2.sh" \
   && chmod 755 CRTool*.sh \
-  && /CRTool-20.07.1.sh --prefix=/opt/extern/CRTool --exclude-subdir \
-  && /CRToolImpl-20.05.2.sh --prefix=/opt/extern --include-subdir \
-  && rm /CRTool-20.07.1.sh \
-  && rm /CRToolImpl-20.05.2.sh
+  && ./CRTool-20.07.1.sh --prefix=/opt/extern/CRTool --exclude-subdir \
+  && ./CRToolImpl-20.05.2.sh --prefix=/opt/extern --include-subdir \
+  && rm CRTool-20.07.1.sh \
+  && rm CRToolImpl-20.05.2.sh
+ENV PATH=$PATH:/opt/extern/CRTool
 # pros
 ENV \
   XP_VER=20.08.1 \
@@ -66,11 +67,10 @@ RUN wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/releases/download/$WP_
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
-# enable scl binaries, add CRTool to PATH, set USER
+# enable scl binaries, set USER
 ENV BASH_ENV="/scripts/scl_enable" \
     ENV="/scripts/scl_enable" \
     PROMPT_COMMAND=". /scripts/scl_enable" \
-    PATH=/opt/extern/CRTool:$PATH \
     USER=$USERNAME
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
