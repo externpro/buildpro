@@ -44,6 +44,5 @@ docker container run \
   --net=host \
   --user=$(id -u ${USER}):$(id -g ${USER}) \
   --hostname=${CONTAINER_HOSTNAME} \
-  --name=buildpro_${CMD} \
   --rm -it ${REPO}:${TAG} \
   ${CMD}
