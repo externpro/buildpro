@@ -21,7 +21,9 @@ RUN yum -y update \
      redhat-lsb-core \
      rpm-build \
      unixODBC-devel \
+     vim \
      wget \
+     xeyes \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm \
      https://repo.ius.io/ius-release-el6.rpm \
   && yum -y install --setopt=tsflags=nodocs \
