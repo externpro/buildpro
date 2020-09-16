@@ -32,8 +32,12 @@ RUN yum -y update \
      python27 `#scl` \
      https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm `#ius.io` \
   && yum clean all
+# cmake and git-lfs
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-Linux-x86_64.tar.gz" \
-  | tar --strip-components=1 -xz -C /usr/
+  | tar --strip-components=1 -xz -C /usr/local/ \
+  && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
+  && yum -y install git-lfs \
+  && yum clean all
 # CRTool
 RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
   && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
