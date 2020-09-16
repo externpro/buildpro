@@ -11,6 +11,7 @@ RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
      centos-release-scl \
+     ghostscript `#LaTeX` \
      graphviz \
      gtk2-devel.x86_64 \
      libSM-devel.x86_64 \
@@ -32,6 +33,19 @@ RUN yum -y update \
      python27 `#scl` \
      https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm `#ius.io` \
   && yum clean all
+# doxygen and LaTeX
+COPY texlive.profile /usr/local/src/
+RUN wget -qO- --no-check-certificate \
+  "https://downloads.sourceforge.net/project/doxygen/rel-1.8.13/doxygen-1.8.13.linux.bin.tar.gz" \
+  | tar -xz -C /usr/local/ \
+  && mv /usr/local/doxygen-1.8.13/bin/doxygen /usr/local/bin/ \
+  && rm -rf /usr/local/doxygen-1.8.13/ \
+  && wget -qO- "http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/tlnet-final/install-tl-unx.tar.gz" \
+  | tar -xz -C /usr/local/src/ \
+  && /usr/local/src/install-tl-20180303/install-tl -profile /usr/local/src/texlive.profile \
+     -repository http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/tlnet-final/archive/ \
+  && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile
+ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # cmake and git-lfs
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-Linux-x86_64.tar.gz" \
   | tar --strip-components=1 -xz -C /usr/local/ \
