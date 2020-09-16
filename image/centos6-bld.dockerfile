@@ -23,17 +23,14 @@ RUN yum -y update \
      wget \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm \
      https://repo.ius.io/ius-release-el6.rpm \
-  # https://www.softwarecollections.org/en/ : devtoolset-7-*, python27
-  # https://ius.io/ : git
-  # epel-release : cppcheck, lcov
   && yum -y install --setopt=tsflags=nodocs \
-     cppcheck \
-     devtoolset-7-binutils \
-     devtoolset-7-gcc \
-     devtoolset-7-gcc-c++ \
-     lcov \
-     python27 \
-     https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm \
+     cppcheck `#epel` \
+     devtoolset-7-binutils `#scl` \
+     devtoolset-7-gcc `#scl` \
+     devtoolset-7-gcc-c++ `#scl` \
+     lcov `#epel` \
+     python27 `#scl` \
+     https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm `#ius.io` \
   && yum clean all
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-Linux-x86_64.tar.gz" \
   | tar --strip-components=1 -xz -C /usr/
