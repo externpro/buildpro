@@ -49,7 +49,7 @@ RUN wget -qO- --no-check-certificate \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # cmake and git-lfs
-RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-Linux-x86_64.tar.gz" \
+RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-3.17.5-Linux-x86_64.tar.gz" \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
   && yum -y install git-lfs \
