@@ -46,7 +46,8 @@ RUN wget -qO- --no-check-certificate \
   | tar -xz -C /usr/local/src/ \
   && /usr/local/src/install-tl-20180303/install-tl -profile /usr/local/src/texlive.profile \
      -repository http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/tlnet-final/archive/ \
-  && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile
+  && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile \
+  && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # cmake and git-lfs
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.4/cmake-3.17.4-Linux-x86_64.tar.gz" \
