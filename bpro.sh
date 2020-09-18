@@ -2,6 +2,7 @@
 cd "$( dirname "$0" )"
 CMD=shell
 MOUNT=$HOME
+NETWORK=
 REPO=buildpro/centos6-bld
 TAG=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
@@ -9,7 +10,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
 XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:m:r:t:x" opt
+while getopts ":c:m:nr:t:x" opt
 do
   case ${opt} in
     c )
@@ -17,6 +18,9 @@ do
       ;;
     m )
       MOUNT=$OPTARG
+      ;;
+    n )
+      NETWORK="--volume=$HOME/.ssh:/home/${USER}/.ssh --net=host"
       ;;
     r )
       REPO=$OPTARG
@@ -50,7 +54,7 @@ shift $((OPTIND -1))
 docker container run \
   --volume=$(pwd)/image/scripts:/scripts \
   --volume=$MOUNT:/srcdir \
-  --volume="$HOME/.ssh:/home/${USER}/.ssh" \
+  ${NETWORK} \
   --volume=/tmp/.X11-unix:/tmp/.X11-unix \
   ${XARG} \
   --user=$(id -u ${USER}):$(id -g ${USER}) \
