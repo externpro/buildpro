@@ -4,7 +4,7 @@ gtag=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
   gtag=${gtag}-dr
 fi
-for img in centos6-bld centos7-bld
+for img in centos6-bld
 do
   time docker image build \
     --network=host \
