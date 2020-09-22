@@ -1,11 +1,7 @@
 FROM centos:6
 LABEL maintainer="smanders"
 SHELL ["/bin/bash", "-c"]
-# Create non-root user:group and generate a home directory to support SSH
-ARG USERNAME
-ARG USERID
 USER 0
-RUN adduser --uid ${USERID} ${USERNAME}
 # install software build system inside docker
 RUN yum -y update \
   && yum clean all \
@@ -84,11 +80,15 @@ RUN wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/releases/download/$WP_
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
-# enable scl binaries, set USER
+# enable scl binaries
 ENV BASH_ENV="/scripts/scl_enable" \
     ENV="/scripts/scl_enable" \
-    PROMPT_COMMAND=". /scripts/scl_enable" \
-    USER=$USERNAME
+    PROMPT_COMMAND=". /scripts/scl_enable"
+# create non-root user
+ARG USERNAME
+ARG USERID
+RUN adduser --uid ${USERID} ${USERNAME}
+ENV USER=${USERNAME}
 # add USERNAME to sudoers
 RUN echo "" >> /etc/sudoers \
   && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
