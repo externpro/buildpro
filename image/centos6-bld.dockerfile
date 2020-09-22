@@ -17,7 +17,6 @@ RUN yum -y update \
      libSM-devel.x86_64 \
      mesa-libGL-devel.x86_64 \
      mesa-libGLU-devel.x86_64 \
-     ncurses-devel \
      redhat-lsb-core \
      rpm-build \
      unixODBC-devel \
