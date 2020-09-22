@@ -9,8 +9,9 @@ if [ -n "$(git status --porcelain)" ]; then
   TAG=${TAG}-dr
 fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
+VERBOSE=
 XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:m:nr:t:x" opt
+while getopts ":c:m:nr:t:vx" opt
 do
   case ${opt} in
     c )
@@ -28,6 +29,9 @@ do
     t )
       TAG=$OPTARG
       CONTAINER_HOSTNAME=buildpro_${TAG}
+      ;;
+    v )
+      VERBOSE=true
       ;;
     x )
       DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
@@ -51,13 +55,17 @@ do
   esac
 done
 shift $((OPTIND -1))
-docker container run \
-  --volume=$(pwd)/image/scripts:/scripts \
-  --volume=$MOUNT:/srcdir \
-  ${NETWORK} \
-  --volume=/tmp/.X11-unix:/tmp/.X11-unix \
-  ${XARG} \
-  --user=$(id -u ${USER}):$(id -g ${USER}) \
-  --hostname=${CONTAINER_HOSTNAME} \
-  --rm -it ${REPO}:${TAG} \
-  ${CMD}
+RUN_ARGS="\
+ --volume=$(pwd)/image/scripts:/scripts\
+ --volume=$MOUNT:/srcdir\
+ ${NETWORK}\
+ --volume=/tmp/.X11-unix:/tmp/.X11-unix\
+ ${XARG}\
+ --user=$(id -u ${USER}):$(id -g ${USER})\
+ --hostname=${CONTAINER_HOSTNAME}\
+ --rm -it ${REPO}:${TAG}\
+ ${CMD}"
+if [ $VERBOSE ]; then
+  echo "docker container run${RUN_ARGS}"
+fi
+docker container run ${RUN_ARGS}
