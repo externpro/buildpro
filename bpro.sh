@@ -55,7 +55,9 @@ do
   esac
 done
 shift $((OPTIND -1))
+REMAINING_ARGS="$@" # args after --
 RUN_ARGS="\
+ ${REMAINING_ARGS}\
  --volume=$(pwd)/image/scripts:/scripts\
  --volume=$MOUNT:/srcdir\
  ${NETWORK}\
