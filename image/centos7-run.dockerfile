@@ -1,11 +1,7 @@
 FROM centos:7
 LABEL maintainer="smanders"
 SHELL ["/bin/bash", "-c"]
-# Create non-root user:group and generate a home directory to support SSH
-ARG USERNAME
-ARG USERID
 USER 0
-RUN adduser --uid ${USERID} ${USERNAME}
 # install software build system inside docker
 RUN yum -y update \
   && yum clean all \
@@ -13,6 +9,7 @@ RUN yum -y update \
      gtk2.x86_64 \
      libSM.x86_64 \
      make \
+     sudo \
      unixODBC \
      wget \
   && yum clean all
@@ -22,8 +19,15 @@ RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
-# set USER
+# create non-root user
+ARG USERNAME
+ARG USERID
+RUN adduser --uid ${USERID} ${USERNAME}
 ENV USER=$USERNAME
+# add USERNAME to sudoers
+RUN echo "" >> /etc/sudoers \
+  && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
+  && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
