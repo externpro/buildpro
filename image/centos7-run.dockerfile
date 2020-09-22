@@ -19,15 +19,14 @@ RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-
 # set up volumes
 VOLUME /scripts
 VOLUME /srcdir
-# create non-root user
+# create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
-RUN adduser --uid ${USERID} ${USERNAME}
-ENV USER=$USERNAME
-# add USERNAME to sudoers
-RUN echo "" >> /etc/sudoers \
+RUN adduser --uid ${USERID} ${USERNAME} \
+  && echo "" >> /etc/sudoers \
   && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
   && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+ENV USER=${USERNAME}
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
