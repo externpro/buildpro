@@ -19,6 +19,7 @@ RUN yum -y update \
      mesa-libGLU-devel.x86_64 \
      redhat-lsb-core \
      rpm-build \
+     sudo \
      unixODBC-devel \
      vim \
      wget \
@@ -88,6 +89,10 @@ ENV BASH_ENV="/scripts/scl_enable" \
     ENV="/scripts/scl_enable" \
     PROMPT_COMMAND=". /scripts/scl_enable" \
     USER=$USERNAME
+# add USERNAME to sudoers
+RUN echo "" >> /etc/sudoers \
+  && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
+  && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
