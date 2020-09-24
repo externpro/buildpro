@@ -1,0 +1,32 @@
+[mock_midb_dsn]
+Description=mock midb database
+Trace=Off
+TraceFile=stderr
+Driver=MySQL ODBC 8.0 Unicode Driver
+SERVER=mysqldocker
+DATABASE=mock_midb
+PORT=3306
+USER=vantage
+PASSWORD=MockDB4me!
+
+[mock_users_dsn]
+Description=mock users database
+Trace=Off
+TraceFile=stderr
+Driver=MySQL ODBC 8.0 Unicode Driver
+SERVER=mysqldocker
+DATABASE=mock_users
+PORT=3306
+USER=vantage
+PASSWORD=MockDB4me!
+
+[mock_events_dsn]
+Description=mock events database
+Trace=Off
+TraceFile=stderr
+Driver=MySQL ODBC 8.0 Unicode Driver
+SERVER=mysqldocker
+DATABASE=mock_events
+PORT=3306
+USER=vantage
+PASSWORD=MockDB4me!
