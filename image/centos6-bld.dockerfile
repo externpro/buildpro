@@ -1,9 +1,8 @@
 FROM centos:6
 LABEL maintainer="smanders"
+LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-VOLUME /scripts
-VOLUME /srcdir
 # yum repositories
 RUN yum -y update \
   && yum clean all \
@@ -36,10 +35,6 @@ RUN yum -y update \
      https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm `#ius.io` \
   && yum clean all
 ENV GCC_VER=gcc731
-# enable scl binaries
-ENV BASH_ENV="/scripts/scl_enable" \
-    ENV="/scripts/scl_enable" \
-    PROMPT_COMMAND=". /scripts/scl_enable"
 # doxygen and LaTeX
 COPY texlive.profile /usr/local/src/
 RUN wget -qO- --no-check-certificate \
@@ -76,44 +71,3 @@ RUN export XP_VER=20.08.1 \
   && printf "lsb_release %s\n" "`lsb_release --description`" \
      >> /opt/extern/externpro-${XP_VER}-${GCC_VER}-64-Linux/externpro_${XP_VER}-${GCC_VER}-64.txt \
   && unset XP_DL && unset XP_VER
-# CRTool
-RUN mkdir /opt/extern/CRTool \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/20.05.2/CRToolImpl-20.05.2.sh" \
-  && chmod 755 CRTool*.sh \
-  && ./CRTool-20.07.1.sh --prefix=/opt/extern/CRTool --exclude-subdir \
-  && ./CRToolImpl-20.05.2.sh --prefix=/opt/extern --include-subdir \
-  && rm CRTool-20.07.1.sh \
-  && rm CRToolImpl-20.05.2.sh
-ENV PATH=$PATH:/opt/extern/CRTool
-# SDLPluginSDK
-RUN export SDK_VER=v3.2.0.0 \
-  && export SDK_DL=releases/download/${SDK_VER}/SDLPluginSDK-${SDK_VER}-${GCC_VER}-64-Linux.tar.xz \
-  && wget -qO- "https://isrhub.usurf.usu.edu/PluginFramework/SDKSuper/${SDK_DL}" \
-   | tar -xJ -C /opt/extern/ \
-  && unset SDK_DL && unset SDK_VER
-# internpro
-RUN export IP_VER=20.09.1 \
-  && export IP_DL=releases/download/${IP_VER}/internpro-${IP_VER}-${GCC_VER}-64-Linux.tar.xz \
-  && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
-   | tar -xJ -C /opt/extern/ \
-  && unset IP_DL && unset IP_VER
-# webpro
-RUN export WP_VER=20.06.1 \
-  && export WP_DL=releases/download/${WP_VER}/webpro-${WP_VER}-${GCC_VER}-64-Linux.tar.xz \
-  && wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}" \
-   | tar -xJ -C /opt/extern/ \
-  && unset WP_DL && unset WP_VER
-# create non-root user, add to sudoers
-ARG USERNAME
-ARG USERID
-RUN adduser --uid ${USERID} ${USERNAME} \
-  && echo "" >> /etc/sudoers \
-  && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
-  && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-ENV USER=${USERNAME}
-# run container as non-root user from here onwards
-# so that build output files have the correct owner
-USER ${USERNAME}
-# run bash script and process the input command
-ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
