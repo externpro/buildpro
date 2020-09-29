@@ -2,6 +2,8 @@ FROM centos:6
 LABEL maintainer="smanders"
 SHELL ["/bin/bash", "-c"]
 USER 0
+VOLUME /scripts
+VOLUME /srcdir
 # install software build system inside docker
 RUN yum -y update \
   && yum clean all \
@@ -22,15 +24,22 @@ RUN yum -y update \
      xeyes \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm \
      https://repo.ius.io/ius-release-el6.rpm \
+  && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
   && yum -y install --setopt=tsflags=nodocs \
      cppcheck `#epel` \
      devtoolset-7-binutils `#scl` \
      devtoolset-7-gcc `#scl` \
      devtoolset-7-gcc-c++ `#scl` \
+     git-lfs `#packagecloud` \
      lcov `#epel` \
      python27 `#scl` \
      https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm `#ius.io` \
   && yum clean all
+ENV GCC_VER=gcc731
+# enable scl binaries
+ENV BASH_ENV="/scripts/scl_enable" \
+    ENV="/scripts/scl_enable" \
+    PROMPT_COMMAND=". /scripts/scl_enable"
 # doxygen and LaTeX
 COPY texlive.profile /usr/local/src/
 RUN wget -qO- --no-check-certificate \
@@ -45,14 +54,20 @@ RUN wget -qO- --no-check-certificate \
   && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
-# cmake and git-lfs
+# cmake
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-3.17.5-Linux-x86_64.tar.gz" \
-  | tar --strip-components=1 -xz -C /usr/local/ \
-  && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
-  && yum -y install git-lfs \
-  && yum clean all
+  | tar --strip-components=1 -xz -C /usr/local/
+# externpro
+RUN export XP_VER=20.08.1 \
+  && mkdir /opt/extern \
+  && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
+   | tar -xJ -C /opt/extern/ \
+  && printf "lsb_release %s\n" "`lsb_release --description`" \
+     >> /opt/extern/externpro-${XP_VER}-${GCC_VER}-64-Linux/externpro_${XP_VER}-${GCC_VER}-64.txt \
+  && unset XP_DL && unset XP_VER
 # CRTool
-RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
+RUN mkdir /opt/extern/CRTool \
   && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
   && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/20.05.2/CRToolImpl-20.05.2.sh" \
   && chmod 755 CRTool*.sh \
@@ -61,29 +76,24 @@ RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
   && rm CRTool-20.07.1.sh \
   && rm CRToolImpl-20.05.2.sh
 ENV PATH=$PATH:/opt/extern/CRTool
-# pros
-ENV \
-  XP_VER=20.08.1 \
-  IP_VER=20.09.1 \
-  WP_VER=20.06.1
-# externpro
-RUN wget -qO- "https://github.com/smanders/externpro/releases/download/$XP_VER/externpro-$XP_VER-gcc731-64-Linux.tar.xz" \
-  | tar -xJ -C /opt/extern/ \
-  && printf "lsb_release %s\n" "`lsb_release --description`" \
-     >> /opt/extern/externpro-$XP_VER-gcc731-64-Linux/externpro_$XP_VER-gcc731-64.txt
+# SDLPluginSDK
+RUN export SDK_VER=v3.2.0.0 \
+  && export SDK_DL=releases/download/${SDK_VER}/SDLPluginSDK-${SDK_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && wget -qO- "https://isrhub.usurf.usu.edu/PluginFramework/SDKSuper/${SDK_DL}" \
+   | tar -xJ -C /opt/extern/ \
+  && unset SDK_DL && unset SDK_VER
 # internpro
-RUN wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/releases/download/$IP_VER/internpro-$IP_VER-gcc731-64-Linux.tar.xz" \
-  | tar -xJ -C /opt/extern/
+RUN export IP_VER=20.09.1 \
+  && export IP_DL=releases/download/${IP_VER}/internpro-${IP_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
+   | tar -xJ -C /opt/extern/ \
+  && unset IP_DL && unset IP_VER
 # webpro
-RUN wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/releases/download/$WP_VER/webpro-$WP_VER-gcc731-64-Linux.tar.xz" \
-  | tar -xJ -C /opt/extern/
-# set up volumes
-VOLUME /scripts
-VOLUME /srcdir
-# enable scl binaries
-ENV BASH_ENV="/scripts/scl_enable" \
-    ENV="/scripts/scl_enable" \
-    PROMPT_COMMAND=". /scripts/scl_enable"
+RUN export WP_VER=20.06.1 \
+  && export WP_DL=releases/download/${WP_VER}/webpro-${WP_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}" \
+   | tar -xJ -C /opt/extern/ \
+  && unset WP_DL && unset WP_VER
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
