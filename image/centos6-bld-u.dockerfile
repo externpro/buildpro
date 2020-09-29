@@ -20,17 +20,23 @@ RUN mkdir /opt/extern/CRTool \
   && rm CRToolImpl-20.05.2.sh
 ENV PATH=$PATH:/opt/extern/CRTool
 # SDLPluginSDK
-RUN export SDK_VER=v3.0.3.0 \
-  && export SDK_DL=releases/download/${SDK_VER}/VantagePluginSDK-${SDK_VER}-${GCC_VER}-64-Linux.tar.xz \
+RUN export SDK_VER=v3.2.0.0 \
+  && export SDK_DL=releases/download/${SDK_VER}/SDLPluginSDK-${SDK_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/PluginFramework/SDKSuper/${SDK_DL}" \
    | tar -xJ -C /opt/extern/ \
   && unset SDK_DL && unset SDK_VER
 # internpro
-RUN export IP_VER=20.01.3 \
+RUN export IP_VER=20.09.1 \
   && export IP_DL=releases/download/${IP_VER}/internpro-${IP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
    | tar -xJ -C /opt/extern/ \
   && unset IP_DL && unset IP_VER
+# webpro
+RUN export WP_VER=20.06.1 \
+  && export WP_DL=releases/download/${WP_VER}/webpro-${WP_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}" \
+   | tar -xJ -C /opt/extern/ \
+  && unset WP_DL && unset WP_VER
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
