@@ -2,7 +2,7 @@
 cd "$( dirname "$0" )"
 gtag=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
-  gtag=${gtag}-dr
+  gtag=working
 fi
 for img in centos6-bld centos7-run
 do

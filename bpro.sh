@@ -57,7 +57,7 @@ NETWORK=
 REPO=buildpro/centos6-bld
 TAG=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
-  TAG=${TAG}-dr
+  TAG=working
 fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
