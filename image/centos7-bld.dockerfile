@@ -1,8 +1,9 @@
 FROM centos:7
 LABEL maintainer="smanders"
+LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-# install software build system inside docker
+# yum repositories
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
@@ -22,14 +23,17 @@ RUN yum -y update \
      xeyes \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
      https://repo.ius.io/ius-release-el7.rpm \
+  && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
   && yum -y install --setopt=tsflags=nodocs \
      cppcheck `#epel` \
      devtoolset-7-binutils `#scl` \
      devtoolset-7-gcc `#scl` \
      devtoolset-7-gcc-c++ `#scl` \
+     git-lfs `#packagecloud` \
      lcov `#epel` \
      https://repo.ius.io/7/x86_64/packages/g/git224-2.24.3-1.el7.ius.x86_64.rpm `#ius.io` \
   && yum clean all
+ENV GCC_VER=gcc731
 # doxygen and LaTeX
 COPY texlive.profile /usr/local/src/
 RUN wget -qO- --no-check-certificate \
@@ -44,55 +48,25 @@ RUN wget -qO- --no-check-certificate \
   && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
-# cmake and git-lfs
+# CUDA https://developer.nvidia.com/cuda-10.1-download-archive-update1
+RUN wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel6/x86_64/cuda-repo-rhel6-10.1.168-1.x86_64.rpm" \
+  && rpm --install cuda-repo-rhel6-10.1.168-1.x86_64.rpm \
+  && yum clean all \
+  && yum -y install \
+     cuda-compiler-10-1 \
+     cuda-libraries-dev-10-1 \
+  && ln -s cuda-10.1 /usr/local/cuda \
+  && yum clean all \
+  && rm cuda-repo-rhel6-10.1.168-1.x86_64.rpm
+# cmake
 RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-3.17.5-Linux-x86_64.tar.gz" \
-  | tar --strip-components=1 -xz -C /usr/local/ \
-  && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
-  && yum -y install git-lfs \
-  && yum clean all
-# CRTool
-RUN mkdir /opt/extern && mkdir /opt/extern/CRTool \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/20.05.2/CRToolImpl-20.05.2.sh" \
-  && chmod 755 CRTool*.sh \
-  && ./CRTool-20.07.1.sh --prefix=/opt/extern/CRTool --exclude-subdir \
-  && ./CRToolImpl-20.05.2.sh --prefix=/opt/extern --include-subdir \
-  && rm CRTool-20.07.1.sh \
-  && rm CRToolImpl-20.05.2.sh
-ENV PATH=$PATH:/opt/extern/CRTool
-# pros
-ENV \
-  XP_VER=20.08.1 \
-  IP_VER=20.09.1 \
-  WP_VER=20.06.1
+  | tar --strip-components=1 -xz -C /usr/local/
 # externpro
-RUN wget -qO- "https://github.com/smanders/externpro/releases/download/$XP_VER/externpro-$XP_VER-gcc731-64-Linux.tar.xz" \
-  | tar -xJ -C /opt/extern/ \
+RUN export XP_VER=20.08.1 \
+  && mkdir /opt/extern \
+  && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
+   | tar -xJ -C /opt/extern/ \
   && printf "lsb_release %s\n" "`lsb_release --description`" \
-     >> /opt/extern/externpro-$XP_VER-gcc731-64-Linux/externpro_$XP_VER-gcc731-64.txt
-# internpro
-RUN wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/releases/download/$IP_VER/internpro-$IP_VER-gcc731-64-Linux.tar.xz" \
-  | tar -xJ -C /opt/extern/
-# webpro
-RUN wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/releases/download/$WP_VER/webpro-$WP_VER-gcc731-64-Linux.tar.xz" \
-  | tar -xJ -C /opt/extern/
-# set up volumes
-VOLUME /scripts
-VOLUME /srcdir
-# enable scl binaries
-ENV BASH_ENV="/scripts/scl_enable" \
-    ENV="/scripts/scl_enable" \
-    PROMPT_COMMAND=". /scripts/scl_enable"
-# create non-root user, add to sudoers
-ARG USERNAME
-ARG USERID
-RUN adduser --uid ${USERID} ${USERNAME} \
-  && echo "" >> /etc/sudoers \
-  && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
-  && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-ENV USER=${USERNAME}
-# run container as non-root user from here onwards
-# so that build output files have the correct owner
-USER ${USERNAME}
-# run bash script and process the input command
-ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+     >> /opt/extern/externpro-${XP_VER}-${GCC_VER}-64-Linux/externpro_${XP_VER}-${GCC_VER}-64.txt \
+  && unset XP_DL && unset XP_VER
