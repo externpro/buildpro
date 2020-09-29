@@ -54,7 +54,7 @@ CMD=shell
 DB=
 MOUNT=$HOME
 NETWORK=
-REPO=buildpro/centos6-bld
+REPO=buildpro/centos6-bld-u
 TAG=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
   TAG=working
