@@ -60,14 +60,15 @@ RUN wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel6/x86_
   && yum clean all \
   && rm cuda-repo-rhel6-10.1.168-1.x86_64.rpm
 # cmake
-RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-3.17.5-Linux-x86_64.tar.gz" \
-  | tar --strip-components=1 -xz -C /usr/local/
+RUN export CMK_VER=3.13.4 \
+  && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-Linux-x86_64.tar.gz \
+  && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
+  | tar --strip-components=1 -xz -C /usr/local/ \
+  && unset CMK_DL && unset CMK_VER
 # externpro
-RUN export XP_VER=20.08.1 \
+RUN export XP_VER=20.01.1 \
   && mkdir /opt/extern \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
    | tar -xJ -C /opt/extern/ \
-  && printf "lsb_release %s\n" "`lsb_release --description`" \
-     >> /opt/extern/externpro-${XP_VER}-${GCC_VER}-64-Linux/externpro_${XP_VER}-${GCC_VER}-64.txt \
   && unset XP_DL && unset XP_VER
