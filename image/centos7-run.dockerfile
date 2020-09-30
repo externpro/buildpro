@@ -15,8 +15,11 @@ RUN yum -y update \
      wget \
   && yum clean all
 # cmake
-RUN wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.17.5/cmake-3.17.5-Linux-x86_64.tar.gz" \
-  | tar --strip-components=1 -xz -C /usr/local/
+RUN export CMK_VER=3.17.5 \
+  && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-Linux-x86_64.tar.gz \
+  && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
+  | tar --strip-components=1 -xz -C /usr/local/ \
+  && unset CMK_DL && unset CMK_VER
 # install database connect from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 # install data source name (DSN)
