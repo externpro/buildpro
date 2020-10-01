@@ -46,6 +46,9 @@ RUN wget -qO- --no-check-certificate \
   && /usr/local/src/install-tl-20180303/install-tl -profile /usr/local/src/texlive.profile \
      -repository http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/tlnet-final/archive/ \
   && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile \
+  && tlmgr install collection-fontsrecommended \
+  && tlmgr install collection-latexrecommended \
+  && tlmgr install collection-latexextra \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # CUDA https://developer.nvidia.com/cuda-10.1-download-archive-update1
