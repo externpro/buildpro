@@ -37,3 +37,4 @@ RUN yum -y update \
   && chmod 777 /mnt/mock_midb \
   && odbcinst -i -s -l -f /usr/local/src/odbc.ini.mock \
   && rm /usr/local/src/odbc.ini.mock
+CMD ["/bin/bash"]

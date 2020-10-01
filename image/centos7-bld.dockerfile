@@ -76,3 +76,4 @@ RUN export XP_VER=20.08.1 \
   && printf "lsb_release %s\n" "`lsb_release --description`" \
      >> /opt/extern/externpro-${XP_VER}-${GCC_VER}-64-Linux/externpro_${XP_VER}-${GCC_VER}-64.txt \
   && unset XP_DL && unset XP_VER
+CMD ["/bin/bash"]
