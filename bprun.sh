@@ -127,7 +127,7 @@ if [ $VERBOSE ]; then
   echo "docker container run${RUN_ARGS}"
 fi
 if [[ "$(docker images -q ${REPO}:${TAG} 2>/dev/null)" == "" ]]; then
-  ./image/bimage.sh
+  ./image/bpimg.sh
   echo "'docker image build' complete... 'docker container run' starting"
 fi
 docker container run ${RUN_ARGS}
