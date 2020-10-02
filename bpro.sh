@@ -54,7 +54,7 @@ CMD=shell
 DB=
 MOUNT=$HOME
 NETWORK=
-REPO=buildpro/centos6-bld-u
+REPO=bpro/centos6-bld
 TAG=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
   TAG=working
@@ -70,7 +70,7 @@ do
       ;;
     d )
       DB="--link ${db_container_name}:mysqldocker"
-      REPO=buildpro/centos7-run
+      REPO=bpro/centos7-run
       dbinit
       ;;
     m )

@@ -13,14 +13,14 @@ do
     time docker image build \
       --network=host \
       --file ${img}.dockerfile \
+      --tag ghcr.io/smanders/buildpro/${img}:latest \
       --tag ${pkg} .
   fi
-  imgu=${img}-u
   time docker image build \
     --network=host \
     --build-arg USERNAME=${USER} \
     --build-arg USERID=$(id -u ${USER}) \
-    --file ${imgu}.dockerfile \
-    --tag buildpro/${imgu}:${gtag} .
+    --file ${img}-u.dockerfile \
+    --tag bpro/${img}:${gtag} .
 done
 docker image ls
