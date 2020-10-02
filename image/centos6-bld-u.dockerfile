@@ -26,7 +26,7 @@ RUN export SDK_VER=v3.2.0.0 \
    | tar -xJ -C /opt/extern/ \
   && unset SDK_DL && unset SDK_VER
 # internpro
-RUN export IP_VER=20.09.1 \
+RUN export IP_VER=20.02.1 \
   && export IP_DL=releases/download/${IP_VER}/internpro-${IP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
    | tar -xJ -C /opt/extern/ \
