@@ -53,15 +53,28 @@ RUN wget -qO- --no-check-certificate \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # CUDA https://developer.nvidia.com/cuda-10.1-download-archive-update1
-RUN wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel6/x86_64/cuda-repo-rhel6-10.1.168-1.x86_64.rpm" \
-  && rpm --install cuda-repo-rhel6-10.1.168-1.x86_64.rpm \
+# NOTE: only subset of cuda-libraries-dev to reduce layer sizes
+RUN export CUDA_VER=10.1.168-1 \
+  && export CUDA_RPM=cuda-repo-rhel6-${CUDA_VER}.x86_64.rpm \
+  && wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel6/x86_64/${CUDA_RPM}" \
+  && rpm --install ${CUDA_RPM} \
   && yum clean all \
   && yum -y install \
      cuda-compiler-10-1 \
-     cuda-libraries-dev-10-1 \
+  `# cuda-libraries-dev-10-1` \
+     cuda-cudart-dev-10-1 \
+     cuda-cusolver-dev-10-1 \
+     libcublas-devel-10-2 \
   && ln -s cuda-10.1 /usr/local/cuda \
   && yum clean all \
-  && rm cuda-repo-rhel6-10.1.168-1.x86_64.rpm
+  && rm ${CUDA_RPM} \
+  `# libcublas installed to 10.2, move to 10.1` \
+  && mv /usr/local/cuda-10.2/targets/x86_64-linux/include/* /usr/local/cuda-10.1/targets/x86_64-linux/include/ \
+  && mv /usr/local/cuda-10.2/targets/x86_64-linux/lib/stubs/* /usr/local/cuda-10.1/targets/x86_64-linux/lib/stubs/ \
+  && rmdir /usr/local/cuda-10.2/targets/x86_64-linux/lib/stubs/ \
+  && mv /usr/local/cuda-10.2/targets/x86_64-linux/lib/* /usr/local/cuda-10.1/targets/x86_64-linux/lib/ \
+  && rm -rf /usr/local/cuda-10.2 \
+  && unset CUDA_VER && unset CUDA_RPM
 # cmake
 RUN export CMK_VER=3.17.5 \
   && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-Linux-x86_64.tar.gz \
