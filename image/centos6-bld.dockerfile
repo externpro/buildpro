@@ -4,6 +4,7 @@ LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
 # yum repositories
+# NOTE: multiple layers to reduce layer sizes
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
@@ -23,6 +24,9 @@ RUN yum -y update \
      xeyes \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm \
      https://repo.ius.io/ius-release-el6.rpm \
+  && yum clean all
+RUN yum -y update \
+  && yum clean all \
   && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
   && yum -y install --setopt=tsflags=nodocs \
      cppcheck `#epel` \
@@ -35,21 +39,27 @@ RUN yum -y update \
      https://repo.ius.io/6/x86_64/packages/g/git224-2.24.3-1.el6.ius.x86_64.rpm `#ius.io` \
   && yum clean all
 ENV GCC_VER=gcc731
-# doxygen and LaTeX
-COPY texlive.profile /usr/local/src/
-RUN wget -qO- --no-check-certificate \
-  "https://downloads.sourceforge.net/project/doxygen/rel-1.8.13/doxygen-1.8.13.linux.bin.tar.gz" \
+# doxygen
+RUN export DXY_VER=1.8.13 \
+  && wget -qO- --no-check-certificate \
+  "https://downloads.sourceforge.net/project/doxygen/rel-${DXY_VER}/doxygen-${DXY_VER}.linux.bin.tar.gz" \
   | tar -xz -C /usr/local/ \
-  && mv /usr/local/doxygen-1.8.13/bin/doxygen /usr/local/bin/ \
-  && rm -rf /usr/local/doxygen-1.8.13/ \
-  && wget -qO- "http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/tlnet-final/install-tl-unx.tar.gz" \
+  && mv /usr/local/doxygen-${DXY_VER}/bin/doxygen /usr/local/bin/ \
+  && rm -rf /usr/local/doxygen-${DXY_VER}/ \
+  && unset DXY_VER
+# LaTeX
+# NOTE: multiple layers, small subset of collection-latexextra to reduce layer sizes
+COPY texlive.profile /usr/local/src/
+RUN export TEX_VER=2017 \
+  && wget -qO- "http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/${TEX_VER}/tlnet-final/install-tl-unx.tar.gz" \
   | tar -xz -C /usr/local/src/ \
   && /usr/local/src/install-tl-20180303/install-tl -profile /usr/local/src/texlive.profile \
-     -repository http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2017/tlnet-final/archive/ \
+     -repository http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/${TEX_VER}/tlnet-final/archive/ \
   && rm -rf /usr/local/src/install-tl-20180303 /usr/local/src/texlive.profile \
-  && tlmgr install collection-fontsrecommended \
+  && unset TEX_VER
+RUN  tlmgr install collection-fontsrecommended \
   && tlmgr install collection-latexrecommended \
-  && tlmgr install collection-latexextra \
+  && tlmgr install tabu varwidth multirow wrapfig adjustbox collectbox sectsty tocloft `#collection-latexextra` \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # CUDA https://developer.nvidia.com/cuda-10.1-download-archive-update1
