@@ -5,6 +5,8 @@ SHELL ["/bin/bash", "-c"]
 USER 0
 VOLUME /scripts
 VOLUME /srcdir
+# ConfigTools Update20181115 unit test writes to log file
+RUN mkdir -p /etc/opt/VANTAGE && chmod 777 /etc/opt/VANTAGE
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
