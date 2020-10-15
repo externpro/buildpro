@@ -55,6 +55,7 @@ DB=
 MOUNT=$HOME
 NETWORK=
 REPO=bpro/centos6-bld
+SNAP=
 TAG=`git describe --tags`
 if [ -n "$(git status --porcelain)" ]; then
   TAG=working
@@ -62,7 +63,7 @@ fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
 XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:dm:nr:t:vx" opt
+while getopts ":c:dm:nr:st:vx" opt
 do
   case ${opt} in
     c )
@@ -81,6 +82,14 @@ do
       ;;
     r )
       REPO=$OPTARG
+      ;;
+    s )
+      # mkdir $HOME/tmp; sudo mount --bind /tmp $HOME/tmp/
+      # sudo umount $HOME/tmp; rmdir $HOME/tmp
+      # make it permanent by adding line to /etc/fstab and 'sudo update-initramfs -u -k all'
+      # # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+      # /tmp /home/<user>/tmp auto bin 0 3
+      SNAP=${HOME}
       ;;
     t )
       TAG=$OPTARG
@@ -116,7 +125,7 @@ RUN_ARGS="\
  --volume=$(pwd)/image/scripts:/scripts\
  --volume=$MOUNT:/srcdir\
  ${NETWORK}\
- --volume=/tmp/.X11-unix:/tmp/.X11-unix\
+ --volume=${SNAP}/tmp/.X11-unix:/tmp/.X11-unix\
  ${XARG} ${DB}\
  --user=$(id -u ${USER}):$(id -g ${USER})\
  --hostname=${CONTAINER_HOSTNAME}\
