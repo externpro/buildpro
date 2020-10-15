@@ -36,7 +36,9 @@ RUN yum -y update \
      git-lfs `#packagecloud` \
      lcov `#epel` \
      https://repo.ius.io/7/x86_64/packages/g/git224-2.24.3-1.el7.ius.x86_64.rpm `#ius.io` \
-  && yum clean all
+  && yum clean all \
+  && echo "[ -f /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git" \
+     >> /etc/skel/.bashrc
 ENV GCC_VER=gcc731
 # doxygen
 RUN export DXY_VER=1.8.13 \
@@ -91,12 +93,10 @@ RUN export CMK_VER=3.17.5 \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
 # externpro
-RUN export XP_VER=20.08.1 \
+RUN export XP_VER=20.10.1 \
   && mkdir /opt/extern \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
    | tar -xJ -C /opt/extern/ \
-  && printf "lsb_release %s\n" "`lsb_release --description`" \
-     >> /opt/extern/externpro-${XP_VER}-${GCC_VER}-64-Linux/externpro_${XP_VER}-${GCC_VER}-64.txt \
   && unset XP_DL && unset XP_VER
 CMD ["/bin/bash"]
