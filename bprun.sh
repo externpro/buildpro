@@ -35,7 +35,10 @@ function dbinit
     # docker [stop|retart|start|rm] ${db_container_name}
     # docker inspect ${db_container_name} | grep IPAddress
     # ip a | grep docker | grep inet
-    # cat /etc/hosts (in link'ed container)
+    # in link'ed container:
+    #  cat /etc/hosts
+    #  cat /etc/odbc.ini
+    #  isql mock_midb_dsn
     # docker exec -it ${db_container_name} mysql -uroot -p
     # mysql> SELECT @@innodb_buffer_pool_size;
     # mysql> SELECT @@innodb_flush_log_at_trx_commit;
