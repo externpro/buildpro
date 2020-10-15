@@ -94,11 +94,10 @@ do
       DISPLAY_SCREEN=$(echo $DISPLAY | cut -d: -f2)
       DISPLAY_NUM=$(echo ${DISPLAY_SCREEN} | cut -d. -f1)
       MAGIC_COOKIE=$(xauth list ${DISPLAY} | awk '{print $3}')
-      XAUTH=/tmp/.docker.xauth
+      XAUTH=/tmp/.X11-unix/docker.xauth
       touch ${XAUTH}
       xauth -f ${XAUTH} add ${DOCKER_HOST}:${DISPLAY_NUM} . ${MAGIC_COOKIE}
-      XARG="--env=DISPLAY=${DOCKER_HOST}:${DISPLAY_SCREEN}
-        --volume=${XAUTH}:${XAUTH} --env=XAUTHORITY=${XAUTH}"
+      XARG="--env=DISPLAY=${DOCKER_HOST}:${DISPLAY_SCREEN} --env=XAUTHORITY=${XAUTH}"
       ;;
     \? )
       echo "Invalid option: $OPTARG" 1>&2
