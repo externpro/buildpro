@@ -10,14 +10,16 @@ ENV BASH_ENV="/scripts/scl_enable" \
     ENV="/scripts/scl_enable" \
     PROMPT_COMMAND=". /scripts/scl_enable"
 # CRTool
-RUN mkdir /opt/extern/CRTool \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/20.07.1/CRTool-20.07.1.sh" \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/20.05.2/CRToolImpl-20.05.2.sh" \
+RUN export CRT_VER=20.10.1 && export CRW_VER=20.07.1 \
+  && mkdir /opt/extern/CRTool \
+  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/${CRW_VER}/CRTool-${CRW_VER}.sh" \
+  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/${CRT_VER}/CRToolImpl-${CRT_VER}.sh" \
   && chmod 755 CRTool*.sh \
-  && ./CRTool-20.07.1.sh --prefix=/opt/extern/CRTool --exclude-subdir \
-  && ./CRToolImpl-20.05.2.sh --prefix=/opt/extern --include-subdir \
-  && rm CRTool-20.07.1.sh \
-  && rm CRToolImpl-20.05.2.sh
+  && ./CRTool-${CRW_VER}.sh --prefix=/opt/extern/CRTool --exclude-subdir \
+  && ./CRToolImpl-${CRT_VER}.sh --prefix=/opt/extern --include-subdir \
+  && rm CRTool-${CRW_VER}.sh \
+  && rm CRToolImpl-${CRT_VER}.sh \
+  && unset CRT_VER && unset CRW_VER
 ENV PATH=$PATH:/opt/extern/CRTool
 # SDLPluginSDK
 RUN export SDK_VER=v3.2.0.0 \
@@ -26,13 +28,13 @@ RUN export SDK_VER=v3.2.0.0 \
    | tar -xJ -C /opt/extern/ \
   && unset SDK_DL && unset SDK_VER
 # internpro
-RUN export IP_VER=20.09.1 \
+RUN export IP_VER=20.10.1 \
   && export IP_DL=releases/download/${IP_VER}/internpro-${IP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
    | tar -xJ -C /opt/extern/ \
   && unset IP_DL && unset IP_VER
 # webpro
-RUN export WP_VER=20.06.1 \
+RUN export WP_VER=20.10.3 \
   && export WP_DL=releases/download/${WP_VER}/webpro-${WP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}" \
    | tar -xJ -C /opt/extern/ \
