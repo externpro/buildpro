@@ -20,6 +20,8 @@ RUN export CMK_VER=3.17.5 \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
+# prompt
+COPY git-prompt.sh /etc/profile.d/
 # install database connect from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 # install data source name (DSN)

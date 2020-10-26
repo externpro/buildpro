@@ -36,9 +36,8 @@ RUN yum -y update \
      git-lfs `#packagecloud` \
      lcov `#epel` \
      https://repo.ius.io/7/x86_64/packages/g/git224-2.24.3-1.el7.ius.x86_64.rpm `#ius.io` \
-  && yum clean all \
-  && echo "[ -f /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git" \
-     >> /etc/skel/.bashrc
+  && yum clean all
+COPY git-prompt.sh /etc/profile.d/
 ENV GCC_VER=gcc731
 # doxygen
 RUN export DXY_VER=1.8.13 \
