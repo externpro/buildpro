@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
+docker network inspect bpnet >/dev/null 2>&1 || \
+  docker network create --driver bridge bpnet >/dev/null 2>&1
 db_container_name=mysqlpro
 function dbinit
 {
@@ -14,6 +16,7 @@ function dbinit
       --restart on-failure \
       --detach \
       --env="MYSQL_ROOT_PASSWORD=${db_root_passwd}" \
+      --network=bpnet \
       mysql/mysql-server:8.0.21 \
         --innodb-buffer-pool-size=2G \
         --innodb-flush-log-at-trx-commit=2 \
@@ -53,8 +56,12 @@ function dbinit
     exit
   fi
 }
+# $ sudo vi /etc/NetworkManager/dnsmasq.d/docker-bridge.conf
+# $ cat /etc/NetworkManager/dnsmasq.d/docker-bridge.conf
+# listen-address=172.17.0.1
+# $ sudo service network-manager restart
+# NOTE: 172.17.0.1 == DOCKER_HOST
 CMD=shell
-DB=
 MOUNT=$HOME
 NETWORK=
 REPO=bpro/centos6-bld
@@ -65,6 +72,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
+DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
 XARG="--env=DISPLAY=${DISPLAY}"
 while getopts ":c:dm:nr:st:vx" opt
 do
@@ -73,7 +81,6 @@ do
       CMD=$OPTARG
       ;;
     d )
-      DB="--link ${db_container_name}:mysqldocker"
       REPO=bpro/centos7-run
       dbinit
       ;;
@@ -102,7 +109,6 @@ do
       VERBOSE=true
       ;;
     x )
-      DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
       DISPLAY_SCREEN=$(echo $DISPLAY | cut -d: -f2)
       DISPLAY_NUM=$(echo ${DISPLAY_SCREEN} | cut -d. -f1)
       MAGIC_COOKIE=$(xauth list ${DISPLAY} | awk '{print $3}')
@@ -129,7 +135,8 @@ RUN_ARGS="\
  --volume=$MOUNT:/srcdir\
  ${NETWORK}\
  --volume=${SNAP}/tmp/.X11-unix:/tmp/.X11-unix\
- ${XARG} ${DB}\
+ ${XARG}\
+ --network=bpnet --dns=${DOCKER_HOST}\
  --user=$(id -u ${USER}):$(id -g ${USER})\
  --hostname=${CONTAINER_HOSTNAME}\
  --rm -it ${REPO}:${TAG}\
