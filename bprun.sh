@@ -63,7 +63,6 @@ function dbinit
 # NOTE: 172.17.0.1 == DOCKER_HOST
 CMD=shell
 MOUNT=$HOME
-NETWORK=
 REPO=bpro/centos6-bld
 SNAP=
 TAG=`git describe --tags`
@@ -74,7 +73,7 @@ CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
 DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
 XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:dm:nr:st:vx" opt
+while getopts ":c:dm:r:st:vx" opt
 do
   case ${opt} in
     c )
@@ -86,9 +85,6 @@ do
       ;;
     m )
       MOUNT=$OPTARG
-      ;;
-    n )
-      NETWORK="--volume=$HOME/.ssh:/home/${USER}/.ssh --net=host"
       ;;
     r )
       REPO=$OPTARG
@@ -133,7 +129,7 @@ RUN_ARGS="\
  ${REMAINING_ARGS}\
  --volume=$(pwd)/image/scripts:/scripts\
  --volume=$MOUNT:/srcdir\
- ${NETWORK}\
+ --volume=$HOME/.ssh:/home/${USER}/.ssh\
  --volume=${SNAP}/tmp/.X11-unix:/tmp/.X11-unix\
  ${XARG}\
  --network=bpnet --dns=${DOCKER_HOST}\
