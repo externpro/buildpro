@@ -24,10 +24,6 @@ RUN export CMK_VER=3.17.5 \
 COPY git-prompt.sh /etc/profile.d/
 # install database connect from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
-# install data source name (DSN)
-#  odbcinst: [Action]i:install [Object]s:data_source [Options]l:system_dsn,f:template_file
-#  odbcinst creates /etc/odbc.ini
-COPY odbc.ini.mock /usr/local/src/
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
@@ -35,8 +31,6 @@ RUN yum -y update \
   && yum -y install --enablerepo=mysql80-community --setopt=tsflags=nodocs \
      mysql-connector-odbc \
   && yum clean all \
-  && mkdir -p /mnt/mock_midb \
-  && chmod 777 /mnt/mock_midb \
-  && odbcinst -i -s -l -f /usr/local/src/odbc.ini.mock \
-  && rm /usr/local/src/odbc.ini.mock
+  && mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins \
+  && chmod 777 /mnt/mock_midb /mnt/midb /mnt/Plugins
 CMD ["/bin/bash"]

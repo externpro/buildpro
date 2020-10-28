@@ -31,7 +31,10 @@ function dbinit
       -e "CREATE DATABASE mock_midb;" \
       -e "CREATE DATABASE mock_users;" \
       -e "CREATE DATABASE mock_events;" \
-      -e "CREATE USER 'vantage'@'%' IDENTIFIED BY 'MockDB4me!';" \
+      -e "CREATE DATABASE midb;" \
+      -e "CREATE DATABASE users;" \
+      -e "CREATE DATABASE eventsdb;" \
+      -e "CREATE USER 'vantage'@'%' IDENTIFIED BY 'TestDB4me!';" \
       -e "GRANT ALL ON *.* TO 'vantage'@'%';" \
       -e "FLUSH PRIVILEGES;"
     # NOTES: to verify settings, etc
