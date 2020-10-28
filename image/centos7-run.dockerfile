@@ -9,6 +9,7 @@ RUN yum -y update \
   && yum -y install --setopt=tsflags=nodocs \
      gtk2.x86_64 \
      libSM.x86_64 \
+     mesa-libGLU.x86_64 \
      make \
      sudo \
      unixODBC \
