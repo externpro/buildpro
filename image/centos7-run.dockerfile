@@ -33,7 +33,8 @@ RUN yum -y update \
      https://repo.mysql.com//mysql80-community-release-el7-3.noarch.rpm \
   && yum -y install --enablerepo=mysql80-community --setopt=tsflags=nodocs \
      mysql-connector-odbc \
-  && yum clean all \
-  && mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins \
+  && yum clean all
+# create directories needed by unit tests, autotest
+RUN mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins \
   && chmod 777 /mnt/mock_midb /mnt/midb /mnt/Plugins
 CMD ["/bin/bash"]
