@@ -7,19 +7,17 @@ else
   PS1="$PS1"'\[\033[32m\]\u@\h'   # green user@host
   PS1="$PS1"'\[\033[35m\]:'       # purple :
   PS1="$PS1"'\[\033[33m\]\w'      # brownish yellow working directory
-  if test -f "/etc/bash_completion.d/git"
+  [ -f /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
+  [ -f /usr/share/bash-completion/completions/git ] && source /usr/share/bash-completion/completions/git
+  GIT_EXEC_PATH="$(git --exec-path 2>/dev/null)"
+  COMPLETION_PATH="${GIT_EXEC_PATH%/libexec/git-core}"
+  COMPLETION_PATH="${COMPLETION_PATH%/lib/git-core}"
+  COMPLETION_PATH="$COMPLETION_PATH/share/git-core/contrib/completion"
+  if test -f "$COMPLETION_PATH/git-prompt.sh"
   then
-    . "/etc/bash_completion.d/git"
-    GIT_EXEC_PATH="$(git --exec-path 2>/dev/null)"
-    COMPLETION_PATH="${GIT_EXEC_PATH%/libexec/git-core}"
-    COMPLETION_PATH="${COMPLETION_PATH%/lib/git-core}"
-    COMPLETION_PATH="$COMPLETION_PATH/share/git-core/contrib/completion"
-    if test -f "$COMPLETION_PATH/git-prompt.sh"
-    then
-      . "/usr/share/git-core/contrib/completion/git-prompt.sh"
-      PS1="$PS1"'\[\033[36m\]'  # change color to cyan
-      PS1="$PS1"'`__git_ps1`'   # bash function
-    fi
+    . "/usr/share/git-core/contrib/completion/git-prompt.sh"
+    PS1="$PS1"'\[\033[36m\]'  # change color to cyan
+    PS1="$PS1"'`__git_ps1`'   # bash function
   fi
   PS1="$PS1"'\[\033[0m\]'        # change color
   PS1="$PS1"'\n'                 # new line
