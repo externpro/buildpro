@@ -12,6 +12,7 @@ RUN yum -y update \
      ghostscript `#LaTeX` \
      graphviz \
      gtk2-devel.x86_64 \
+     iproute \
      libSM-devel.x86_64 \
      mesa-libGL-devel.x86_64 \
      mesa-libGLU-devel.x86_64 \
