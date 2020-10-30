@@ -33,9 +33,9 @@ RUN yum -y update \
      devtoolset-7-binutils `#scl` \
      devtoolset-7-gcc `#scl` \
      devtoolset-7-gcc-c++ `#scl` \
+     git224 `#ius.io` \
      git-lfs `#packagecloud` \
      lcov `#epel` \
-     https://repo.ius.io/7/x86_64/packages/g/git224-2.24.3-1.el7.ius.x86_64.rpm `#ius.io` \
   && yum clean all
 COPY git-prompt.sh /etc/profile.d/
 ENV GCC_VER=gcc731
