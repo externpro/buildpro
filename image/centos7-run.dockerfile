@@ -15,6 +15,7 @@ RUN yum -y update \
      sudo \
      unixODBC \
      wget \
+     which \
   && yum clean all
 # cmake
 RUN export CMK_VER=3.17.5 \
