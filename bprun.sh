@@ -21,7 +21,8 @@ function dbinit
         --innodb-buffer-pool-size=2G \
         --innodb-flush-log-at-trx-commit=2 \
         --disable-log-bin \
-        --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+        --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION \
+      >/dev/null 2>&1
     echo "${db_container_name} starting... waiting until status reports 'healthy'"
     while [ ! "$(docker ps -f name=${db_container_name} | grep healthy)" ]; do
       sleep 3
