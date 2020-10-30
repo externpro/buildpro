@@ -28,13 +28,13 @@ function dbinit
     done
     echo "initializing ${db_container_name}"
     docker exec -it ${db_container_name} mysql -uroot -p${db_root_passwd} \
-      -e "CREATE DATABASE mock_midb;" \
-      -e "CREATE DATABASE mock_users;" \
-      -e "CREATE DATABASE mock_events;" \
-      -e "CREATE DATABASE midb;" \
-      -e "CREATE DATABASE users;" \
-      -e "CREATE DATABASE eventsdb;" \
-      -e "CREATE USER 'vantage'@'%' IDENTIFIED BY 'TestDB4me!';" \
+      -e "CREATE DATABASE IF NOT EXISTS mock_midb;" \
+      -e "CREATE DATABASE IF NOT EXISTS mock_users;" \
+      -e "CREATE DATABASE IF NOT EXISTS mock_events;" \
+      -e "CREATE DATABASE IF NOT EXISTS midb;" \
+      -e "CREATE DATABASE IF NOT EXISTS users;" \
+      -e "CREATE DATABASE IF NOT EXISTS eventsdb;" \
+      -e "CREATE USER IF NOT EXISTS 'vantage'@'%' IDENTIFIED BY 'TestDB4me!';" \
       -e "GRANT ALL ON *.* TO 'vantage'@'%';" \
       -e "FLUSH PRIVILEGES;"
     # NOTES: to verify settings, etc
