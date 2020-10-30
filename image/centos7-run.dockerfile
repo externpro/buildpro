@@ -32,6 +32,7 @@ RUN yum -y update \
   && yum -y install --setopt=tsflags=nodocs \
      https://repo.mysql.com//mysql80-community-release-el7-3.noarch.rpm \
   && yum -y install --enablerepo=mysql80-community --setopt=tsflags=nodocs \
+     mysql-community-client \
      mysql-connector-odbc \
   && yum clean all
 # create directories needed by unit tests, autotest
