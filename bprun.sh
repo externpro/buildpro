@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
+function usage
+{
+  echo "`basename -- $0` usage:"
+  echo " -d      runtime (bpro/centos7-run) and database (mysqlpro) containers"
+  echo " -h      display this help message"
+  echo " -m arg  directory to mount to /srcdir in container (default: \$HOME)"
+  echo " -r arg  specify a repository (default: $REPO)"
+  echo " -s      snap workaround: mount \$HOME/tmp/.X11-unix to /tmp/.X11-unix"
+  echo " -t arg  specify a repository tag (default: $TAG)"
+  echo " -v      verbose (display 'docker container run' command)"
+  echo " -x      X11 forwarding (container running on remote system via ssh [-X|-Y])"
+}
 docker network inspect bpnet >/dev/null 2>&1 || \
   docker network create --driver bridge bpnet >/dev/null 2>&1
 db_container_name=mysqlpro
@@ -77,7 +89,7 @@ CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
 DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
 XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:dm:r:st:vx" opt
+while getopts ":c:dhm:r:st:vx" opt
 do
   case ${opt} in
     c )
@@ -86,6 +98,10 @@ do
     d )
       REPO=bpro/centos7-run
       dbinit
+      ;;
+    h )
+      usage
+      exit 0
       ;;
     m )
       MOUNT=$OPTARG
@@ -119,11 +135,13 @@ do
       ;;
     \? )
       echo "Invalid option: $OPTARG" 1>&2
-      exit
+      usage
+      exit 1
       ;;
     : )
       echo "Invalid option: $OPTARG requires an argument" 1>&2
-      exit
+      usage
+      exit 1
       ;;
   esac
 done
