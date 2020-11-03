@@ -1,12 +1,13 @@
 # buildpro
 
-build containers for externpro and projects that use externpro
+build containers for [externpro](https://github.com/smanders/externpro) and projects that use externpro
 
 ## Table of Contents
 - [Getting started with docker](#getting-started-with-docker)
   - [install and configure docker](#install-and-configure-docker)
   - [verify docker installation and configuration](#verify-docker-installation-and-configuration)
   - [short docker tutorial](#short-docker-tutorial)
+- [Getting started with buildpro](#getting-started-with-buildpro)
 
 ## Getting started with docker
 
@@ -61,3 +62,19 @@ so first remove the container, using it's randomly assigned name "romantic_torva
 $ docker rm romantic_torvalds
 $ docker image rm hello-world
 ```
+
+## Getting started with buildpro
+
+buildpro was designed to be run from a git repository (`docker tag` comes from `git tag`), so start by cloning the repo
+```
+$ git clone git://github.com/smanders/buildpro.git
+$ cd buildpro
+```
+there are two main buildpro scripts
+* [bpimg.sh](image/bpimg.sh)
+  * located in the [image/](image) directory
+  * the `image/` directory contains dockerfiles and other files to support building docker images
+  * main task is to run `docker image build`
+* [bprun.sh](bprun.sh)
+  * located in the root directory of buildpro
+  * main task is to run `docker container run`
