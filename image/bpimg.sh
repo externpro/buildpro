@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 gtag=`git describe --tags`
-if [[ ${gtag} == *"-g"* ]]; then
-  gtag=latest
-elif [ -n "$(git status --porcelain --untracked=no)" ]; then
+if [ -n "$(git status --porcelain --untracked=no .)" ]; then
   gtag=working
+elif [[ ${gtag} == *"-g"* ]]; then
+  gtag=latest
 fi
 dodashu=true
 host isrhub.usurf.usu.edu | grep "not found" >/dev/null && dodashu=false
@@ -17,7 +17,6 @@ do
     time docker image build \
       --network=host \
       --file ${img}.dockerfile \
-      --tag ghcr.io/smanders/buildpro/${img}:latest \
       --tag ${pkg} .
   fi
   if ${dodashu}; then

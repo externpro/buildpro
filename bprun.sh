@@ -82,10 +82,10 @@ MOUNT=$HOME
 REPO=bpro/centos6-bld
 SNAP=
 TAG=`git describe --tags`
-if [[ ${TAG} == *"-g"* ]]; then
-  TAG=latest
-elif [ -n "$(git status --porcelain --untracked=no)" ]; then
+if [ -n "$(git status --porcelain --untracked=no image)" ]; then
   TAG=working
+elif [[ ${TAG} == *"-g"* ]]; then
+  TAG=latest
 fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
