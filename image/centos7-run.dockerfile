@@ -25,7 +25,7 @@ RUN export CMK_VER=3.17.5 \
   && unset CMK_DL && unset CMK_VER
 # prompt
 COPY git-prompt.sh /etc/profile.d/
-# install database connect from yum repo
+# install database packages from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN yum -y update \
   && yum clean all \
