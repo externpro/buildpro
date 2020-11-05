@@ -57,16 +57,17 @@ do
     else
       args=()
     fi
-    render template.dockerfile > .dockerfiles/${img}-u.dockerfile
-    time docker image build \
-      --network=host \
-      ${args[@]} \
-      --build-arg USERNAME=${USER} \
-      --build-arg USERID=$(id -u ${USER}) \
-      --file .dockerfiles/${img}-u.dockerfile \
-      --tag bpro/${img}:${gtag} .
   else
+    args=()
     echo "isrhub.usurf.usu.edu not accessible"
   fi
+  render template.dockerfile > .dockerfiles/${img}-u.dockerfile
+  time docker image build \
+    --network=host \
+    ${args[@]} \
+    --build-arg USERNAME=${USER} \
+    --build-arg USERID=$(id -u ${USER}) \
+    --file .dockerfiles/${img}-u.dockerfile \
+    --tag bpro/${img}:${gtag} .
 done
 docker image ls
