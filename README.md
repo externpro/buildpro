@@ -75,6 +75,38 @@ there are two main buildpro scripts
   * located in the [image/](image) directory
   * the `image/` directory contains dockerfiles and other files to support building docker images
   * main task is to run `docker image build`
+  * running the `bpimg.sh` script will
+    * download/pull the base open source packages `ghcr.io/smanders/buildpro/` from
+      https://github.com/smanders?tab=packages&repo_name=buildpro 
+    * build the `bpro/` images that require access to the internal isrhub (internpro, etc),
+      which are based on the open source images
+  ```
+  $ docker images
+  REPOSITORY                              TAG       IMAGE ID            CREATED             SIZE
+  bpro/centos7-bld                        20.9      b92aaf04c4f7        12 days ago         7.29GB
+  bpro/centos7-run                        20.9      4e2e19507c18        12 days ago         441MB
+  bpro/centos6-bld                        20.9      066364e38517        12 days ago         7.54GB
+  ghcr.io/smanders/buildpro/centos7-bld   20.9      f41cabdc77e6        2 weeks ago         3.87GB
+  ghcr.io/smanders/buildpro/centos6-bld   20.9      94fe6b48f41c        3 weeks ago         4.12GB
+  ghcr.io/smanders/buildpro/centos7-run   20.9      d28fd6963d52        5 weeks ago         439MB
+  centos                                  7         7e6257c9f8d8        2 months ago        203MB
+  centos                                  6         d0957ffdf8a2        20 months ago       194MB
+  ```
 * [bprun.sh](bprun.sh)
   * located in the root directory of buildpro
   * main task is to run `docker container run`
+  * running the `bprun.sh` script will call `bpimg.sh` if the image it's attempting
+    to create a container from doesn't exist
+  * the `-h` option shows the usage options
+  ```
+  $ ./bprun.sh -h
+  bprun.sh usage:
+   -d      runtime (bpro/centos7-run) and database (mysqlpro) containers
+   -h      display this help message
+   -m arg  directory to mount to /srcdir in container (default: $HOME)
+   -r arg  specify a repository (default: bpro/centos6-bld)
+   -s      snap workaround: mount $HOME/tmp/.X11-unix to /tmp/.X11-unix
+   -t arg  specify a repository tag (default: working)
+   -v      verbose (display 'docker container run' command)
+   -x      X11 forwarding (container running on remote system via ssh [-X|-Y])
+  ```
