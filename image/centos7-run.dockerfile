@@ -3,6 +3,8 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+VOLUME /scripts
+VOLUME /srcdir
 # yum repositories
 RUN yum -y update \
   && yum clean all \

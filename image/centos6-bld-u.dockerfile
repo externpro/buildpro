@@ -3,12 +3,6 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-VOLUME /scripts
-VOLUME /srcdir
-# enable scl binaries
-ENV BASH_ENV="/scripts/scl_enable" \
-    ENV="/scripts/scl_enable" \
-    PROMPT_COMMAND=". /scripts/scl_enable"
 # CRTool
 RUN export CRT_VER=20.10.1 && export CRW_VER=20.07.1 \
   && mkdir /opt/extern/CRTool \

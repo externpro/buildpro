@@ -3,6 +3,8 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+VOLUME /scripts
+VOLUME /srcdir
 # yum repositories
 # NOTE: multiple layers to reduce layer sizes
 RUN yum -y update \
@@ -38,8 +40,12 @@ RUN yum -y update \
      lcov `#epel` \
      python27 `#scl` \
   && yum clean all
+# environment: gcc version, enable scl binaries
+ENV GCC_VER=gcc731 \
+    BASH_ENV="/scripts/scl_enable" \
+    ENV="/scripts/scl_enable" \
+    PROMPT_COMMAND=". /scripts/scl_enable"
 COPY git-prompt.sh /etc/profile.d/
-ENV GCC_VER=gcc731
 # doxygen
 RUN export DXY_VER=1.8.13 \
   && wget -qO- --no-check-certificate \
