@@ -30,14 +30,12 @@ RUN yum -y update \
   && yum clean all
 RUN yum -y update \
   && yum clean all \
-  && curl -s "https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh" | bash \
   && yum -y install --setopt=tsflags=nodocs \
      cppcheck `#epel` \
      devtoolset-7-binutils `#scl` \
      devtoolset-7-gcc `#scl` \
      devtoolset-7-gcc-c++ `#scl` \
      git224 `#ius.io` \
-     git-lfs `#packagecloud` \
      lcov `#epel` \
   && yum clean all
 # environment: gcc version, enable scl binaries
@@ -46,6 +44,14 @@ ENV GCC_VER=gcc731 \
     ENV="/scripts/scl_enable" \
     PROMPT_COMMAND=". /scripts/scl_enable"
 COPY git-prompt.sh /etc/profile.d/
+# git-lfs
+RUN export LFS_VER=2.12.1 \
+  && mkdir /usr/local/src/lfs \
+  && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-linux-amd64-v${LFS_VER}.tar.gz" \
+  | tar -xz -C /usr/local/src/lfs \
+  && /usr/local/src/lfs/install.sh \
+  && rm -rf /usr/local/src/lfs/ \
+  && unset LFS_VER
 # doxygen
 RUN export DXY_VER=1.8.13 \
   && wget -qO- --no-check-certificate \
