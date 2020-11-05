@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 gtag=`git describe --tags`
-if [ -n "$(git status --porcelain --untracked=no .)" ]; then
+if [ -n "$(git status --porcelain --untracked=no)" ]; then
   gtag=working
 elif [[ ${gtag} == *"-g"* ]]; then
   gtag=latest

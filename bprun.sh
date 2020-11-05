@@ -82,7 +82,7 @@ MOUNT=$HOME
 REPO=bpro/centos6-bld
 SNAP=
 TAG=`git describe --tags`
-if [ -n "$(git status --porcelain --untracked=no image)" ]; then
+if [ -n "$(git status --porcelain --untracked=no)" ]; then
   TAG=working
 elif [[ ${TAG} == *"-g"* ]]; then
   TAG=latest
