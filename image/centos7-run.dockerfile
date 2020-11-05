@@ -36,6 +36,6 @@ RUN yum -y update \
      mysql-connector-odbc \
   && yum clean all
 # create directories needed by unit tests, autotest
-RUN mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins \
-  && chmod 777 /mnt/mock_midb /mnt/midb /mnt/Plugins
+RUN mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins /etc/opt/VANTAGE \
+  && chmod 777 /mnt/mock_midb /mnt/midb /mnt/Plugins /etc/opt/VANTAGE
 CMD ["/bin/bash"]
