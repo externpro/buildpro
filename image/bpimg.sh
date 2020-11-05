@@ -46,6 +46,7 @@ do
     time docker image build \
       --network=host \
       --file ${img}.dockerfile \
+      --tag ghcr.io/smanders/buildpro/${img}:latest \
       --tag ${pkg} .
   fi
   if ${dodashu}; then
