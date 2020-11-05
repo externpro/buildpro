@@ -112,11 +112,6 @@ do
       REPO=$OPTARG
       ;;
     s )
-      # mkdir $HOME/tmp; sudo mount --bind /tmp $HOME/tmp/
-      # sudo umount $HOME/tmp; rmdir $HOME/tmp
-      # make it permanent by adding line to /etc/fstab and 'sudo update-initramfs -u -k all'
-      # # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-      # /tmp /home/<user>/tmp auto bin 0 3
       SNAP=${HOME}
       ;;
     t )
