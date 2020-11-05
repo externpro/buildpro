@@ -154,9 +154,53 @@ there are two main buildpro scripts
     ```
     docker container run  --volume=/home/smanders/src/buildpro/image/scripts:/scripts
     --volume=/home/smanders:/srcdir --volume=/home/smanders/.ssh:/home/smanders/.ssh
-    --volume=/tmp/.X11-unix:/tmp/.X11-unix --env=DISPLAY=bluepill:10.0 --network=bpnet
-    --dns=172.17.0.1  --user=4793:100 --hostname=buildpro_working --rm -it
+    --volume=/tmp/.X11-unix:/tmp/.X11-unix
+    --env=DISPLAY=bluepill:10.0
+    --network=bpnet --dns=172.17.0.1  --user=4793:100 --hostname=buildpro_working --rm -it
     bpro/centos6-bld:working shell
     ```
 * `-x` "X11 forwarding" option
+  * if you're running `bprun` on a remote system you've connected to via `ssh -X` or `ssh -Y`
+    for X11 forwarding to work correctly, the `-x` option will do additional configuration and
+    add/modify parameters to the `docker container run` command so that X display from the running
+    container will (hopefully) work as expected
+  * example: `$ ./bprun -x -v`
+    ```
+    docker container run  --volume=/home/smanders/src/buildpro/image/scripts:/scripts
+    --volume=/home/smanders:/srcdir --volume=/home/smanders/.ssh:/home/smanders/.ssh
+    --volume=/tmp/.X11-unix:/tmp/.X11-unix
+    --env=DISPLAY=172.17.0.1:10.0 --env=XAUTHORITY=/tmp/.X11-unix/docker.xauth
+    --network=bpnet --dns=172.17.0.1  --user=4793:100 --hostname=buildpro_working --rm -it
+    bpro/centos6-bld:working shell
+    ```
+  * NOTE: the `-bld` images include the `xeyes` package, which can be run (`$ xeyes &`) from the
+    container to verify X11 forwarding is working as expected
 * `-s` "Snap" option
+  * for X11 forwarding to work when using docker snap
+    (see [install and configure docker](#install-and-configure-docker) above)
+  * as seen by the `-v` output above, volumes need to be created between the host `/tmp` directory
+    and the container's `/tmp` directory for X11 forwarding to work as expected (regardless of whether
+    you are connecting to the host remotely via `ssh -X`)
+  * however, as noted in the docker snap usage https://github.com/docker-snap/docker-snap#usage
+    > All files that `docker` needs access to should live within your `$HOME` folder.
+  * so a work-around is to mount the `/tmp` directory to your `$HOME` directory
+    * temporary setup: `$ mkdir $HOME/tmp; sudo mount --bind /tmp $HOME/tmp/`
+    * temporary undo: `$ sudo umount $HOME/tmp; rmdir $HOME/tmp`
+    * more permanent
+      * add line to `/etc/fstab`, similar to the following (I recommend looking it up), where your username
+        is substituted for `<user>`
+        ```diff
+        *** 5,10 ****
+        --- 5,11 ----
+          # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+        + /tmp /home/<user>/tmp auto bin 0 3
+        ```
+      * run `$ sudo update-initramfs -u -k all`
+  * example: `$ ./bprun -s -v`
+    ```
+    docker container run  --volume=/home/smanders/src/buildpro/image/scripts:/scripts
+    --volume=/home/smanders:/srcdir --volume=/home/smanders/.ssh:/home/smanders/.ssh
+    --volume=/home/smanders/tmp/.X11-unix:/tmp/.X11-unix --env=DISPLAY=:0
+    --network=bpnet --dns=172.17.0.1 --user=1001:1001 --hostname=buildpro_latest --rm -it
+    bpro/centos6-bld:latest shell
+    ```
