@@ -274,11 +274,11 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
 * the `/etc/sysctl.d/README` explains the directory's relation to `/etc/sysctl.conf` and mentions
   > After making any changes, please run "service procps start"
   * I believe they meant `restart` instead of `start`
-* the script [image/bpnet-perform.sh](image/bpnet-perform.sh) will help you to check the values before
+* the script [image/check-bpnet-perform.sh](image/check-bpnet-perform.sh) will help you to check the values before
   applying the changes in [image/90-bpnet-perform.conf](image/90-bpnet-perform.conf) -- in case you'd like to
   ever go back to the original, default values
   ```
-  $ ./image/bpnet-perform.sh
+  $ ./image/check-bpnet-perform.sh
   net.core.rmem_max = 212992
   net.core.wmem_max = 212992
   net.core.rmem_default = 212992
@@ -293,7 +293,7 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   $ sudo cp image/90-bpnet-perform.conf /etc/sysctl.d/
   $ sudo service procps restart
 
-  $ ./image/bpnet-perform.sh
+  $ ./image/check-bpnet-perform.sh
   net.core.rmem_max = 8388608
   net.core.wmem_max = 8388608
   net.core.rmem_default = 8388608
