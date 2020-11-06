@@ -72,11 +72,6 @@ function dbinit
     exit
   fi
 }
-# $ sudo vi /etc/NetworkManager/dnsmasq.d/docker-bridge.conf
-# $ cat /etc/NetworkManager/dnsmasq.d/docker-bridge.conf
-# listen-address=172.17.0.1
-# $ sudo service network-manager restart
-# NOTE: 172.17.0.1 == DOCKER_HOST
 CMD=shell
 MOUNT=$HOME
 REPO=bpro/centos6-bld
