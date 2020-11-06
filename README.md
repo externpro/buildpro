@@ -265,6 +265,8 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   $ ping github.com
   ping: unknown host github.com
   ```
+  * "DNS not working within docker containers when host uses dnsmasq
+    and Google's DNS server are firewalled?" https://stackoverflow.com/a/50001940
   * on the host system, create a new file with the line `listen-address=172.17.0.1`
     and restart the network-manager
     ```
