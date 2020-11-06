@@ -12,6 +12,7 @@ build containers for [externpro](https://github.com/smanders/externpro) and proj
   - [additional configuration](#additional-configuration)
     - [network](#network)
     - [dns](#dns)
+    - [network performance tuning](#network-performance-tuning)
 
 ## Getting started with docker
 
@@ -258,3 +259,38 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
     listen-address=172.17.0.1
     $ sudo service network-manager restart
     ```
+
+#### network performance tuning
+* with `/etc/sysctl.conf` you can configure various linux kernel networking settings
+* some of these settings are required to be modified for Autotest (in the runtime container) to succeed
+* some `--sysctl` settings can be applied to a container in the `docker container run` command,
+  but I found that none of the required changes could be done this way
+* these settings need to be applied to the host, then the docker container (which shares the host kernel)
+  will have the required settings
+  ```
+  $ ./image/bpnet-perform.sh
+  net.core.rmem_max = 212992
+  net.core.wmem_max = 212992
+  net.core.rmem_default = 212992
+  net.core.wmem_default = 212992
+  net.ipv4.tcp_rmem = 4096	87380	6291456
+  net.ipv4.tcp_wmem = 4096	16384	4194304
+  net.ipv4.tcp_mem = 383520	511360	767040
+  net.ipv4.udp_rmem_min = 4096
+  net.ipv4.udp_wmem_min = 4096
+  net.ipv4.udp_mem = 767040	1022720	1534080
+
+  $ sudo cp image/90-bpnet-perform.conf /etc/sysctl.d/
+  
+  $ ./image/bpnet-perform.sh
+  net.core.rmem_max = 8388608
+  net.core.wmem_max = 8388608
+  net.core.rmem_default = 8388608
+  net.core.wmem_default = 8388608
+  net.ipv4.tcp_rmem = 94096	987380	8388608
+  net.ipv4.tcp_wmem = 94096	987380	8388608
+  net.ipv4.tcp_mem = 8388608	8388608	8388608
+  net.ipv4.udp_rmem_min = 8388608
+  net.ipv4.udp_wmem_min = 8388608
+  net.ipv4.udp_mem = 8388608	8388608	8388608
+  ```
