@@ -7,12 +7,14 @@ build containers for [externpro](https://github.com/smanders/externpro) and proj
   - [install and configure docker](#install-and-configure-docker)
   - [verify docker installation and configuration](#verify-docker-installation-and-configuration)
   - [short docker tutorial](#short-docker-tutorial)
+  - [useful docker commands](#useful-docker-commands)
 - [Getting started with buildpro](#getting-started-with-buildpro)
   - [bprun usage examples](#bprun-usage-examples)
   - [additional configuration](#additional-configuration)
     - [network](#network)
     - [dns](#dns)
     - [network performance tuning](#network-performance-tuning)
+    - [database](#database)
 
 ## Getting started with docker
 
@@ -66,6 +68,14 @@ so first remove the container, using it's randomly assigned name "romantic_torva
 ```
 $ docker rm romantic_torvalds
 $ docker image rm hello-world
+```
+### useful docker commands
+```
+$ docker images
+$ docker ps -a
+$ docker [stop|restart|start|rm|logs|inspect] <container_name>
+$ docker inspect <container_name> | grep -i ipaddress
+$ docker exec -it <container_name> bash
 ```
 
 ## Getting started with buildpro
@@ -247,6 +257,8 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   5: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
       inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
          valid_lft forever preferred_lft forever
+  $ ip a | grep docker | grep inet
+      inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
   ```
 * if the container is unable to use dns, for example:
   ```
@@ -304,4 +316,29 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   net.ipv4.udp_rmem_min = 8388608
   net.ipv4.udp_wmem_min = 8388608
   net.ipv4.udp_mem = 8388608	8388608	8388608
+  ```
+
+#### database
+* https://dev.mysql.com/doc/refman/8.0/en/docker-mysql-getting-started.html
+* https://severalnines.com/database-blog/mysql-docker-containers-understanding-basics
+* verify start-up configuration is as-expected (changed from defaults)
+  ```
+  $ docker exec -it mysqlpro mysql -uvantage -p
+  mysql> SELECT @@innodb_buffer_pool_size;
+  mysql> SELECT @@innodb_flush_log_at_trx_commit;
+  mysql> SELECT @@sql_mode;
+  mysql> quit;
+  ```
+* some useful mysql commands to get configuration correct
+  ```
+  $ docker exec -it mysqlpro bash
+  $ mysqld --verbose --help (to see default values)
+  $ mysqladmin -uroot -p variables
+  ```
+* troubleshooting the runtime/database container connection
+  ```
+  $ ./bprun -d
+  $ cat ~/.odbc.ini
+  $ cat /etc/odbcinst.ini
+  $ isql mock_midb_dsn
   ```
