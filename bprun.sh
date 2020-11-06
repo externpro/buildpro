@@ -13,7 +13,7 @@ function usage
   echo " -x      X11 forwarding (container running on remote system via ssh [-X|-Y])"
 }
 docker network inspect bpnet >/dev/null 2>&1 || \
-  docker network create --driver bridge bpnet >/dev/null 2>&1
+  docker network create --driver bridge --opt com.docker.network.driver.mtu=9000 bpnet >/dev/null 2>&1
 db_container_name=mysqlpro
 function dbinit
 {
