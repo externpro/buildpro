@@ -267,6 +267,10 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   but I found that none of the required changes could be done this way
 * these settings need to be applied to the host, then the docker container (which shares the host kernel)
   will have the required settings
+* the `/etc/sysctl.d/README` explains the directories relation to `/etc/sysctl.conf` and mentions
+  > After making any changes, please run "service procps start"
+* the script [image/bpnet-perform.sh](image/bpnet-perform.sh) will help you to check the values before
+  applying the changes in [image/90-bpnet-perform.conf](image/90-bpnet-perform.conf)
   ```
   $ ./image/bpnet-perform.sh
   net.core.rmem_max = 212992
@@ -281,6 +285,8 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   net.ipv4.udp_mem = 767040	1022720	1534080
 
   $ sudo cp image/90-bpnet-perform.conf /etc/sysctl.d/
+
+  $ sudo service procps restart
   
   $ ./image/bpnet-perform.sh
   net.core.rmem_max = 8388608
