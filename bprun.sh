@@ -17,8 +17,6 @@ docker network inspect bpnet >/dev/null 2>&1 || \
 db_container_name=mysqlpro
 function dbinit
 {
-  # https://dev.mysql.com/doc/refman/8.0/en/docker-mysql-getting-started.html
-  # https://severalnines.com/database-blog/mysql-docker-containers-understanding-basics
   if [ ! "$(docker ps -q -f name=${db_container_name})" ]; then
     if [ "$(docker ps -aq -f status=exited -f name=${db_container_name})" ]; then
       docker rm ${db_container_name}
@@ -50,22 +48,6 @@ function dbinit
       -e "CREATE USER IF NOT EXISTS 'vantage'@'%' IDENTIFIED BY 'TestDB4me!';" \
       -e "GRANT ALL ON *.* TO 'vantage'@'%';" \
       -e "FLUSH PRIVILEGES;"
-    # NOTES: to verify settings, etc
-    # docker [stop|retart|start|rm] ${db_container_name}
-    # docker inspect ${db_container_name} | grep IPAddress
-    # ip a | grep docker | grep inet
-    # in link'ed container:
-    #  cat /etc/hosts
-    #  cat /etc/odbc.ini
-    #  isql mock_midb_dsn
-    # docker exec -it ${db_container_name} mysql -uroot -p
-    # mysql> SELECT @@innodb_buffer_pool_size;
-    # mysql> SELECT @@innodb_flush_log_at_trx_commit;
-    # mysql> SELECT @@sql_mode;
-    # mysql> quit;
-    # docker exec -it ${db_container_name} bash
-    # mysqladmin -uroot -p variables
-    # mysqld --verbose --help (to see default values)
   fi
   if [ ! "$(docker container inspect -f '{{.State.Status}}' ${db_container_name})" == "running" ]; then
     echo "${db_container_name} not running"
