@@ -52,6 +52,10 @@ ENV USER=${USERNAME}
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
+# needs to run as non-root user
+RUN if command -v git-lfs &>/dev/null; then \
+  git lfs install \
+  ; fi
 # install data source name (DSN)
 #  odbcinst: [Action]i:install [Object]s:data_source [Options]h:user_dsn,f:template_file
 #  odbcinst creates ~/.odbc.ini
