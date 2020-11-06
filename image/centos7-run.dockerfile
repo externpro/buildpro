@@ -40,4 +40,4 @@ RUN yum -y update \
 # create directories needed by unit tests, autotest
 RUN mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins /etc/opt/VANTAGE \
   && chmod 777 /mnt/mock_midb /mnt/midb /mnt/Plugins /etc/opt/VANTAGE
-CMD ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]

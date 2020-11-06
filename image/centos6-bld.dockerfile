@@ -111,4 +111,4 @@ RUN export XP_VER=20.10.1 \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
    | tar -xJ -C /opt/extern/ \
   && unset XP_DL && unset XP_VER
-CMD ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
