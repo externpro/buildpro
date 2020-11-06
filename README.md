@@ -231,6 +231,7 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   * each user-defined network creates a configurable bridge
     * the `docker network create` command issued by `bprun` includes `--opt com.docker.network.driver.mtu=9000`
       to "turn on" [jumbo frames](https://en.wikipedia.org/wiki/Jumbo_frame)
+    * https://docs.docker.com/engine/reference/commandline/network_create/#bridge-driver-options
     * this can be verified inside the container
       ```
       $ ip link show | grep mtu
@@ -265,8 +266,11 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
 * some of these settings are required to be modified for Autotest (in the runtime container) to succeed
 * some `--sysctl` settings can be applied to a container in the `docker container run` command,
   but I found that none of the required changes could be done this way
+  (or at least in my attempts with Docker version 18.09.7)
+  https://docs.docker.com/engine/reference/commandline/run/#configure-namespaced-kernel-parameters-sysctls-at-runtime
 * these settings need to be applied to the host, then the docker container (which shares the host kernel)
   will have the required settings
+* https://unix.stackexchange.com/questions/404387/how-to-sysctl-net-related-config-in-docker-container/455193
 * the `/etc/sysctl.d/README` explains the directory's relation to `/etc/sysctl.conf` and mentions
   > After making any changes, please run "service procps start"
   * I believe they meant `restart` instead of `start`
