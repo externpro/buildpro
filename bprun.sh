@@ -55,6 +55,7 @@ function dbinit
   fi
 }
 CMD=shell
+PUBLISH=
 MOUNT=$HOME
 REPO=bpro/centos6-bld
 SNAP=
@@ -77,6 +78,7 @@ do
     d )
       REPO=bpro/centos7-run
       dbinit
+      PUBLISH="-p 8443:8443"
       ;;
     h )
       usage
@@ -129,6 +131,7 @@ RUN_ARGS="\
  --volume=${SNAP}/tmp/.X11-unix:/tmp/.X11-unix\
  ${XARG}\
  --network=bpnet --dns=${DOCKER_HOST}\
+ ${PUBLISH}\
  --user=$(id -u ${USER}):$(id -g ${USER})\
  --hostname=${CONTAINER_HOSTNAME}\
  --rm -it ${REPO}:${TAG}\
