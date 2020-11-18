@@ -6,36 +6,10 @@ if [ -n "$(git status --porcelain --untracked=no)" ]; then
 elif [[ ${gtag} == *"-g"* ]]; then
   gtag=latest
 fi
-dodashu=true
-host isrhub.usurf.usu.edu | grep "not found" >/dev/null && dodashu=false
-render()
-{
-  sed_str="
-    s!%%BP_REPO%%!${img}!g;
-    s!%%BP_TAG%%!${gtag}!g;
-  "
-  sed -r "${sed_str}" $1
-}
-## bldargs
-bldargs=()
-pkgver=(\
-  "CRT_VER=20.10.1"\
-  "CRW_VER=20.07.1"\
-  "SDK_VER=v3.2.0.0"\
-  "IP_VER=20.10.1"\
-  "WP_VER=20.10.3"\
-  )
-for p in ${pkgver[@]}; do
-  bldargs+=("--build-arg $p")
-done
-## runargs
-runargs=()
-flags=(\
-  "ODBC_INI=true"\
-  )
-for f in ${flags[@]}; do
-  runargs+=("--build-arg $f")
-done
+doisrhub=false
+command -v host >/dev/null \
+  && host isrhub.usurf.usu.edu | grep "has address" >/dev/null \
+  && doisrhub=true
 # download/pull or build images
 for img in centos6-bld centos7-run centos7-bld
 do
@@ -49,25 +23,23 @@ do
       --tag ghcr.io/smanders/buildpro/${img}:latest \
       --tag ${pkg} .
   fi
-  if ${dodashu}; then
-    if [[ ${img} == *"-bld"* ]]; then
-      args=${bldargs[@]}
-    elif [[ ${img} == *"-run"* ]]; then
-      args=${runargs[@]}
-    else
-      args=()
-    fi
+  dfile=.dockerfiles/${img}-u.dockerfile
+  awk -v r="${img}" -v t="${gtag}" '{gsub(/%BP_REPO%/,r);gsub(/%BP_TAG%/,t)} 1' bit.head.dockerfile > ${dfile}
+  if [[ ${doisrhub} && ${img} == *"-bld"* ]]; then
+    cat bit.isrhub.dockerfile >> ${dfile}
+    cat bit.user.dockerfile >> ${dfile}
+  elif [[ ${img} == *"-run"* ]]; then
+    cat bit.user.dockerfile >> ${dfile}
+    cat bit.run.dockerfile >> ${dfile}
   else
-    args=()
-    echo "isrhub.usurf.usu.edu not accessible"
+    cat bit.user.dockerfile >> ${dfile}
   fi
-  render template.dockerfile > .dockerfiles/${img}-u.dockerfile
+  cat bit.tail.dockerfile >> ${dfile}
   time docker image build \
     --network=host \
-    ${args[@]} \
     --build-arg USERNAME=${USER} \
     --build-arg USERID=$(id -u ${USER}) \
-    --file .dockerfiles/${img}-u.dockerfile \
+    --file ${dfile} \
     --tag bpro/${img}:${gtag} .
 done
 docker image ls
