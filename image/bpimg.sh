@@ -25,7 +25,7 @@ do
   fi
   dfile=.dockerfiles/${img}-u.dockerfile
   awk -v r="${img}" -v t="${gtag}" '{gsub(/%BP_REPO%/,r);gsub(/%BP_TAG%/,t)} 1' bit.head.dockerfile > ${dfile}
-  if [[ ${doisrhub} && ${img} == *"-bld"* ]]; then
+  if ${doisrhub} && [[ ${img} == *"-bld"* ]]; then
     cat bit.isrhub.dockerfile >> ${dfile}
     cat bit.user.dockerfile >> ${dfile}
   elif [[ ${img} == *"-run"* ]]; then
