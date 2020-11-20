@@ -6,6 +6,7 @@ function usage
   echo " -d      runtime (bpro/centos7-run) and database (mysqlpro) containers"
   echo " -h      display this help message"
   echo " -m arg  directory to mount to /srcdir in container (default: \$HOME)"
+  echo " -n      use --network=host instead of --network=bpnet --dns=$DOCKER_HOST"
   echo " -r arg  specify a repository (default: $REPO)"
   echo " -s      snap workaround: mount \$HOME/tmp/.X11-unix to /tmp/.X11-unix"
   echo " -t arg  specify a repository tag (default: $TAG)"
@@ -68,8 +69,9 @@ fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
 DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
+NETWORK="--network=bpnet --dns=${DOCKER_HOST}"
 XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:dhm:r:st:vx" opt
+while getopts ":c:dhm:nr:st:vx" opt
 do
   case ${opt} in
     c )
@@ -86,6 +88,9 @@ do
       ;;
     m )
       MOUNT=$OPTARG
+      ;;
+    n )
+      NETWORK="--network=host"
       ;;
     r )
       REPO=$OPTARG
@@ -130,7 +135,7 @@ RUN_ARGS="\
  --volume=$HOME/.ssh:/home/${USER}/.ssh\
  --volume=${SNAP}/tmp/.X11-unix:/tmp/.X11-unix\
  ${XARG}\
- --network=bpnet --dns=${DOCKER_HOST}\
+ ${NETWORK}\
  ${PUBLISH}\
  --user=$(id -u ${USER}):$(id -g ${USER})\
  --hostname=${CONTAINER_HOSTNAME}\

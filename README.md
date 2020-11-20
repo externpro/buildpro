@@ -127,6 +127,7 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
    -d      runtime (bpro/centos7-run) and database (mysqlpro) containers
    -h      display this help message
    -m arg  directory to mount to /srcdir in container (default: $HOME)
+   -n      use --network=host instead of --network=bpnet --dns=$DOCKER_HOST
    -r arg  specify a repository (default: bpro/centos6-bld)
    -s      snap workaround: mount $HOME/tmp/.X11-unix to /tmp/.X11-unix
    -t arg  specify a repository tag (default: 20.9)
@@ -274,6 +275,11 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
     listen-address=172.17.0.1
     $ sudo service network-manager restart
     ```
+* if the container is still unable to use dns, the `bprun.sh -n` option will replace
+  the default `--network=bpnet --dns=172.17.0.1` with `--network=host`
+  * hopefully this is a temporary work-around until dns works for different setups
+  * see the [network](#network) section for benefits of user-defined networks and
+    https://docs.docker.com/network/host/ for details of host networking
 
 #### network performance tuning
 * with `/etc/sysctl.conf` you can configure various linux kernel networking settings
