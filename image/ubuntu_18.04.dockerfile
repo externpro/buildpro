@@ -1,8 +1,7 @@
 FROM ubuntu:18.04
 LABEL maintainer="smanders"
 SHELL ["/bin/bash", "-c"]
-VOLUME /scripts
-VOLUME /srcdir
+VOLUME /bpvol
 # install software build system inside docker
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive \
@@ -31,4 +30,4 @@ RUN adduser --disabled-password --gecos '' --uid ${USERID} ${USERNAME} \
 # so that build output files have the correct owner
 USER ${USERNAME}
 # run bash script and process the input command
-ENTRYPOINT [ "/bin/bash", "/scripts/entry.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]

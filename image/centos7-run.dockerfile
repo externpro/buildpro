@@ -3,8 +3,7 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-VOLUME /scripts
-VOLUME /srcdir
+VOLUME /bpvol
 # yum repositories
 RUN yum -y update \
   && yum clean all \
@@ -25,8 +24,6 @@ RUN export CMK_VER=3.17.5 \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
-# prompt
-COPY git-prompt.sh /etc/profile.d/
 # install database packages from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN yum -y update \
@@ -40,4 +37,7 @@ RUN yum -y update \
 # create directories needed by unit tests, autotest
 RUN mkdir -p /mnt/mock_midb /mnt/midb /mnt/Plugins /etc/opt/VANTAGE \
   && chmod 777 /mnt/mock_midb /mnt/midb /mnt/Plugins /etc/opt/VANTAGE
-ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+# copy from local into image
+COPY scripts/ /usr/local/bpbin
+COPY git-prompt.sh /etc/profile.d/
+ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]

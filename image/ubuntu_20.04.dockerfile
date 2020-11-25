@@ -3,8 +3,7 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-VOLUME /scripts
-VOLUME /srcdir
+VOLUME /bpvol
 # install buildpro script-ready system
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive \
@@ -45,4 +44,4 @@ RUN adduser --disabled-password --gecos '' --uid ${USERID} ${USERNAME} \
 # so that build output files have the correct owner
 USER ${USERNAME}
 # run bash script and process the input command
-ENTRYPOINT [ "/bin/bash", "/scripts/entry.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]

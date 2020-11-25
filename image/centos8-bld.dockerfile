@@ -3,8 +3,7 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-VOLUME /scripts
-VOLUME /srcdir
+VOLUME /bpvol
 # dnf repositories
 # NOTE: multiple layers to reduce layer sizes
 RUN dnf -y update \
@@ -26,9 +25,6 @@ RUN dnf -y update \
      wget \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
   && dnf clean all
-# environment: gcc version
-ENV GCC_VER=gcc731
-COPY git-prompt.sh /etc/profile.d/
 # git-lfs
 RUN export LFS_VER=2.12.1 \
   && mkdir /usr/local/src/lfs \
@@ -89,6 +85,11 @@ RUN export CMK_VER=3.17.5 \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
+# copy from local into image
+COPY scripts/ /usr/local/bpbin
+COPY git-prompt.sh /etc/profile.d/
+# environment: gcc version
+ENV GCC_VER=gcc731
 # externpro
 RUN export XP_VER=20.10.1 \
   && mkdir /opt/extern \
@@ -96,4 +97,4 @@ RUN export XP_VER=20.10.1 \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
    | tar -xJ -C /opt/extern/ \
   && unset XP_DL && unset XP_VER
-ENTRYPOINT ["/bin/bash", "/scripts/entry.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]

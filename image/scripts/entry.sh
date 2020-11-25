@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-cd /srcdir
-if [ $1 = "shell" ]; then
+cd /bpvol
+if [[ -z $1 ]]; then
+  /bin/bash
+elif [ $1 = "shell" ]; then
   /bin/bash
 elif [ $1 = "build" ]; then
   echo "performing software build"

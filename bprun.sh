@@ -5,7 +5,7 @@ function usage
   echo "`basename -- $0` usage:"
   echo " -d      runtime (bpro/centos7-run) and database (mysqlpro) containers"
   echo " -h      display this help message"
-  echo " -m arg  directory to mount to /srcdir in container (default: \$HOME)"
+  echo " -m arg  directory to mount to /bpvol in container (default: \$HOME)"
   echo " -n      use --network=host instead of --network=bpnet --dns=$DOCKER_HOST"
   echo " -r arg  specify a repository (default: $REPO)"
   echo " -s      snap workaround: mount \$HOME/tmp/.X11-unix to /tmp/.X11-unix"
@@ -55,7 +55,7 @@ function dbinit
     exit
   fi
 }
-CMD=shell
+CMD=
 PUBLISH=
 MOUNT=$HOME
 REPO=bpro/centos6-bld
@@ -75,7 +75,7 @@ while getopts ":c:dhm:nr:st:vx" opt
 do
   case ${opt} in
     c )
-      CMD=$OPTARG
+      CMD=$OPTARG # shell, build
       ;;
     d )
       REPO=bpro/centos7-run
@@ -130,8 +130,7 @@ shift $((OPTIND -1))
 REMAINING_ARGS="$@" # args after --
 RUN_ARGS="\
  ${REMAINING_ARGS}\
- --volume=$(pwd)/image/scripts:/scripts\
- --volume=$MOUNT:/srcdir\
+ --volume=$MOUNT:/bpvol\
  --volume=$HOME/.ssh:/home/${USER}/.ssh\
  --volume=${SNAP}/tmp/.X11-unix:/tmp/.X11-unix\
  ${XARG}\
