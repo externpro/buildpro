@@ -126,7 +126,7 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   bprun.sh usage:
    -d      runtime (bpro/centos7-run) and database (mysqlpro) containers
    -h      display this help message
-   -m arg  directory to mount to /srcdir in container (default: $HOME)
+   -m arg  directory to mount to /bpvol in container (default: $HOME)
    -n      use --network=host instead of --network=bpnet --dns=$DOCKER_HOST
    -r arg  specify a repository (default: bpro/centos6-bld)
    -s      snap workaround: mount $HOME/tmp/.X11-unix to /tmp/.X11-unix
@@ -139,9 +139,9 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
 
 * `-m arg` "mount" option
   * by default, `bprun` mounts your `$HOME` directory from the host system
-    to `/srcdir` in the container
+    to `/bpvol` in the container
   * but you can specify what host directory to mount with the `-m` option,
-    for example mounting `~/src` to `/srcdir`
+    for example mounting `~/src` to `/bpvol`
   * example: `$ ./bprun -m ~/src`
 * `-r arg` "repo" option
   * by default, `bprun` uses the repository listed as the default by `bprun -h`
@@ -167,12 +167,12 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   * because sometimes it's useful to see the `docker container run` command
   * example: `$ ./bprun -v`
     ```
-    docker container run  --volume=/home/smanders/src/buildpro/image/scripts:/scripts
-    --volume=/home/smanders:/srcdir --volume=/home/smanders/.ssh:/home/smanders/.ssh
+    docker container run --volume=/home/smanders:/bpvol
+    --volume=/home/smanders/.ssh:/home/smanders/.ssh
     --volume=/tmp/.X11-unix:/tmp/.X11-unix
     --env=DISPLAY=bluepill:10.0
-    --network=bpnet --dns=172.17.0.1  --user=4793:100 --hostname=buildpro_working --rm -it
-    bpro/centos6-bld:working shell
+    --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
+    bpro/centos6-bld:working
     ```
 * `-x` "X11 forwarding" option
   * if you're running `bprun` on a remote system you've connected to via `ssh -X` or `ssh -Y`
@@ -181,12 +181,12 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
     container will (hopefully) work as expected
   * example: `$ ./bprun -x -v`
     ```
-    docker container run  --volume=/home/smanders/src/buildpro/image/scripts:/scripts
-    --volume=/home/smanders:/srcdir --volume=/home/smanders/.ssh:/home/smanders/.ssh
+    docker container run --volume=/home/smanders:/bpvol
+    --volume=/home/smanders/.ssh:/home/smanders/.ssh
     --volume=/tmp/.X11-unix:/tmp/.X11-unix
     --env=DISPLAY=172.17.0.1:10.0 --env=XAUTHORITY=/tmp/.X11-unix/docker.xauth
-    --network=bpnet --dns=172.17.0.1  --user=4793:100 --hostname=buildpro_working --rm -it
-    bpro/centos6-bld:working shell
+    --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
+    bpro/centos6-bld:working
     ```
   * NOTE: the `-bld` images include the `xeyes` package, which can be run (`$ xeyes &`) from the
     container to verify X11 forwarding is working as expected
@@ -213,11 +213,12 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
       * run `$ sudo update-initramfs -u -k all`
   * example: `$ ./bprun -s -v`
     ```
-    docker container run  --volume=/home/smanders/src/buildpro/image/scripts:/scripts
-    --volume=/home/smanders:/srcdir --volume=/home/smanders/.ssh:/home/smanders/.ssh
-    --volume=/home/smanders/tmp/.X11-unix:/tmp/.X11-unix --env=DISPLAY=:0
+    docker container run --volume=/home/smanders:/bpvol
+    --volume=/home/smanders/.ssh:/home/smanders/.ssh
+    --volume=/home/smanders/tmp/.X11-unix:/tmp/.X11-unix
+    --env=DISPLAY=:0
     --network=bpnet --dns=172.17.0.1 --user=1001:1001 --hostname=buildpro_latest --rm -it
-    bpro/centos6-bld:latest shell
+    bpro/centos6-bld:latest
     ```
 ### additional configuration
 
