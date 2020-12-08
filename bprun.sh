@@ -56,6 +56,7 @@ function dbinit
 }
 CMD=
 PUBLISH=
+SHM=
 MOUNT=$HOME
 REPO=bpro/centos6-bld
 SNAP=
@@ -80,6 +81,7 @@ do
       REPO=bpro/centos7-run
       dbinit
       PUBLISH="-p 8443:8443"
+      SHM="--shm-size=4g"
       ;;
     h )
       usage
@@ -135,6 +137,7 @@ RUN_ARGS="\
  ${XARG}\
  ${NETWORK}\
  ${PUBLISH}\
+ ${SHM}\
  --user=$(id -u ${USER}):$(id -g ${USER})\
  --hostname=${CONTAINER_HOSTNAME}\
  --rm -it ${REPO}:${TAG}\
