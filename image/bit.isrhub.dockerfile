@@ -11,13 +11,13 @@ RUN export CRT_VER=20.10.1 && export CRW_VER=20.07.1 \
   && unset CRT_VER && unset CRW_VER
 ENV PATH=$PATH:/opt/extern/CRTool
 # SDLPluginSDK
-RUN export SDK_VER=v3.2.0.0 \
+RUN export SDK_VER=v3.4.0.0 \
   && export SDK_DL=releases/download/${SDK_VER}/SDLPluginSDK-${SDK_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/PluginFramework/SDKSuper/${SDK_DL}" \
    | tar -xJ -C /opt/extern/ \
   && unset SDK_DL  && unset SDK_VER
 # internpro
-RUN export IP_VER=20.10.1 \
+RUN export IP_VER=20.12.1 \
   && export IP_DL=releases/download/${IP_VER}/internpro-${IP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
    | tar -xJ -C /opt/extern/ \
