@@ -190,6 +190,8 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
     ```
   * NOTE: the `-bld` images include the `xeyes` package, which can be run (`$ xeyes &`) from the
     container to verify X11 forwarding is working as expected
+  * TIP: if you get a "can't open display" error trying to run X applications, you may need
+    to change the `X11UseLocahost` option in `/etc/ssh/sshd_config` to `no` (and restart sshd)
 * `-s` "Snap" option
   * for X11 forwarding to work when using docker snap
     (see [install and configure docker](#install-and-configure-docker) above)
