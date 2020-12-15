@@ -1,12 +1,15 @@
 CMakeLists.txt text eol=lf
+Dockerfile text eol=lf
 *.c text eol=lf
 *.cmake text eol=lf
+*.conf text eol=lf
 *.cpp text eol=lf
 *.cs text eol=lf
 *.css text eol=lf
 *.cu text eol=lf
 *.cuh text eol=lf
 *.dae text eol=lf
+*.dockerfile text eol=lf
 *.h text eol=lf
 *.h.in text eol=lf
 *.hpp text eol=lf
@@ -28,6 +31,7 @@ CMakeLists.txt text eol=lf
 *.xml text eol=lf
 *.xpm text eol=lf
 *.xsd text eol=lf
+*.yml text eol=lf
 ####################
 *.csproj.in text eol=crlf
 *.filters text eol=crlf
@@ -39,7 +43,6 @@ CMakeLists.txt text eol=lf
 *.vcproj text eol=crlf
 *.vcxproj text eol=crlf
 ####################
-Jstars*.cfg binary
 *.bmp binary
 *.doc binary
 *.eap binary
