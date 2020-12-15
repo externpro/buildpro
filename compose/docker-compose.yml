@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  bpro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+      args:
+        USERNAME: ${USER}
+        USERID: ${USERID}
+        WEBPRO: ${WEBPRO}
+        INTERNPRO: ${INTERNPRO}
+        PLUGINSDK: ${PLUGINSDK}
+        CRTOOL: ${CRTOOL}
+        CRWRAP: ${CRWRAP}
+    volumes:
+      - .:/bpvol
+# docker-compose build
+# docker-compose run --rm bpro
