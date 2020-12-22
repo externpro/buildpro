@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
+isrhubver=(\
+  "WEBPRO=20.10.3"\
+  "INTERNPRO=20.12.1"\
+  "PLUGINSDK=v3.4.0.0"\
+  "CRTOOL=20.10.1"\
+  "CRWRAP=20.07.1"\
+  )
+for p in ${isrhubver[@]}; do
+  bldargs+=("--build-arg $p")
+done
+args=
 gtag=`git describe --tags`
 if [ -n "$(git status --porcelain --untracked=no)" ]; then
   gtag=working
@@ -28,6 +39,7 @@ do
   if ${doisrhub} && [[ ${img} == *"-bld"* ]]; then
     cat bit.isrhub.dockerfile >> ${dfile}
     cat bit.user.dockerfile >> ${dfile}
+    args=${bldargs[@]}
   elif [[ ${img} == *"-run"* ]]; then
     cat bit.user.dockerfile >> ${dfile}
     cat bit.run.dockerfile >> ${dfile}
@@ -37,6 +49,7 @@ do
   cat bit.tail.dockerfile >> ${dfile}
   time docker image build \
     --network=host \
+    ${args[@]} \
     --build-arg USERNAME=${USER} \
     --build-arg USERID=$(id -u ${USER}) \
     --file ${dfile} \
