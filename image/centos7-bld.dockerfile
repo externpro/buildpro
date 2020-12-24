@@ -1,40 +1,25 @@
-FROM centos:7
+FROM ghcr.io/smanders/buildpro/centos7-pro:latest
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-VOLUME /bpvol
 # yum repositories
-# NOTE: multiple layers to reduce layer sizes
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
-     centos-release-scl \
      ghostscript `#LaTeX` \
      graphviz \
-     gtk2-devel.x86_64 \
      iproute \
      libSM-devel.x86_64 \
-     mesa-libGL-devel.x86_64 \
-     mesa-libGLU-devel.x86_64 \
-     redhat-lsb-core \
      rpm-build \
-     sudo \
      unixODBC-devel \
-     vim \
-     wget \
      xeyes \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-     https://repo.ius.io/ius-release-el7.rpm \
   && yum clean all
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
      cppcheck `#epel` \
-     devtoolset-7-binutils `#scl` \
-     devtoolset-7-gcc `#scl` \
-     devtoolset-7-gcc-c++ `#scl` \
-     git224 `#ius.io` \
      lcov `#epel` \
   && yum clean all
 # git-lfs
@@ -91,20 +76,6 @@ RUN export CUDA_VER=10.1.168-1 \
   && mv /usr/local/cuda-10.2/targets/x86_64-linux/lib/* /usr/local/cuda-10.1/targets/x86_64-linux/lib/ \
   && rm -rf /usr/local/cuda-10.2 \
   && unset CUDA_VER && unset CUDA_RPM
-# cmake
-RUN export CMK_VER=3.17.5 \
-  && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-Linux-x86_64.tar.gz \
-  && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
-  | tar --strip-components=1 -xz -C /usr/local/ \
-  && unset CMK_DL && unset CMK_VER
-# copy from local into image
-COPY scripts/ /usr/local/bpbin
-COPY git-prompt.sh /etc/profile.d/
-# environment: gcc version, enable scl binaries
-ENV GCC_VER=gcc731 \
-    BASH_ENV="/usr/local/bpbin/scl_enable" \
-    ENV="/usr/local/bpbin/scl_enable" \
-    PROMPT_COMMAND=". /usr/local/bpbin/scl_enable"
 # externpro
 RUN export XP_VER=20.10.1 \
   && mkdir /opt/extern \
