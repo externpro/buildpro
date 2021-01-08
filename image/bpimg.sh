@@ -45,6 +45,7 @@ do
     ${args[@]} \
     --build-arg USERNAME=${USER} \
     --build-arg USERID=$(id -u ${USER}) \
+    --build-arg GROUPID=$(id -g ${USER}) \
     --file ${dfile} \
     --tag bpro/${img}:${gtag} .
 done

@@ -8,6 +8,7 @@ services:
       args:
         USERNAME: ${USER}
         USERID: ${USERID}
+        GROUPID: ${GROUPID}
         WEBPRO: ${WEBPRO}
         INTERNPRO: ${INTERNPRO}
         PLUGINSDK: ${PLUGINSDK}

@@ -22,6 +22,7 @@ PLUGINSDK=`grep SDK_REV CMakeLists.txt | awk '{$1=$1};1' | cut -d " " -f2 | cut 
 CRTOOL=`grep version .crtoolrc | awk '{$1=$1};1' | cut -d " " -f2 | cut -d "\"" -f2`
 CRWRAP=20.07.1
 env="USERID=$(id -u ${USER})"
+env="${env}\nGROUPID=$(id -g ${USER})"
 [[ -n "${WEBPRO}" ]] && env="${env}\nWEBPRO=${WEBPRO}"
 [[ -n "${INTERNPRO}" ]] && env="${env}\nINTERNPRO=${INTERNPRO}"
 [[ -n "${PLUGINSDK}" ]] && env="${env}\nPLUGINSDK=${PLUGINSDK}"
