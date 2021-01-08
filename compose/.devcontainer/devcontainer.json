@@ -1,0 +1,18 @@
+{
+	"name": "TODO-PROJECTNAME",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "bpro",
+	"workspaceFolder": "/bpvol",
+	"initializeCommand": ["./.devcontainer/denv.sh"],
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"ms-vscode.cpptools",
+		"ms-vscode.cmake-tools",
+		"ms-azuretools.vscode-docker",
+		"davidanson.vscode-markdownlint",
+		"mhutchie.git-graph",
+		"twxs.cmake"
+	]
+}

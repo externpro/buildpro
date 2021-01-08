@@ -2,7 +2,7 @@ version: '3.4'
 services:
   bpro:
     build:
-      context: .
+      context: .devcontainer
       dockerfile: Dockerfile
       network: host
       args:
@@ -14,7 +14,10 @@ services:
         PLUGINSDK: ${PLUGINSDK}
         CRTOOL: ${CRTOOL}
         CRWRAP: ${CRWRAP}
+    hostname: ${HNAME}
     volumes:
       - .:/bpvol
+    stdin_open: true
+    tty: true
 # docker-compose build
 # docker-compose run --rm bpro
