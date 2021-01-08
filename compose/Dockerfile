@@ -1,4 +1,4 @@
-FROM ghcr.io/smanders/buildpro/centos6-bld:20.11
+FROM ghcr.io/smanders/buildpro/centos6-bld:20.12
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
