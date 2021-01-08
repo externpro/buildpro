@@ -76,6 +76,7 @@ RUN export CUDA_VER=10.1.168-1 \
   && mv /usr/local/cuda-10.2/targets/x86_64-linux/lib/* /usr/local/cuda-10.1/targets/x86_64-linux/lib/ \
   && rm -rf /usr/local/cuda-10.2 \
   && unset CUDA_VER && unset CUDA_RPM
+ENV PATH=$PATH:/usr/local/cuda/bin
 # externpro
 RUN export XP_VER=20.10.1 \
   && mkdir /opt/extern \
