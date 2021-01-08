@@ -127,6 +127,7 @@ do
 done
 shift $((OPTIND -1))
 REMAINING_ARGS="$@" # args after --
+CONTAINER_HOSTNAME=${CONTAINER_HOSTNAME/./-}
 RUN_ARGS="\
  ${REMAINING_ARGS}\
  --volume=$MOUNT:/bpvol\
