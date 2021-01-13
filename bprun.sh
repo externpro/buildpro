@@ -61,7 +61,7 @@ MOUNT=$HOME
 REPO=bpro/centos7-bld
 SNAP=
 TAG=`git describe --tags`
-if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then
+if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${TAG} == *"-g"* ]]; then
   TAG=latest
 fi
 CONTAINER_HOSTNAME=buildpro_${TAG}
