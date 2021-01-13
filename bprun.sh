@@ -58,7 +58,7 @@ CMD=
 PUBLISH=
 SHM=
 MOUNT=$HOME
-REPO=bpro/centos6-bld
+REPO=bpro/centos7-bld
 SNAP=
 TAG=`git describe --tags`
 if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then

@@ -20,7 +20,7 @@ command -v host >/dev/null \
   && host isrhub.usurf.usu.edu | grep "has address" >/dev/null \
   && doisrhub=true
 # download/pull images (ghimg.sh builds them)
-for img in centos6-bld centos7-run centos7-pro centos7-bld
+for img in centos7-run centos7-pro centos7-bld
 do
   pkg=ghcr.io/smanders/buildpro/${img}:${gtag}
   docker pull ${pkg}

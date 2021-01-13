@@ -5,7 +5,7 @@ if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]];
   gtag=latest
 fi
 # build ghcr.io images
-for img in centos6-bld centos7-run centos7-pro centos7-bld
+for img in centos7-run centos7-pro centos7-bld
 do
   pkg=ghcr.io/smanders/buildpro/${img}:${gtag}
   time docker image build \
