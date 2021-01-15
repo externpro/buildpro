@@ -78,7 +78,7 @@ RUN export CUDA_VER=10.1.168-1 \
   && unset CUDA_VER && unset CUDA_RPM
 ENV PATH=$PATH:/usr/local/cuda/bin
 # externpro
-RUN export XP_VER=21.01 \
+RUN export XP_VER=21.02 \
   && mkdir /opt/extern \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
