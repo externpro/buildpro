@@ -11,7 +11,6 @@ function usage
   echo " -s      snap workaround: mount \$HOME/tmp/.X11-unix to /tmp/.X11-unix"
   echo " -t arg  specify a repository tag (default: $TAG)"
   echo " -v      verbose (display 'docker container run' command)"
-  echo " -x      X11 forwarding (container running on remote system via ssh [-X|-Y])"
 }
 docker network inspect bpnet >/dev/null 2>&1 || \
   docker network create --driver bridge --opt com.docker.network.driver.mtu=9000 bpnet >/dev/null 2>&1
@@ -68,8 +67,23 @@ CONTAINER_HOSTNAME=buildpro_${TAG}
 VERBOSE=
 DOCKER_HOST=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
 NETWORK="--network=bpnet --dns=${DOCKER_HOST}"
-XARG="--env=DISPLAY=${DISPLAY}"
-while getopts ":c:dhm:nr:st:vx" opt
+DISPLAY_HOST=$(echo ${DISPLAY} | cut -d: -f1)
+if [[ -z "${DISPLAY_HOST}" ]]; then
+  XARG="--env=DISPLAY=${DISPLAY}"
+else
+  if [[ "${DISPLAY_HOST}" == "localhost" ]]; then
+    echo "X11UseLocalhost should be no in /etc/ssh/sshd_config"
+    exit
+  fi
+  DISPLAY_SCREEN=$(echo $DISPLAY | cut -d: -f2)
+  DISPLAY_NUM=$(echo ${DISPLAY_SCREEN} | cut -d. -f1)
+  MAGIC_COOKIE=$(xauth list ${DISPLAY} | awk '{print $3}')
+  XAUTH=/tmp/.X11-unix/docker.xauth
+  touch ${XAUTH}
+  xauth -f ${XAUTH} add ${DOCKER_HOST}:${DISPLAY_NUM} . ${MAGIC_COOKIE}
+  XARG="--env=DISPLAY=${DOCKER_HOST}:${DISPLAY_SCREEN} --env=XAUTHORITY=${XAUTH}"
+fi
+while getopts ":c:dhm:nr:st:v" opt
 do
   case ${opt} in
     c )
@@ -103,15 +117,6 @@ do
       ;;
     v )
       VERBOSE=true
-      ;;
-    x )
-      DISPLAY_SCREEN=$(echo $DISPLAY | cut -d: -f2)
-      DISPLAY_NUM=$(echo ${DISPLAY_SCREEN} | cut -d. -f1)
-      MAGIC_COOKIE=$(xauth list ${DISPLAY} | awk '{print $3}')
-      XAUTH=/tmp/.X11-unix/docker.xauth
-      touch ${XAUTH}
-      xauth -f ${XAUTH} add ${DOCKER_HOST}:${DISPLAY_NUM} . ${MAGIC_COOKIE}
-      XARG="--env=DISPLAY=${DOCKER_HOST}:${DISPLAY_SCREEN} --env=XAUTHORITY=${XAUTH}"
       ;;
     \? )
       echo "Invalid option: $OPTARG" 1>&2
