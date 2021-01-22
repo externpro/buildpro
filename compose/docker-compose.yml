@@ -15,16 +15,10 @@ services:
         CRTOOL: ${CRTOOL}
         CRWRAP: ${CRWRAP}
     hostname: ${HNAME}
-    networks:
-      - bpnet
+    network_mode: host
     volumes:
-      - .:/bpvol
+      - .:/bpvol/${COMPOSE_PROJECT_NAME}
     stdin_open: true
     tty: true
-networks:
-  bpnet:
-    driver: bridge
-    driver_opts:
-      com.docker.network.driver.mtu: "9000"
 # docker-compose build
 # docker-compose run --rm bpro
