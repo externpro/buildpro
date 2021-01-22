@@ -14,12 +14,16 @@ services:
         PLUGINSDK: ${PLUGINSDK}
         CRTOOL: ${CRTOOL}
         CRWRAP: ${CRWRAP}
+    environment:
+      - DISPLAY=${DISPLAY_ENV}
+      - XAUTHORITY=${XAUTH_ENV}
     hostname: ${HNAME}
     network_mode: host
     volumes:
       - .:/bpvol/${COMPOSE_PROJECT_NAME}
       - ~/.ssh:/home/${USER}/.ssh
       - ~/.gitconfig:/home/${USER}/.gitconfig
+      - /tmp/.X11-unix:/tmp/.X11-unix
     stdin_open: true
     tty: true
 # docker-compose build
