@@ -14,6 +14,7 @@ and projects that use externpro
   - [additional configuration](#additional-configuration)
     - [network](#network)
     - [dns](#dns)
+    - [X11 forwarding](#X11-forwarding)
     - [network performance tuning](#network-performance-tuning)
     - [database](#database)
 
@@ -137,7 +138,6 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
    -s      snap workaround: mount $HOME/tmp/.X11-unix to /tmp/.X11-unix
    -t arg  specify a repository tag (default: 20.9)
    -v      verbose (display 'docker container run' command)
-   -x      X11 forwarding (container running on remote system via ssh [-X|-Y])
   ```
 
 ### bprun usage examples
@@ -179,24 +179,6 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
     --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
     bpro/centos6-bld:working
     ```
-* `-x` "X11 forwarding" option
-  * if you're running `bprun` on a remote system you've connected to via `ssh -X` or `ssh -Y`
-    for X11 forwarding to work correctly, the `-x` option will do additional configuration and
-    add/modify parameters to the `docker container run` command so that X display from the running
-    container will (hopefully) work as expected
-  * example: `$ ./bprun -x -v`
-    ```
-    docker container run --volume=/home/smanders:/bpvol
-    --volume=/home/smanders/.ssh:/home/smanders/.ssh
-    --volume=/tmp/.X11-unix:/tmp/.X11-unix
-    --env=DISPLAY=172.17.0.1:10.0 --env=XAUTHORITY=/tmp/.X11-unix/docker.xauth
-    --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
-    bpro/centos6-bld:working
-    ```
-  * NOTE: the `-bld` images include the `xeyes` package, which can be run (`$ xeyes &`) from the
-    container to verify X11 forwarding is working as expected
-  * TIP: if you get a "can't open display" error trying to run X applications, you may need
-    to change the `X11UseLocahost` option in `/etc/ssh/sshd_config` to `no` (and restart sshd)
 * `-s` "Snap" option
   * for X11 forwarding to work when using docker snap
     (see [install and configure docker](#install-and-configure-docker) above)
@@ -293,6 +275,25 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
   * hopefully this is a temporary work-around until dns works for different setups
   * see the [network](#network) section for benefits of user-defined networks and
     https://docs.docker.com/network/host/ for details of host networking
+
+#### X11 forwarding
+* if you're running `bprun` on a remote system you've connected to via `ssh -X` or `ssh -Y`
+  the script should automatically detect this case and will do additional configuration and
+  add/modify parameters to the `docker container run` command so that X display from the running
+  container will (hopefully) work as expected
+* example: `$ ./bprun -v`
+  ```
+  docker container run --volume=/home/smanders:/bpvol
+  --volume=/home/smanders/.ssh:/home/smanders/.ssh
+  --volume=/tmp/.X11-unix:/tmp/.X11-unix
+  --env=DISPLAY=172.17.0.1:10.0 --env=XAUTHORITY=/tmp/.X11-unix/docker.xauth
+  --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
+  bpro/centos6-bld:working
+  ```
+* NOTE: the `-bld` images include the `xeyes` package, which can be run (`$ xeyes &`) from the
+  container to verify X11 forwarding is working as expected
+* TIP: if you get a "can't open display" error trying to run X applications, you may need
+  to change the `X11UseLocahost` option in `/etc/ssh/sshd_config` to `no` (and restart sshd)
 
 #### network performance tuning
 * with `/etc/sysctl.conf` you can configure various linux kernel networking settings
