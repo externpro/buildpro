@@ -26,5 +26,3 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
     stdin_open: true
     tty: true
-# docker-compose build
-# docker-compose run --rm bpro
