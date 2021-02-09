@@ -29,7 +29,8 @@ RUN export LFS_VER=2.12.1 \
   | tar -xz -C /usr/local/src/lfs \
   && /usr/local/src/lfs/install.sh \
   && rm -rf /usr/local/src/lfs/ \
-  && unset LFS_VER
+  && unset LFS_VER \
+  && git lfs install --system
 # doxygen
 RUN export DXY_VER=1.8.13 \
   && wget -qO- --no-check-certificate \
