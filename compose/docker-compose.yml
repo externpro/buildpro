@@ -21,6 +21,7 @@ services:
     network_mode: host
     volumes:
       - .:/bpvol/${COMPOSE_PROJECT_NAME}
+      - ..:/bpvol/workspace
       - ~/.ssh:/home/${USER}/.ssh
       - ~/.gitconfig:/home/${USER}/.gitconfig
       - /tmp/.X11-unix:/tmp/.X11-unix
