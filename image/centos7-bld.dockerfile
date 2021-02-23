@@ -78,6 +78,13 @@ RUN export CUDA_VER=10.1.168-1 \
   && rm -rf /usr/local/cuda-10.2 \
   && unset CUDA_VER && unset CUDA_RPM
 ENV PATH=$PATH:/usr/local/cuda/bin
+# dotnet
+RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm \
+  && yum -y update \
+  && yum clean all \
+  && yum -y install --setopt=tsflags=nodocs \
+     dotnet-sdk-3.1 \
+  && yum clean all
 # externpro
 RUN export XP_VER=21.02 \
   && mkdir /opt/extern \
