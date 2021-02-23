@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 isrhubver=(\
-  "WEBPRO=20.10.3"\
-  "INTERNPRO=21.01"\
+  "WEBPRO=21.02"\
+  "INTERNPRO=21.02"\
   "PLUGINSDK=v3.4.0.0"\
   "CRTOOL=20.10.1"\
   "CRWRAP=20.07.1"\
