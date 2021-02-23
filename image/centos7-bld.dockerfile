@@ -85,6 +85,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
   && yum -y install --setopt=tsflags=nodocs \
      dotnet-sdk-3.1 \
   && yum clean all
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # externpro
 RUN export XP_VER=21.02 \
   && mkdir /opt/extern \
