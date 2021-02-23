@@ -1,5 +1,4 @@
 {
-	"name": "TODO-PROJECTNAME",
 	"dockerComposeFile": "../docker-compose.yml",
 	"service": "bpro",
 	"workspaceFolder": "/bpvol",
