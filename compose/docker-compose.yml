@@ -3,7 +3,7 @@ services:
   bpro:
     build:
       context: .devcontainer
-      dockerfile: Dockerfile
+      dockerfile: centos7-bld.dockerfile
       network: host
       args:
         USERNAME: ${USER}

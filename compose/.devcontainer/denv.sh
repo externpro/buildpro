@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
-rel=$(grep FROM .devcontainer/Dockerfile | cut -d- -f2)
+rel=$(grep FROM .devcontainer/centos7-bld.dockerfile | cut -d- -f2)
 rel=${rel//:}
 rel=bp${rel/./-}
 display_host=$(echo ${DISPLAY} | cut -d: -f1)
