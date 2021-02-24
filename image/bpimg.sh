@@ -27,7 +27,7 @@ do
   if [[ "$(docker images -q ${pkg} 2>/dev/null)" == "" ]]; then
     echo "ghcr.io/smanders/buildpro/${img}:${gtag} not found: run ghimg.sh"
   fi
-  dfile=.dockerfiles/${img}-u.dockerfile
+  dfile=../compose/.devcontainer/${img}.dockerfile
   awk -v r="${img}" -v t="${gtag}" '{gsub(/%BP_REPO%/,r);gsub(/%BP_TAG%/,t)} 1' bit.head.dockerfile > ${dfile}
   if ${doisrhub} && [[ ${img} == *"-bld"* ]]; then
     cat bit.isrhub.dockerfile >> ${dfile}
