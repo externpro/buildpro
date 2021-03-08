@@ -24,6 +24,9 @@ RUN yum -y update \
      devtoolset-7-binutils `#scl` \
      devtoolset-7-gcc `#scl` \
      devtoolset-7-gcc-c++ `#scl` \
+     devtoolset-7-libasan-devel `#scl` \
+     devtoolset-7-libtsan-devel `#scl` \
+     devtoolset-7-gdb `#scl` \
      git224 `#ius.io` \
   && yum clean all
 # cmake
