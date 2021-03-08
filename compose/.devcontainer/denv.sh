@@ -35,6 +35,8 @@ elif [ -f Web/CMakeLists.txt ]; then
   wpro=`grep "set(webpro_REV" Web/CMakeLists.txt`
 elif [ -f web/CMakeLists.txt ]; then
   wpro=`grep "set(webpro_REV" web/CMakeLists.txt`
+else
+  wpro=`grep "set(webpro_REV" CMakeLists.txt`
 fi
 WEBPRO=`echo ${wpro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
 if [ -f Shared/make/toplevel.cmake ]; then
