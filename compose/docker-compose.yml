@@ -14,6 +14,8 @@ services:
         PLUGINSDK: ${PLUGINSDK}
         CRTOOL: ${CRTOOL}
         CRWRAP: ${CRWRAP}
+    cap_add:
+      - SYS_PTRACE
     environment:
       - DISPLAY=${DISPLAY_ENV}
       - XAUTHORITY=${XAUTH_ENV}
