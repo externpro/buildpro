@@ -20,7 +20,7 @@ command -v host >/dev/null \
   && host isrhub.usurf.usu.edu | grep "has address" >/dev/null \
   && doisrhub=true
 # download/pull images (ghimg.sh builds them)
-for img in centos7-run centos7-pro centos7-bld
+for img in centos7-run centos7-pro centos7-bld centos7-dev
 do
   pkg=ghcr.io/smanders/buildpro/${img}:${gtag}
   docker pull ${pkg}
@@ -36,6 +36,11 @@ do
   elif [[ ${img} == *"-run"* ]]; then
     cat bit.user.dockerfile >> ${dfile}
     cat bit.run.dockerfile >> ${dfile}
+  elif [[ ${img} == *"-dev"* ]]; then
+    cat bit.isrhub.dockerfile >> ${dfile}
+    cat bit.user.dockerfile >> ${dfile}
+    cat bit.run.dockerfile >> ${dfile}
+    args=${bldargs[@]}
   else
     cat bit.user.dockerfile >> ${dfile}
   fi
