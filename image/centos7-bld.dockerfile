@@ -65,6 +65,7 @@ RUN export CUDA_VER=10.1.168-1 \
      cuda-compiler-10-1 \
   `# cuda-libraries-dev-10-1` \
      cuda-cudart-dev-10-1 \
+     cuda-cufft-dev-10-1 \
      cuda-cusolver-dev-10-1 \
      libcublas-devel-10-2 \
   && ln -s cuda-10.1 /usr/local/cuda \
