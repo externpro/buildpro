@@ -57,8 +57,8 @@ ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # CUDA https://developer.nvidia.com/cuda-10.1-download-archive-update1
 # NOTE: only subset of cuda-libraries-dev to reduce layer sizes
 RUN export CUDA_VER=10.1.168-1 \
-  && export CUDA_RPM=cuda-repo-rhel6-${CUDA_VER}.x86_64.rpm \
-  && wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel6/x86_64/${CUDA_RPM}" \
+  && export CUDA_RPM=cuda-repo-rhel7-${CUDA_VER}.x86_64.rpm \
+  && wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/${CUDA_RPM}" \
   && rpm --install ${CUDA_RPM} \
   && yum clean all \
   && yum -y install \
