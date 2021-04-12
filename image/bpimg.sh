@@ -2,7 +2,7 @@
 cd "$( dirname "$0" )"
 isrhubver=(\
   "WEBPRO=21.02"\
-  "INTERNPRO=21.02"\
+  "INTERNPRO=21.03"\
   "PLUGINSDK=v3.4.0.0"\
   "CRTOOL=20.10.1"\
   "CRWRAP=20.07.1"\
