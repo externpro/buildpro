@@ -29,6 +29,7 @@ RUN yum -y update \
      devtoolset-7-libtsan-devel `#scl` \
      devtoolset-7-gdb `#scl` \
      git224 `#ius.io` \
+  && echo "exclude=libtsan" >> /etc/yum.conf \
   && yum clean all
 # cmake
 RUN export CMK_VER=3.17.5 \
