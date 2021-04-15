@@ -21,6 +21,7 @@ RUN yum -y update \
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
+     libtsan-7.3.1 \
      devtoolset-7-binutils `#scl` \
      devtoolset-7-gcc `#scl` \
      devtoolset-7-gcc-c++ `#scl` \
