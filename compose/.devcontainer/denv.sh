@@ -9,7 +9,7 @@ if [[ -z "${display_host}" ]]; then
   display_env=${DISPLAY}
   xauth_env=
 elif [[ "${display_host}" == "localhost" ]]; then
-  echo "NOTE: X11UseLocahost should be no in /etc/ssh/sshd_config"
+  echo "NOTE: X11UseLocalhost should be no in /etc/ssh/sshd_config"
 else
   display_screen=$(echo $DISPLAY | cut -d: -f2)
   display_num=$(echo ${display_screen} | cut -d. -f1)
