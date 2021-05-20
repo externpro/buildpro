@@ -49,9 +49,11 @@ ARG USERNAME
 ARG USERID
 ARG GROUPID
 RUN if [ ${USERID:-0} -ne 0 ] && [ ${GROUPID:-0} -ne 0 ]; then \
-  export GROUPNAME=$(getent group | grep ${GROUPID} | cut -d: -f1) \
+  export GROUPNAME=$(getent group ${GROUPID} | cut -d: -f1) \
   && if [[ -z ${GROUPNAME} ]]; then groupadd -g ${GROUPID} ${USERNAME}; fi \
-  && adduser --uid ${USERID} --gid ${GROUPID} ${USERNAME} \
+  && echo "${USERNAME}:x:${USERID}:${GROUPID}::/home/${USERNAME}:/bin/bash" >> /etc/passwd \
+  && cp -a /etc/skel /home/${USERNAME} && chown -R ${USERNAME}:${GROUPNAME} /home/${USERNAME} \
+  && chmod -R go=u,go-w /home/${USERNAME} && chmod go= /home/${USERNAME} \
   && echo "" >> /etc/sudoers \
   && echo "## dockerfile adds ${USERNAME} to sudoers" >> /etc/sudoers \
   && echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
