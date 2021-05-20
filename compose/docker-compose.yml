@@ -21,6 +21,7 @@ services:
       - XAUTHORITY=${XAUTH_ENV}
     hostname: ${HNAME}
     network_mode: host
+    user: ${USER}
     volumes:
       - .:/bpvol/${COMPOSE_PROJECT_NAME}
       - ..:/bpvol/workspace
