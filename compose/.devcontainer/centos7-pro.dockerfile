@@ -8,7 +8,7 @@ ARG USERNAME
 ARG USERID
 ARG GROUPID
 RUN if [ ${USERID:-0} -ne 0 ] && [ ${GROUPID:-0} -ne 0 ]; then \
-  export GROUPNAME=$(getent group | grep ${GROUPID} | cut -d: -f1) \
+  export GROUPNAME=$(getent group ${GROUPID} | cut -d: -f1) \
   && if [[ -z ${GROUPNAME} ]]; then groupadd -g ${GROUPID} ${USERNAME}; fi \
   && adduser --uid ${USERID} --gid ${GROUPID} ${USERNAME} \
   && echo "" >> /etc/sudoers \
