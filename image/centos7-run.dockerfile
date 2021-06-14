@@ -19,7 +19,7 @@ RUN yum -y update \
      which \
   && yum clean all
 # cmake
-RUN export CMK_VER=3.20.3 \
+RUN export CMK_VER=3.20.4 \
   && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-Linux-x86_64.tar.gz \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
