@@ -42,6 +42,7 @@ COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
 # environment: gcc version, enable scl binaries
 ENV GCC_VER=gcc731 \
+    EXTERN_DIR=/opt/extern \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \
     PROMPT_COMMAND=". /usr/local/bpbin/scl_enable"
