@@ -88,7 +88,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
   && yum clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # externpro
-RUN export XP_VER=21.03 \
+RUN export XP_VER=21.04 \
   && mkdir /opt/extern \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
