@@ -2,9 +2,9 @@
 cd "$( dirname "$0" )"
 isrhubver=(\
   "WEBPRO=21.02"\
-  "INTERNPRO=21.03"\
+  "INTERNPRO=21.07"\
   "PLUGINSDK=v3.4.0.0"\
-  "CRTOOL=20.10.1"\
+  "CRTOOL=21.01"\
   "CRWRAP=20.07.1"\
   )
 for p in ${isrhubver[@]}; do
