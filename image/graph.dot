@@ -1,0 +1,21 @@
+digraph GG {
+  node [fontsize=12];
+  "centos7" [shape=diamond];
+  "mysql-server" [shape=diamond];
+  "externpro" [shape=box];
+  "PluginSDK" [shape=box];
+  "Plugins" [shape=box];
+  "VANTAGE" [shape=box];
+  "buildpro/centos7-run" -> "centos7";
+  "buildpro/centos7-pro" -> "centos7";
+  "buildpro/centos7-bld" -> "buildpro/centos7-pro";
+  "buildpro/centos7-dev" -> "buildpro/centos7-bld";
+  "buildpro/centos7-dev" -> "mysql-server";
+  "buildpro/centos7-run" -> "mysql-server";
+  "externpro" -> "buildpro/centos7-pro";
+  "PluginSDK" -> "buildpro/centos7-bld";
+  "Plugins" -> "buildpro/centos7-bld";
+  "VANTAGE" -> "buildpro/centos7-bld";
+  "VANTAGE" -> "buildpro/centos7-dev";
+  "VANTAGE" -> "buildpro/centos7-run";
+}
