@@ -40,9 +40,16 @@ ENV INTERNPRO_PATH=${EXTERN_DIR}/internpro-${INTERNPRO}-${GCC_VER}-64-Linux
 # webpro
 ARG WEBPRO
 RUN if [[ -n "${WEBPRO}" ]]; then \
-  export WP_DL=releases/download/${WEBPRO}/webpro-${WEBPRO}-${GCC_VER}-64-Linux.tar.xz \
-  && wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}" \
-   | tar -xJ -C ${EXTERN_DIR} \
+  export WP_DL=releases/download/${WEBPRO}/webpro-${WEBPRO}-${GCC_VER}-64-Linux \
+  && if [[ ${WEBPRO} < "20.05.1" ]]; then \
+       wget -q "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}.sh" \
+       && chmod 755 webpro*.sh \
+       && ./webpro-${WEBPRO}-${GCC_VER}-64-Linux.sh --prefix=${EXTERN_DIR} --include-subdir \
+       && rm webpro*.sh \
+     ; else \
+       wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}.tar.xz" \
+         | tar -xJ -C ${EXTERN_DIR} \
+     ; fi \
   && unset WP_DL \
   ; fi
 ENV WEBPRO_PATH=${EXTERN_DIR}/webpro-${WEBPRO}-${GCC_VER}-64-Linux
