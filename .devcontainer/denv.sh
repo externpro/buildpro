@@ -43,6 +43,8 @@ if [ -f Shared/make/toplevel.cmake ]; then
   ipro=`grep "set(internpro_REV" Shared/make/toplevel.cmake`
 elif [ -f SDKLibraries/make/toplevel.cmake ]; then
   ipro=`grep "set(internpro_REV" SDKLibraries/make/toplevel.cmake`
+elif [ -f Libraries/cmake/toplevel.cmake ]; then
+  ipro=`grep "set(internpro_REV" Libraries/cmake/toplevel.cmake`
 else
   ipro=`grep internpro_REV CMakeLists.txt`
 fi
