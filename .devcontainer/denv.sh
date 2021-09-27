@@ -27,6 +27,12 @@ env="${env}\nUSERID=$(id -u ${USER})"
 env="${env}\nGROUPID=$(id -g ${USER})"
 env="${env}\nDISPLAY_ENV=${display_env}"
 env="${env}\nXAUTH_ENV=${xauth_env}"
+if command -v host >/dev/null && host isrhub.usurf.usu.edu | grep "has address" >/dev/null; then
+  DOWNLD="https://isrhub.usurf.usu.edu"
+else
+  DOWNLD=.
+fi
+env="${env}\nDOWNLD=${DOWNLD}"
 if [ -f Nodejs/CMakeLists.txt ]; then
   wpro=`grep "set(webpro_REV" Nodejs/CMakeLists.txt`
 elif [ -f WebClient/CMakeLists.txt ]; then

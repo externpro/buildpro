@@ -9,6 +9,7 @@ services:
         USERNAME: ${USER}
         USERID: ${USERID}
         GROUPID: ${GROUPID}
+        DOWNLD: ${DOWNLD}
         WEBPRO: ${WEBPRO}
         INTERNPRO: ${INTERNPRO}
         PLUGINSDK: ${PLUGINSDK}
