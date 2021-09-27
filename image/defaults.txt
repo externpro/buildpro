@@ -1,0 +1,4 @@
+set(webpro_REV 21.02)
+set(internpro_REV 21.07)
+set(SDLPluginSDK_REV v3.4.0.0)
+set(CRTOOL_REV "21.01")

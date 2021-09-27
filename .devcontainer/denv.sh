@@ -35,8 +35,10 @@ elif [ -f Web/CMakeLists.txt ]; then
   wpro=`grep "set(webpro_REV" Web/CMakeLists.txt`
 elif [ -f web/CMakeLists.txt ]; then
   wpro=`grep "set(webpro_REV" web/CMakeLists.txt`
-else
+elif [ -f CMakeLists.txt ]; then
   wpro=`grep "set(webpro_REV" CMakeLists.txt`
+elif [ -f image/defaults.txt ]; then
+  wpro=`grep "set(webpro_REV" image/defaults.txt`
 fi
 WEBPRO=`echo ${wpro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
 if [ -f Shared/make/toplevel.cmake ]; then
@@ -45,12 +47,24 @@ elif [ -f SDKLibraries/make/toplevel.cmake ]; then
   ipro=`grep "set(internpro_REV" SDKLibraries/make/toplevel.cmake`
 elif [ -f Libraries/cmake/toplevel.cmake ]; then
   ipro=`grep "set(internpro_REV" Libraries/cmake/toplevel.cmake`
-else
-  ipro=`grep internpro_REV CMakeLists.txt`
+elif [ -f CMakeLists.txt ]; then
+  ipro=`grep "set(internpro_REV" CMakeLists.txt`
+elif [ -f image/defaults.txt ]; then
+  ipro=`grep "set(internpro_REV" image/defaults.txt`
 fi
 INTERNPRO=`echo ${ipro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
-PLUGINSDK=`grep SDK_REV CMakeLists.txt | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
-CRTOOL=`grep version .crtoolrc | awk '{$1=$1};1' | cut -d " " -f2 | cut -d "\"" -f2`
+if [ -f CMakeLists.txt ]; then
+  psdk=`grep SDK_REV CMakeLists.txt`
+elif [ -f image/defaults.txt ]; then
+  psdk=`grep SDK_REV image/defaults.txt`
+fi
+PLUGINSDK=`echo ${psdk} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
+if [ -f .crtoolrc ]; then
+  crto=`grep version .crtoolrc`
+elif [ -f image/defaults.txt ]; then
+  crto=`grep CRTOOL_REV image/defaults.txt`
+fi
+CRTOOL=`echo ${crto} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d "\"" -f2`
 CRWRAP=20.07.1
 [[ -n "${WEBPRO}" ]] && env="${env}\nWEBPRO=${WEBPRO}"
 [[ -n "${INTERNPRO}" ]] && env="${env}\nINTERNPRO=${INTERNPRO}"
