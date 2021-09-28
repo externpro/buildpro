@@ -5,54 +5,21 @@ SHELL ["/bin/bash", "-c"]
 USER 0
 # CRTool
 ARG CRTOOL
-ARG CRWRAP
-RUN if [[ -n "${CRTOOL}" && -n "${CRWRAP}" ]]; then \
-  mkdir ${EXTERN_DIR}/CRTool \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRTool/releases/download/${CRWRAP}/CRTool-${CRWRAP}.sh" \
-  && wget -q "https://isrhub.usurf.usu.edu/CRTool/CRToolImpl/releases/download/${CRTOOL}/CRToolImpl-${CRTOOL}.sh" \
-  && chmod 755 CRTool*.sh \
-  && ./CRTool-${CRWRAP}.sh --prefix=${EXTERN_DIR}/CRTool --exclude-subdir \
-  && ./CRToolImpl-${CRTOOL}.sh --prefix=${EXTERN_DIR} --include-subdir \
-  && rm CRTool-${CRWRAP}.sh \
-  && rm CRToolImpl-${CRTOOL}.sh \
-  ; fi
+RUN eval "${CRTOOL}"
 ENV PATH=$PATH:${EXTERN_DIR}/CRTool
 # PluginSDK
 ARG PLUGINSDK
-RUN if [[ -n "${PLUGINSDK}" ]]; then \
-  export SDK_DL=releases/download/${PLUGINSDK}/SDLPluginSDK-${PLUGINSDK}-${GCC_VER}-64-Linux.tar.xz \
-  && if [[ ${PLUGINSDK} == "v3.0.3.0" ]]; then \
-       export SDK_DL=releases/download/${PLUGINSDK}/VantagePluginSDK-${PLUGINSDK}-${GCC_VER}-64-Linux.tar.xz; \
-     fi \
-  && wget -qO- "https://isrhub.usurf.usu.edu/PluginFramework/SDKSuper/${SDK_DL}" \
-   | tar -xJ -C ${EXTERN_DIR} \
-  && unset SDK_DL \
-  ; fi
+RUN eval "${PLUGINSDK}"
 # internpro
 ARG INTERNPRO
-RUN if [[ -n "${INTERNPRO}" ]]; then \
-  export IP_DL=releases/download/${INTERNPRO}/internpro-${INTERNPRO}-${GCC_VER}-64-Linux.tar.xz \
-  && wget -qO- "https://isrhub.usurf.usu.edu/smanders/internpro/${IP_DL}" \
-   | tar -xJ -C ${EXTERN_DIR} \
-  && unset IP_DL \
-  ; fi
-ENV INTERNPRO_PATH=${EXTERN_DIR}/internpro-${INTERNPRO}-${GCC_VER}-64-Linux
+RUN eval "${INTERNPRO}"
+ARG INTERNPRO_PATH="${EXTERN_DIR}/internpro*"
+ENV INTERNPRO_PATH=${INTERNPRO_PATH}
 # webpro
 ARG WEBPRO
-RUN if [[ -n "${WEBPRO}" ]]; then \
-  export WP_DL=releases/download/${WEBPRO}/webpro-${WEBPRO}-${GCC_VER}-64-Linux \
-  && if [[ ${WEBPRO} < "20.05.1" ]]; then \
-       wget -q "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}.sh" \
-       && chmod 755 webpro*.sh \
-       && ./webpro-${WEBPRO}-${GCC_VER}-64-Linux.sh --prefix=${EXTERN_DIR} --include-subdir \
-       && rm webpro*.sh \
-     ; else \
-       wget -qO- "https://isrhub.usurf.usu.edu/webpro/webpro/${WP_DL}.tar.xz" \
-         | tar -xJ -C ${EXTERN_DIR} \
-     ; fi \
-  && unset WP_DL \
-  ; fi
-ENV WEBPRO_PATH=${EXTERN_DIR}/webpro-${WEBPRO}-${GCC_VER}-64-Linux
+RUN eval "${WEBPRO}"
+ARG WEBPRO_PATH="${EXTERN_DIR}/webpro*"
+ENV WEBPRO_PATH=${WEBPRO_PATH}
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID

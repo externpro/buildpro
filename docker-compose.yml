@@ -9,12 +9,10 @@ services:
         USERNAME: ${USER}
         USERID: ${USERID}
         GROUPID: ${GROUPID}
-        DOWNLD: ${DOWNLD}
         WEBPRO: ${WEBPRO}
         INTERNPRO: ${INTERNPRO}
         PLUGINSDK: ${PLUGINSDK}
         CRTOOL: ${CRTOOL}
-        CRWRAP: ${CRWRAP}
     cap_add:
       - SYS_PTRACE
     environment:
