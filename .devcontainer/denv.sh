@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
-rel=$(grep FROM .devcontainer/centos7-bld.dockerfile | cut -d- -f2)
+rel=$(grep FROM .devcontainer/centos7-bld.dockerfile)
+dkr=$(echo "${rel}" | cut -d" " -f2)
+rel=$(echo "${rel}" | cut -d- -f2)
 rel=${rel//:}
 rel=bp${rel/./-}
 display_host=$(echo ${DISPLAY} | cut -d: -f1)
@@ -27,6 +29,11 @@ env="${env}\nUSERID=$(id -u ${USER})"
 env="${env}\nGROUPID=$(id -g ${USER})"
 env="${env}\nDISPLAY_ENV=${display_env}"
 env="${env}\nXAUTH_ENV=${xauth_env}"
+cr8="#/usr/bin/env bash"
+cr8="${cr8}\ncd \"\$( dirname \"\$0\" )\""
+cr8="${cr8}\ndocker pull ${dkr}"
+cr8="${cr8}\necho \"saving docker image ${dkr}...\""
+cr8="${cr8}\ndocker save ${dkr} | pv -s $(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.tar.bz2"
 ##############################
 if command -v host >/dev/null && host isrhub.usurf.usu.edu | grep "has address" >/dev/null; then
   urlPfx="https://isrhub.usurf.usu.edu"
@@ -54,15 +61,18 @@ wproVer=`echo ${wpro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
 if [[ -n "${wproVer}" ]]; then
   wproBase=webpro-${wproVer}-${GCC_VER}-64-Linux
   if [[ ${wproVer} < "20.05.1" ]]; then
-    WEBPRO="wget -q \"${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.sh\" \
-&& chmod 755 webpro*.sh \
+    WEBPRO_DL="wget -q \"${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.sh\" \
+&& chmod 755 webpro*.sh "
+    WEBPRO="${WEBPRO_DL} \
 && ./${wproBase}.sh --prefix=${EXTERN_DIR} --include-subdir \
 && rm ${wproBase}.sh"
   else
-    WEBPRO="wget -qO- ${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.tar.xz | tar -xJ -C ${EXTERN_DIR}"
+    WEBPRO_DL="wget ${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.tar.xz"
+    WEBPRO="${WEBPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
   fi
 fi
 env="${env}\nWEBPRO=${WEBPRO}"
+[[ -n ${WEBPRO_DL} ]] && cr8="${cr8}\n${WEBPRO_DL}"
 ##############################
 if [ -f Shared/make/toplevel.cmake ]; then
   ipro=`grep "set(internpro_REV" Shared/make/toplevel.cmake`
@@ -77,9 +87,11 @@ elif [ -f image/defaults.txt ]; then
 fi
 iproVer=`echo ${ipro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
 if [[ -n "${iproVer}" ]]; then
-  INTERNPRO="wget -qO- ${urlPfx}/smanders/internpro/releases/download/${iproVer}/internpro-${iproVer}-${GCC_VER}-64-Linux.tar.xz | tar -xJ -C ${EXTERN_DIR}"
+  INTERNPRO_DL="wget ${urlPfx}/smanders/internpro/releases/download/${iproVer}/internpro-${iproVer}-${GCC_VER}-64-Linux.tar.xz"
+  INTERNPRO="${INTERNPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nINTERNPRO=${INTERNPRO}"
+[[ -n ${INTERNPRO_DL} ]] && cr8="${cr8}\n${INTERNPRO_DL}"
 ##############################
 if [ -f CMakeLists.txt ]; then
   psdk=`grep PluginSDK_REV CMakeLists.txt`
@@ -93,9 +105,11 @@ else
   pfx=SDL
 fi
 if [[ -n "${psdkVer}" ]]; then
-  PLUGINSDK="wget -qO- ${urlPfx}/PluginFramework/SDKSuper/releases/download/${psdkVer}/${pfx}PluginSDK-${psdkVer}-${GCC_VER}-64-Linux.tar.xz | tar -xJ -C ${EXTERN_DIR}"
+  PLUGINSDK_DL="wget ${urlPfx}/PluginFramework/SDKSuper/releases/download/${psdkVer}/${pfx}PluginSDK-${psdkVer}-${GCC_VER}-64-Linux.tar.xz"
+  PLUGINSDK="${PLUGINSDK_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nPLUGINSDK=${PLUGINSDK}"
+[[ -n ${PLUGINSDK_DL} ]] && cr8="${cr8}\n${PLUGINSDK_DL}"
 ##############################
 if [ -f .crtoolrc ]; then
   crtv=`grep version .crtoolrc`
@@ -105,16 +119,22 @@ fi
 crToolVer=`echo ${crtv} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d "\"" -f2`
 crWrapVer=20.07.1
 if [[ -n "${crToolVer}" && -n "${crWrapVer}" ]]; then
-  CRTOOL="mkdir ${EXTERN_DIR}/CRTool \
-&& wget -q \"${urlPfx}/CRTool/CRTool/releases/download/${crWrapVer}/CRTool-${crWrapVer}.sh\" \
+  CRTOOL_DL="wget -q \"${urlPfx}/CRTool/CRTool/releases/download/${crWrapVer}/CRTool-${crWrapVer}.sh\" \
 && wget -q \"${urlPfx}/CRTool/CRToolImpl/releases/download/${crToolVer}/CRToolImpl-${crToolVer}.sh\" \
-&& chmod 755 CRTool*.sh \
+&& chmod 755 CRTool*.sh"
+  CRTOOL="mkdir ${EXTERN_DIR}/CRTool \
+&& ${CRTOOL_DL} \
 && ./CRTool-${crWrapVer}.sh --prefix=${EXTERN_DIR}/CRTool --exclude-subdir \
 && ./CRToolImpl-${crToolVer}.sh --prefix=${EXTERN_DIR} --include-subdir \
 && rm CRTool-${crWrapVer}.sh \
 && rm CRToolImpl-${crToolVer}.sh"
 fi
 env="${env}\nCRTOOL=${CRTOOL}"
+[[ -n ${CRTOOL_DL} ]] && cr8="${cr8}\n${CRTOOL_DL}"
 ##############################
 echo -e "${env}" > .env
+if [ -d "_bldcontainer" ]; then
+  echo -e "${cr8}" > _bldcontainer/create.sh
+  chmod 755 _bldcontainer/*.sh
+fi
 popd > /dev/null
