@@ -8,9 +8,12 @@ VOLUME /bpvol
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
+     bzip2 `#firefox` \
      gtk2.x86_64 \
+     gtk3.x86_64 `#firefox` \
      iproute \
      libSM.x86_64 \
+     libXt.x86_64 `#firefox` \
      mesa-libGLU.x86_64 \
      make \
      sudo \
@@ -24,6 +27,12 @@ RUN export CMK_VER=3.21.2 \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
+# firefox
+RUN export FOX_VER=78.7.0esr \
+  && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
+  | tar -xj -C /opt/ \
+  && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
+  && unset FOX_VER
 # install database packages from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN yum -y update \
