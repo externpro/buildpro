@@ -80,7 +80,6 @@ if [[ -n "${wproVer}" ]]; then
   fi
 fi
 env="${env}\nWEBPRO=${WEBPRO}"
-[[ -n ${wproVer} ]] && ver="${ver}\nWEBPRO=${wproVer}"
 [[ -n ${WEBPRO_DL} ]] && cr8="${cr8}\n${WEBPRO_DL}"
 ##############################
 if [ -f Shared/make/toplevel.cmake ]; then
@@ -100,7 +99,6 @@ if [[ -n "${iproVer}" ]] && ${doisrhub}; then
   INTERNPRO="${INTERNPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nINTERNPRO=${INTERNPRO}"
-[[ -n ${iproVer} ]] && ver="${ver}\nINTERNPRO=${iproVer}"
 [[ -n ${INTERNPRO_DL} ]] && cr8="${cr8}\n${INTERNPRO_DL}"
 ##############################
 if [ -f CMakeLists.txt ]; then
@@ -119,7 +117,6 @@ if [[ -n "${psdkVer}" ]] && ${doisrhub}; then
   PLUGINSDK="${PLUGINSDK_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nPLUGINSDK=${PLUGINSDK}"
-[[ -n ${psdkVer} ]] && ver="${ver}\nPLUGINSDK=${psdkVer}"
 [[ -n ${PLUGINSDK_DL} ]] && cr8="${cr8}\n${PLUGINSDK_DL}"
 ##############################
 if [ -f .crtoolrc ]; then
@@ -145,7 +142,6 @@ if [[ -n "${crToolVer}" && -n "${crWrapVer}" ]]; then
 && rm CRToolImpl-${crToolVer}.sh"
 fi
 env="${env}\nCRTOOL=${CRTOOL}"
-[[ -n ${crToolVer} ]] && ver="${ver}\nCRTOOL=${crToolVer}"
 [[ -n ${CRTOOL_DL} ]] && cr8="${cr8}\n${CRTOOL_DL}"
 ##############################
 echo -e "${env}" > .env
