@@ -3,6 +3,8 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+# build docker image offline support
+ADD .env _bld/*.tar.xz _bld/*.sh ${EXTERN_DIR}/
 # CRTool
 ARG CRTOOL
 RUN eval "${CRTOOL}"

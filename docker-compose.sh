@@ -10,17 +10,13 @@ function build
 }
 function createContainerBundle
 {
-  if [[ -d _bldcontainer ]]; then
-    rm -rf _bldcontainer
+  offlineDir=.devcontainer/_bld
+  if [[ -d ${offlineDir} ]]; then
+    rm -rf ${offlineDir}
   fi
-  mkdir _bldcontainer
+  mkdir ${offlineDir}
   if [[ -x .devcontainer/denv.sh ]]; then
     ./.devcontainer/denv.sh
-  fi
-  if [[ -x _bldcontainer/create.sh ]]; then
-    ./_bldcontainer/create.sh
-    ls -l _bldcontainer
-    du -sh _bldcontainer
   fi
 }
 function usage
@@ -29,7 +25,7 @@ function usage
   echo " -h      display this help message"
   echo "         run the build container (no switches)"
   echo " -b      build docker image(s)"
-  echo " -c      create _bldcontainer bundle"
+  echo " -c      create offline container bundle"
 }
 if [ $# -eq 0 ]; then
   build

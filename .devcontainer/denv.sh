@@ -35,10 +35,14 @@ cr8="${cr8}\ndocker pull ${dkr}"
 cr8="${cr8}\necho \"saving docker image ${dkr}...\""
 cr8="${cr8}\ndocker save ${dkr} | pv -s $(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.tar.bz2"
 ##############################
-if command -v host >/dev/null && host isrhub.usurf.usu.edu | grep "has address" >/dev/null; then
-  urlPfx="https://isrhub.usurf.usu.edu"
+isrhub=isrhub.usurf.usu.edu
+if command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null; then
+  urlPfx="https://${isrhub}"
+  doisrhub=true
+  ver="docker image built online"
 else
-  urlPfx=.
+  doisrhub=false
+  ver="docker image built offline"
 fi
 # NOTE: EXTERN_DIR and GCC_VER need to match buildpro/image/centos7-pro.dockerfile
 EXTERN_DIR=/opt/extern
@@ -61,17 +65,22 @@ wproVer=`echo ${wpro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
 if [[ -n "${wproVer}" ]]; then
   wproBase=webpro-${wproVer}-${GCC_VER}-64-Linux
   if [[ ${wproVer} < "20.05.1" ]]; then
-    WEBPRO_DL="wget -q \"${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.sh\" \
+    if ${doisrhub}; then
+      WEBPRO_DL="wget -q \"${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.sh\" \
 && chmod 755 webpro*.sh "
+    else
+      WEBPRO_DL="cd ${EXTERN_DIR}"
+    fi
     WEBPRO="${WEBPRO_DL} \
 && ./${wproBase}.sh --prefix=${EXTERN_DIR} --include-subdir \
 && rm ${wproBase}.sh"
-  else
+  elif ${doisrhub}; then
     WEBPRO_DL="wget ${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.tar.xz"
     WEBPRO="${WEBPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
   fi
 fi
 env="${env}\nWEBPRO=${WEBPRO}"
+[[ -n ${wproVer} ]] && ver="${ver}\nWEBPRO=${wproVer}"
 [[ -n ${WEBPRO_DL} ]] && cr8="${cr8}\n${WEBPRO_DL}"
 ##############################
 if [ -f Shared/make/toplevel.cmake ]; then
@@ -86,11 +95,12 @@ elif [ -f image/defaults.txt ]; then
   ipro=`grep "set(internpro_REV" image/defaults.txt`
 fi
 iproVer=`echo ${ipro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
-if [[ -n "${iproVer}" ]]; then
+if [[ -n "${iproVer}" ]] && ${doisrhub}; then
   INTERNPRO_DL="wget ${urlPfx}/smanders/internpro/releases/download/${iproVer}/internpro-${iproVer}-${GCC_VER}-64-Linux.tar.xz"
   INTERNPRO="${INTERNPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nINTERNPRO=${INTERNPRO}"
+[[ -n ${iproVer} ]] && ver="${ver}\nINTERNPRO=${iproVer}"
 [[ -n ${INTERNPRO_DL} ]] && cr8="${cr8}\n${INTERNPRO_DL}"
 ##############################
 if [ -f CMakeLists.txt ]; then
@@ -104,11 +114,12 @@ if [[ ${psdkVer} == "v3.0.3.0" ]]; then
 else
   pfx=SDL
 fi
-if [[ -n "${psdkVer}" ]]; then
+if [[ -n "${psdkVer}" ]] && ${doisrhub}; then
   PLUGINSDK_DL="wget ${urlPfx}/PluginFramework/SDKSuper/releases/download/${psdkVer}/${pfx}PluginSDK-${psdkVer}-${GCC_VER}-64-Linux.tar.xz"
   PLUGINSDK="${PLUGINSDK_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nPLUGINSDK=${PLUGINSDK}"
+[[ -n ${psdkVer} ]] && ver="${ver}\nPLUGINSDK=${psdkVer}"
 [[ -n ${PLUGINSDK_DL} ]] && cr8="${cr8}\n${PLUGINSDK_DL}"
 ##############################
 if [ -f .crtoolrc ]; then
@@ -119,9 +130,13 @@ fi
 crToolVer=`echo ${crtv} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d "\"" -f2`
 crWrapVer=20.07.1
 if [[ -n "${crToolVer}" && -n "${crWrapVer}" ]]; then
-  CRTOOL_DL="wget -q \"${urlPfx}/CRTool/CRTool/releases/download/${crWrapVer}/CRTool-${crWrapVer}.sh\" \
+  if ${doisrhub}; then
+    CRTOOL_DL="wget -q \"${urlPfx}/CRTool/CRTool/releases/download/${crWrapVer}/CRTool-${crWrapVer}.sh\" \
 && wget -q \"${urlPfx}/CRTool/CRToolImpl/releases/download/${crToolVer}/CRToolImpl-${crToolVer}.sh\" \
 && chmod 755 CRTool*.sh"
+  else
+    CRTOOL_DL="cd ${EXTERN_DIR}"
+  fi
   CRTOOL="mkdir ${EXTERN_DIR}/CRTool \
 && ${CRTOOL_DL} \
 && ./CRTool-${crWrapVer}.sh --prefix=${EXTERN_DIR}/CRTool --exclude-subdir \
@@ -130,11 +145,28 @@ if [[ -n "${crToolVer}" && -n "${crWrapVer}" ]]; then
 && rm CRToolImpl-${crToolVer}.sh"
 fi
 env="${env}\nCRTOOL=${CRTOOL}"
+[[ -n ${crToolVer} ]] && ver="${ver}\nCRTOOL=${crToolVer}"
 [[ -n ${CRTOOL_DL} ]] && cr8="${cr8}\n${CRTOOL_DL}"
 ##############################
 echo -e "${env}" > .env
-if [ -d "_bldcontainer" ]; then
-  echo -e "${cr8}" > _bldcontainer/create.sh
-  chmod 755 _bldcontainer/*.sh
+[[ -n ${ver} ]] && echo -e "${ver}" > .devcontainer/.env
+offlineDir=.devcontainer/_bld
+if [ -d ${offlineDir} ]; then
+  if ${doisrhub}; then
+    if [[ -x ${offlineDir}/create.bash ]]; then
+      rm -rf ${offlineDir}
+    else
+      echo -e "${cr8}" > ${offlineDir}/create.bash
+      chmod 755 ${offlineDir}/create.bash
+      ./${offlineDir}/create.bash
+      ls -l ${offlineDir}
+      du -sh ${offlineDir}
+    fi
+  elif [[ ! -x ${offlineDir}/create.bash ]]; then
+    rm -rf ${offlineDir}
+    echo -e "ERROR: can't create offline container bundle when ${isrhub} not accessible"
+  fi
+elif ! ${doisrhub}; then
+  echo "NOTE: create offline container bundle with 'docker-compose.sh -c'"
 fi
 popd > /dev/null
