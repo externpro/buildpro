@@ -38,7 +38,6 @@ cr8="${cr8}\necho \"saving docker image ${dkr}...\""
 cr8="${cr8}\ndocker save ${dkr} | pv -s \$(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.${rel}.tar.bz2"
 ##############################
 isrhub=isrhub.usurf.usu.edu
-#isrhub=isrhub2.usurf.usu.edu # TODO testing
 if command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null; then
   urlPfx="https://${isrhub}"
   doisrhub=true
@@ -156,7 +155,6 @@ echo -e "${env}" > .env
 [[ -n ${ver} ]] && echo -e "${ver}" > .devcontainer/.env
 ##############################
 offlineDir=.devcontainer/_bld
-#hst=ghcr2.io # TODO testing
 if command -v host >/dev/null && host ${hst} | grep "not found" >/dev/null; then
   if ! docker inspect ${dkr} > /dev/null 2>&1; then
     if [[ -f ${offlineDir}/docker.${rel}.tar.bz2 ]]; then
