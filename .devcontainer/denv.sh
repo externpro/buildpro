@@ -33,7 +33,7 @@ cr8="#/usr/bin/env bash"
 cr8="${cr8}\ncd \"\$( dirname \"\$0\" )\""
 cr8="${cr8}\ndocker pull ${dkr}"
 cr8="${cr8}\necho \"saving docker image ${dkr}...\""
-cr8="${cr8}\ndocker save ${dkr} | pv -s $(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.tar.bz2"
+cr8="${cr8}\ndocker save ${dkr} | pv -s \$(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.tar.bz2"
 ##############################
 isrhub=isrhub.usurf.usu.edu
 if command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null; then
@@ -44,6 +44,7 @@ else
   doisrhub=false
   ver="docker image built offline"
 fi
+##############################
 # NOTE: EXTERN_DIR and GCC_VER need to match buildpro/image/centos7-pro.dockerfile
 EXTERN_DIR=/opt/extern
 GCC_VER=gcc731
