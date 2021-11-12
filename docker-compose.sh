@@ -36,7 +36,7 @@ function usage
 if [ $# -eq 0 ]; then
   sysreq
   build
-  docker-compose run --rm bpro
+  docker-compose run --rm bld
   exit 0
 fi
 while getopts "bch" opt

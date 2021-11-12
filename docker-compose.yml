@@ -1,6 +1,6 @@
 version: '3.4'
 services:
-  bpro:
+  bld:
     build:
       context: .devcontainer
       dockerfile: centos7-bld.dockerfile

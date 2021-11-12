@@ -1,6 +1,6 @@
 {
 	"dockerComposeFile": "../docker-compose.yml",
-	"service": "bpro",
+	"service": "bld",
 	"workspaceFolder": "/bpvol",
 	"initializeCommand": ["./.devcontainer/denv.sh"],
 	"settings": {
