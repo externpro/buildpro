@@ -43,9 +43,13 @@ if command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null;
   urlPfx="https://${isrhub}"
   doisrhub=true
   ver="docker image built online"
+  env="${env}\nADDSRC1=.env"
+  env="${env}\nADDSRC2=.env"
 else
   doisrhub=false
   ver="docker image built offline"
+  env="${env}\nADDSRC1=_bld/*.tar.xz"
+  env="${env}\nADDSRC2=_bld/*.sh"
 fi
 ##############################
 # NOTE: EXTERN_DIR and GCC_VER need to match buildpro/image/centos7-pro.dockerfile

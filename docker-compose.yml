@@ -10,6 +10,8 @@ services:
         USERID: ${USERID}
         GROUPID: ${GROUPID}
         TZ: ${TZ}
+        ADDSRC1: ${ADDSRC1}
+        ADDSRC2: ${ADDSRC2}
         WEBPRO: ${WEBPRO}
         INTERNPRO: ${INTERNPRO}
         PLUGINSDK: ${PLUGINSDK}
