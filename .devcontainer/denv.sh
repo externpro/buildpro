@@ -155,9 +155,12 @@ offlineDir=.devcontainer/_bld
 #hst=ghcr2.io # TODO testing
 if command -v host >/dev/null && host ${hst} | grep "not found" >/dev/null; then
   if ! docker inspect ${dkr} > /dev/null 2>&1; then
-    [[ -f ${offlineDir}/docker.${rel}.tar.bz2 ]] && pv ${offlineDir}/docker.${rel}.tar.bz2 | sudo docker load
-    # if the host specified by FROM isn't reachable, and the docker image isn't local, and the offline tar.bz2 exists
-    # then load the offline docker image
+    if [[ -f ${offlineDir}/docker.${rel}.tar.bz2 ]]; then
+      # if the host specified by FROM isn't reachable, the docker image isn't local, and the offline tar.bz2 exists
+      # then load the offline docker image
+      echo "loading docker image from docker.${rel}.tar.bz2..."
+      pv ${offlineDir}/docker.${rel}.tar.bz2 | sudo docker load
+    fi
   fi
 fi
 if [ -d ${offlineDir} ]; then
