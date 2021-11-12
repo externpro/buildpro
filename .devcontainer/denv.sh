@@ -2,8 +2,9 @@
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
 rel=$(grep FROM .devcontainer/centos7-bld.dockerfile)
-dkr=$(echo "${rel}" | cut -d" " -f2)
-rel=$(echo "${rel}" | cut -d- -f2)
+dkr=$(echo "${rel}" | cut -d" " -f2) # ghcr.io/smanders/buildpro/centos7-bld:TAG
+hst=$(echo "${dkr}" | cut -d/ -f1) # ghcr.io
+rel=$(echo "${rel}" | cut -d- -f2) # bld:TAG
 rel=${rel//:}
 rel=bp${rel/./-}
 display_host=$(echo ${DISPLAY} | cut -d: -f1)
@@ -33,9 +34,10 @@ cr8="#/usr/bin/env bash"
 cr8="${cr8}\ncd \"\$( dirname \"\$0\" )\""
 cr8="${cr8}\ndocker pull ${dkr}"
 cr8="${cr8}\necho \"saving docker image ${dkr}...\""
-cr8="${cr8}\ndocker save ${dkr} | pv -s \$(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.tar.bz2"
+cr8="${cr8}\ndocker save ${dkr} | pv -s \$(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.${rel}.tar.bz2"
 ##############################
 isrhub=isrhub.usurf.usu.edu
+#isrhub=isrhub2.usurf.usu.edu # TODO testing
 if command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null; then
   urlPfx="https://${isrhub}"
   doisrhub=true
@@ -147,12 +149,25 @@ env="${env}\nCRTOOL=${CRTOOL}"
 ##############################
 echo -e "${env}" > .env
 [[ -n ${ver} ]] && echo -e "${ver}" > .devcontainer/.env
+##############################
 offlineDir=.devcontainer/_bld
+#hst=ghcr2.io # TODO testing
+if command -v host >/dev/null && host ${hst} | grep "not found" >/dev/null; then
+  if ! docker inspect ${dkr} > /dev/null 2>&1; then
+    [[ -f ${offlineDir}/docker.${rel}.tar.bz2 ]] && pv ${offlineDir}/docker.${rel}.tar.bz2 | sudo docker load
+    # if the host specified by FROM isn't reachable, and the docker image isn't local, and the offline tar.bz2 exists
+    # then load the offline docker image
+  fi
+fi
 if [ -d ${offlineDir} ]; then
   if ${doisrhub}; then
     if [[ -x ${offlineDir}/create.bash ]]; then
+      # if the offlineDir exists, isrhub is reachable, the create script exists,
+      # then wipeout the offlineDir because it shouldn't be in the build context
       rm -rf ${offlineDir}
     else
+      # if the offlineDir exists, isrhub is reachable, the create script doesn't exist,
+      # then create the offline container bundle (docker-compose.sh -c)
       echo -e "${cr8}" > ${offlineDir}/create.bash
       chmod 755 ${offlineDir}/create.bash
       ./${offlineDir}/create.bash
@@ -160,10 +175,13 @@ if [ -d ${offlineDir} ]; then
       du -sh ${offlineDir}
     fi
   elif [[ ! -x ${offlineDir}/create.bash ]]; then
+    # if the offlineDir exists, but the create script doesn't, and isrhub isn't reachable,
+    # then the offline container bundle can't be created (docker-compose.sh -c)
     rm -rf ${offlineDir}
     echo -e "ERROR: can't create offline container bundle when ${isrhub} not accessible"
   fi
 elif ! ${doisrhub}; then
+  # the offlineDir doesn't exist, and isrhub isn't reachable
   echo "NOTE: create offline container bundle with 'docker-compose.sh -c'"
 fi
 popd > /dev/null
