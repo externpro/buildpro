@@ -20,6 +20,9 @@ ARG WEBPRO
 RUN eval "${WEBPRO}"
 ARG WEBPRO_PATH="${EXTERN_DIR}/webpro*"
 ENV WEBPRO_PATH=${WEBPRO_PATH}
+# timezone
+ARG TZ
+ENV TZ=$TZ
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID

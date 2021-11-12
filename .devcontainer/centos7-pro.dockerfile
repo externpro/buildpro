@@ -3,6 +3,9 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+# timezone
+ARG TZ
+ENV TZ=$TZ
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
