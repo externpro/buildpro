@@ -1,30 +1,6 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
-function build
-{
-  if  [[ -x .devcontainer/denv.sh ]]; then
-    ./.devcontainer/denv.sh
-    cat .env
-    docker-compose build
-  fi
-}
-function sysreq
-{
-  if ! command -v pv >/dev/null; then
-    echo "NOTE: install pv before creating or using an offline container bundle"
-  fi
-}
-function createContainerBundle
-{
-  offlineDir=.devcontainer/_bld
-  if [[ -d ${offlineDir} ]]; then
-    rm -rf ${offlineDir}
-  fi
-  mkdir ${offlineDir}
-  if [[ -x .devcontainer/denv.sh ]]; then
-    ./.devcontainer/denv.sh
-  fi
-}
+source ./.devcontainer/funcs.sh
 function usage
 {
   echo "`basename -- $0` usage:"
