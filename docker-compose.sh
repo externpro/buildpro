@@ -11,7 +11,8 @@ function usage
 }
 if [ $# -eq 0 ]; then
   sysreq
-  build
+  init
+  docker-compose --profile pbld build
   docker-compose run --rm bld
   exit 0
 fi
@@ -19,12 +20,13 @@ while getopts "bch" opt
 do
   case ${opt} in
     b )
-      sysreq
-      build
+      pvreq
+      init
+      docker-compose --profile pbld build
       exit 0
       ;;
     c )
-      sysreq
+      pvreq
       createContainerBundle
       exit 0
       ;;
