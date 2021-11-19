@@ -8,6 +8,7 @@ RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
      ghostscript `#LaTeX` \
+     gperftools \
      graphviz \
      iproute \
      libSM-devel.x86_64 \
