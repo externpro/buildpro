@@ -55,20 +55,21 @@ fi
 EXTERN_DIR=/opt/extern
 GCC_VER=gcc731
 ##############################
-if [ -f Nodejs/CMakeLists.txt ]; then
-  wpro=`grep "set(webpro_REV" Nodejs/CMakeLists.txt`
-elif [ -f WebClient/CMakeLists.txt ]; then
-  wpro=`grep "set(webpro_REV" WebClient/CMakeLists.txt`
-elif [ -f Web/CMakeLists.txt ]; then
-  wpro=`grep "set(webpro_REV" Web/CMakeLists.txt`
-elif [ -f web/CMakeLists.txt ]; then
-  wpro=`grep "set(webpro_REV" web/CMakeLists.txt`
-elif [ -f CMakeLists.txt ]; then
-  wpro=`grep "set(webpro_REV" CMakeLists.txt`
-elif [ -f image/defaults.txt ]; then
-  wpro=`grep "set(webpro_REV" image/defaults.txt`
-fi
-wproVer=`echo ${wpro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
+function findVer
+{
+  local val=$1
+  shift
+  for loc in "$@"; do
+    if [ -f $loc ]; then
+      local gver=`grep "$val" $loc`
+      [[ ! -z "$gver" ]] && break
+    fi
+  done
+  local fver=`echo ${gver} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
+  echo "$fver"
+}
+##############################
+wproVer="$(findVer 'set(webpro_REV' CMakeLists.txt */CMakeLists.txt */defaults.txt)"
 if [[ -n "${wproVer}" ]]; then
   wproBase=webpro-${wproVer}-${GCC_VER}-64-Linux
   if [[ ${wproVer} < "20.05.1" ]]; then
@@ -89,18 +90,7 @@ fi
 env="${env}\nWEBPRO=${WEBPRO}"
 [[ -n ${WEBPRO_DL} ]] && cr8="${cr8}\n${WEBPRO_DL}"
 ##############################
-if [ -f Shared/make/toplevel.cmake ]; then
-  ipro=`grep "set(internpro_REV" Shared/make/toplevel.cmake`
-elif [ -f SDKLibraries/make/toplevel.cmake ]; then
-  ipro=`grep "set(internpro_REV" SDKLibraries/make/toplevel.cmake`
-elif [ -f Libraries/cmake/toplevel.cmake ]; then
-  ipro=`grep "set(internpro_REV" Libraries/cmake/toplevel.cmake`
-elif [ -f CMakeLists.txt ]; then
-  ipro=`grep "set(internpro_REV" CMakeLists.txt`
-elif [ -f image/defaults.txt ]; then
-  ipro=`grep "set(internpro_REV" image/defaults.txt`
-fi
-iproVer=`echo ${ipro} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
+iproVer="$(findVer 'set(internpro_REV' CMakeLists.txt */toplevel.cmake */*/toplevel.cmake */defaults.txt)"
 if [[ -n "${iproVer}" ]] && ${doisrhub}; then
   INTERNPRO_DL="wget ${urlPfx}/smanders/internpro/releases/download/${iproVer}/internpro-${iproVer}-${GCC_VER}-64-Linux.tar.xz"
   INTERNPRO="${INTERNPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
@@ -108,12 +98,7 @@ fi
 env="${env}\nINTERNPRO=${INTERNPRO}"
 [[ -n ${INTERNPRO_DL} ]] && cr8="${cr8}\n${INTERNPRO_DL}"
 ##############################
-if [ -f CMakeLists.txt ]; then
-  psdk=`grep PluginSDK_REV CMakeLists.txt`
-elif [ -f image/defaults.txt ]; then
-  psdk=`grep PluginSDK_REV image/defaults.txt`
-fi
-psdkVer=`echo ${psdk} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
+psdkVer="$(findVer 'PluginSDK_REV' CMakeLists.txt */defaults.txt)"
 if [[ ${psdkVer} == "v3.0.3.0" ]]; then
   pfx=Vantage
 else
