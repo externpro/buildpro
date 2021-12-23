@@ -1,5 +1,6 @@
 CMakeLists.txt text eol=lf
 Dockerfile text eol=lf
+.gitattributes text eol=lf
 *.c text eol=lf
 *.cmake text eol=lf
 *.conf text eol=lf
@@ -28,6 +29,7 @@ Dockerfile text eol=lf
 *.rch text eol=lf
 *.sh text eol=lf
 *.svg text eol=lf
+*.ts text eol=lf
 *.txt text eol=lf
 *.xml text eol=lf
 *.xpm text eol=lf
