@@ -1,3 +1,6 @@
+# timezone
+ARG TZ
+ENV TZ=$TZ
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
