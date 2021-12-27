@@ -113,8 +113,8 @@ env="${env}\nPLUGINSDK=${PLUGINSDK}"
 ##############################
 if [ -f .crtoolrc ]; then
   crtv=`grep version .crtoolrc`
-elif [ -f image/defaults.txt ]; then
-  crtv=`grep CRTOOL_REV image/defaults.txt`
+elif [ -f private/defaults.txt ]; then
+  crtv=`grep CRTOOL_REV private/defaults.txt`
 fi
 crToolVer=`echo ${crtv} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d "\"" -f2`
 crWrapVer=20.07.1
