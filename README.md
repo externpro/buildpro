@@ -25,10 +25,6 @@ and projects that use externpro
 
 Install Docker Engine https://docs.docker.com/engine/install/
 
-An alternative is to install the `docker` snap package
-* https://www.unixtutorial.org/how-to-install-docker-in-ubuntu-using-snap/
-* https://github.com/docker-snap/docker-snap
-
 If you don't want to preface the `docker` command with `sudo`, create a Unix group
 called `docker` and add users to it. See "Post-installation steps for Linux"
 https://docs.docker.com/engine/install/linux-postinstall/ for details and warnings.
@@ -191,36 +187,6 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
     --env=DISPLAY=bluepill:10.0
     --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
     bpro/centos6-bld:working
-    ```
-* `-s` "Snap" option
-  * for X11 forwarding to work when using docker snap
-    (see [install and configure docker](#install-and-configure-docker) above)
-  * as seen by the `-v` output above, volumes need to be created between the host `/tmp` directory
-    and the container's `/tmp` directory for X11 forwarding to work as expected (regardless of
-    whether you are connecting to the host remotely via `ssh -X`)
-  * however, as noted in the docker snap usage https://github.com/docker-snap/docker-snap#usage
-    > All files that `docker` needs access to should live within your `$HOME` folder.
-  * so a work-around is to mount the `/tmp` directory to your `$HOME` directory
-    * temporary setup: `$ mkdir $HOME/tmp; sudo mount --bind /tmp $HOME/tmp/`
-    * temporary undo: `$ sudo umount $HOME/tmp; rmdir $HOME/tmp`
-    * more permanent
-      * add line to `/etc/fstab`, similar to the following (I recommend looking it up),
-        where your username is substituted for `<user>`
-        ```diff
-        *** 5,10 ****
-        --- 5,11 ----
-          # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-        + /tmp /home/<user>/tmp auto bin 0 3
-        ```
-      * run `$ sudo update-initramfs -u -k all`
-  * example: `$ ./bprun -s -v`
-    ```
-    docker container run --volume=/home/smanders:/bpvol
-    --volume=/home/smanders/.ssh:/home/smanders/.ssh
-    --volume=/home/smanders/tmp/.X11-unix:/tmp/.X11-unix
-    --env=DISPLAY=:0
-    --network=bpnet --dns=172.17.0.1 --user=1001:1001 --hostname=buildpro_latest --rm -it
-    bpro/centos6-bld:latest
     ```
 ### additional configuration
 
