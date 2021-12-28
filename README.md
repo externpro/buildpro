@@ -10,7 +10,6 @@ and projects that use externpro
   - [short docker tutorial](#short-docker-tutorial)
   - [useful docker commands](#useful-docker-commands)
 - [Using buildpro](#using-buildpro)
-- [Getting started with buildpro](#getting-started-with-buildpro)
 
 ## Getting started with docker
 
@@ -84,42 +83,3 @@ To use buildpro docker images
   ln -s .devcontainer/compose.bld.yml docker-compose.yml
   ```
 * `./docker-compose.sh -h` to display a help message showing usage and options
-
-## Getting started with buildpro
-
-buildpro was designed to be run from a git repository (`docker tag` comes from `git tag`),
-so start by cloning the repo
-```
-$ git clone git://github.com/smanders/buildpro.git
-$ cd buildpro
-```
-there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
-* [bpimg.sh](image/bpimg.sh)
-  * located in the [image/](image) directory
-  * the `image/` directory contains dockerfiles and other files to support building docker images
-  * main task is to run `docker image build`
-  * running the `bpimg.sh` script will
-    * download/pull the base open source packages `ghcr.io/smanders/buildpro/` from
-      https://github.com/smanders?tab=packages&repo_name=buildpro 
-    * build the `bpro/` images that require access to the internal isrhub (internpro, etc),
-      which are based on the open source images
-  ```
-  $ docker images
-  REPOSITORY                              TAG       IMAGE ID            CREATED             SIZE
-  bpro/centos7-bld                        20.9      b92aaf04c4f7        12 days ago         7.29GB
-  bpro/centos7-run                        20.9      4e2e19507c18        12 days ago         441MB
-  bpro/centos6-bld                        20.9      066364e38517        12 days ago         7.54GB
-  ghcr.io/smanders/buildpro/centos7-bld   20.9      f41cabdc77e6        2 weeks ago         3.87GB
-  ghcr.io/smanders/buildpro/centos6-bld   20.9      94fe6b48f41c        3 weeks ago         4.12GB
-  ghcr.io/smanders/buildpro/centos7-run   20.9      d28fd6963d52        5 weeks ago         439MB
-  centos                                  7         7e6257c9f8d8        2 months ago        203MB
-  centos                                  6         d0957ffdf8a2        20 months ago       194MB
-  ```
-  * NOTE regarding image naming conventions
-    * the `bpro/` images are the ones meant to be run
-      * all other images are "base" images used to build up to the `bpro/` images
-    * `-bld` for a build container
-      * with all the packages necessary to build software
-      * unit tests that don't require database should run fine in a build container
-    * `-run` for a runtime container
-      * with all the packages necessary to run unit tests and Autotest (which require database)
