@@ -9,6 +9,7 @@ and projects that use externpro
   - [verify docker installation and configuration](#verify-docker-installation-and-configuration)
   - [short docker tutorial](#short-docker-tutorial)
   - [useful docker commands](#useful-docker-commands)
+- [Using buildpro](#using-buildpro)
 - [Getting started with buildpro](#getting-started-with-buildpro)
   - [bprun usage examples](#bprun-usage-examples)
   - [additional configuration](#additional-configuration)
@@ -82,6 +83,18 @@ $ docker [stop|restart|start|rm|logs|inspect] <container_name>
 $ docker inspect <container_name> | grep -i ipaddress
 $ docker exec -it <container_name> bash
 ```
+
+## Using buildpro
+
+To use buildpro docker images
+* copy the contents of the [.devcontainer](.devcontainer) directory to a `.devcontainer` directory
+  in the root of the project wishing to use buildpro images
+* create symbolic links to the `compose.*.[sh|yml]` file pair suitable for the project
+  ```
+  ln -s .devcontainer/compose.bld.sh docker-compose.sh
+  ln -s .devcontainer/compose.bld.yml docker-compose.yml
+  ```
+* `./docker-compose.sh -h` to display a help message showing usage and options
 
 ## Getting started with buildpro
 
