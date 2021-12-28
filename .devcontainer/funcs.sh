@@ -33,7 +33,7 @@ function composereq
   if ! command -v docker-compose &>/dev/null; then
     echo "docker-compose not installed, attempting (requires sudo)..."
     sudo sh -c \
-     "curl -L 'https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)' \
+     "curl -L 'https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)' \
         -o /usr/local/bin/docker-compose \
       && chmod +x /usr/local/bin/docker-compose"
     exit 1
