@@ -11,7 +11,6 @@ and projects that use externpro
   - [useful docker commands](#useful-docker-commands)
 - [Using buildpro](#using-buildpro)
 - [Getting started with buildpro](#getting-started-with-buildpro)
-  - [bprun usage examples](#bprun-usage-examples)
   - [additional configuration](#additional-configuration)
     - [network](#network)
     - [dns](#dns)
@@ -130,64 +129,7 @@ there are two main buildpro scripts: `bpimg.sh` and `bprun.sh`
       * unit tests that don't require database should run fine in a build container
     * `-run` for a runtime container
       * with all the packages necessary to run unit tests and Autotest (which require database)
-* [bprun.sh](bprun.sh)
-  * located in the root directory of buildpro
-  * main task is to run `docker container run`
-  * running the `bprun.sh` script will call `bpimg.sh` if the image it's attempting
-    to create a container from doesn't exist
-  * the `-h` option shows the usage options
-  ```
-  $ ./bprun.sh -h
-  bprun.sh usage:
-   -d      runtime (bpro/centos7-run) and database (mysqlpro) containers
-   -h      display this help message
-   -m arg  directory to mount to /bpvol in container (default: $HOME)
-   -n      use --network=host instead of --network=bpnet --dns=$DOCKER_HOST
-   -r arg  specify a repository (default: bpro/centos6-bld)
-   -s      snap workaround: mount $HOME/tmp/.X11-unix to /tmp/.X11-unix
-   -t arg  specify a repository tag (default: 20.9)
-   -v      verbose (display 'docker container run' command)
-  ```
 
-### bprun usage examples
-
-* `-m arg` "mount" option
-  * by default, `bprun` mounts your `$HOME` directory from the host system
-    to `/bpvol` in the container
-  * but you can specify what host directory to mount with the `-m` option,
-    for example mounting `~/src` to `/bpvol`
-  * example: `$ ./bprun -m ~/src`
-* `-r arg` "repo" option
-  * by default, `bprun` uses the repository listed as the default by `bprun -h`
-  * but you can specify a specific repository image to create a container from
-  * NOTE: the default will likely change as we move to newer OS releases
-  * example: `$ ./bprun -r bpro/centos7-bld`
-* `-t arg` "tag" option
-  * by default, `bprun` uses the tag listed as the default by `bprun -h`
-  * but you can specify a specific repository image tag to create a container from
-  * NOTE: the default will change depending on the state of the buildpro git repository
-    * if you're on the `master` branch or a tagged release, default will match (ex: `20.9`)
-    * if you're on the `dev` branch, not a tagged release, default will be `latest`
-    * if you have local modifications to the repo, default will be `working`
-  * example: `$ ./bprun -t 20.9`
-* `-d` "database" option
-  * changes the default repository (`-r` option) to a `-run` container
-  * starts up an additional database container (currently named `mysqlpro`)
-    * also downloads/pulls mysql image, if not already available
-    * NOTE: mysql/mysql-server version (tag) used is in the bprun.sh script
-  * all the packages and environment necessary for unit tests and Autotest which require database
-  * example: `$ ./bprun -d`
-* `-v` "verbose" option
-  * because sometimes it's useful to see the `docker container run` command
-  * example: `$ ./bprun -v`
-    ```
-    docker container run --volume=/home/smanders:/bpvol
-    --volume=/home/smanders/.ssh:/home/smanders/.ssh
-    --volume=/tmp/.X11-unix:/tmp/.X11-unix
-    --env=DISPLAY=bluepill:10.0
-    --network=bpnet --dns=172.17.0.1  --user=4455:100 --hostname=buildpro_latest --rm -it
-    bpro/centos6-bld:working
-    ```
 ### additional configuration
 
 ### network
