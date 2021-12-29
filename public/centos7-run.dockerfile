@@ -28,7 +28,7 @@ RUN export CMK_VER=3.21.4 \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
 # chrome
-RUN export CHR_VER=88.0.4324.182 \
+RUN export CHR_VER=94.0.4606.81 \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && yum -y update \
   && yum clean all \
@@ -37,7 +37,7 @@ RUN export CHR_VER=88.0.4324.182 \
   && yum clean all \
   && unset CHR_VER
 # firefox
-RUN export FOX_VER=78.7.0esr \
+RUN export FOX_VER=78.15.0esr \
   && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
   | tar -xj -C /opt/ \
   && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
