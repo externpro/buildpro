@@ -30,7 +30,7 @@ you should see a "Hello from Docker!" message with additional details
 
 ### short docker tutorial
 image vs container https://stackify.com/docker-image-vs-container-everything-you-need-to-know/
-* in other virual machine environments, images would be called something like "snapshots"
+* in other virtual machine environments, images would be called something like "snapshots"
 * Docker images can't ever change -- once you've made one, you can delete it, but you can't modify it
 * if you need a new version of the snapshot, you create an entirely new image
 * if a Docker image is a digital photograph, a Docker container is like a printout of that photograph
