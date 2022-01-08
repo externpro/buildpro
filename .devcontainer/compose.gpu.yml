@@ -62,7 +62,7 @@ services:
           - driver: nvidia
             count: 1
             capabilities: [gpu]
-    hostname: ${HNAME}
+    hostname: ${HNAME}-gpu
     network_mode: host
     profiles:
       - pgpu
