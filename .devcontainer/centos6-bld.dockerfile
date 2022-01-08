@@ -3,6 +3,9 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+# build docker image offline support
+ARG ADDSRC1 ADDSRC2
+ADD ${ADDSRC1} ${ADDSRC2} /opt/extern/
 # CRTool
 ARG CRTOOL
 RUN eval "${CRTOOL}"
@@ -13,9 +16,16 @@ RUN eval "${PLUGINSDK}"
 # internpro
 ARG INTERNPRO
 RUN eval "${INTERNPRO}"
+ARG INTERNPRO_PATH="/opt/extern/internpro*"
+ENV INTERNPRO_PATH=${INTERNPRO_PATH}
 # webpro
 ARG WEBPRO
 RUN eval "${WEBPRO}"
+ARG WEBPRO_PATH="/opt/extern/webpro*"
+ENV WEBPRO_PATH=${WEBPRO_PATH}
+# timezone
+ARG TZ
+ENV TZ=$TZ
 # create non-root user, add to sudoers
 ARG USERNAME
 ARG USERID
