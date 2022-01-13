@@ -16,6 +16,7 @@ x-bld: &bld-alias
     - /tmp/.X11-unix:/tmp/.X11-unix
     - ~/.ssh:/home/${USER}/.ssh
     - ~/.gitconfig:/home/${USER}/.gitconfig
+    - /mnt/gitRepo:/mnt/gitRepo
 x-all-build-args: &all-build-args-alias
   USERNAME: ${USER}
   USERID: ${USERID}
