@@ -150,7 +150,7 @@ if command -v host >/dev/null && host ${hst} | grep "not found" >/dev/null; then
       # if the host specified by FROM isn't reachable, the docker image isn't local, and the offline tar.bz2 exists
       # then load the offline docker image
       echo "loading docker image from docker.${rel}.tar.bz2..."
-      pv ${offlineDir}/docker.${rel}.tar.bz2 | sudo docker load
+      pv ${offlineDir}/docker.${rel}.tar.bz2 | docker load
     fi
   fi
 fi
