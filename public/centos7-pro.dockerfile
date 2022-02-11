@@ -9,7 +9,7 @@ RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
      centos-release-scl \
-     gtk2-devel.x86_64 \
+     gtk3-devel.x86_64 \
      mesa-libGL-devel.x86_64 \
      mesa-libGLU-devel.x86_64 \
      redhat-lsb-core \
