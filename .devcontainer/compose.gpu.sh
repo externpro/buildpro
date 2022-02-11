@@ -22,7 +22,6 @@ do
   case ${opt} in
     b )
       composereq
-      offlinereq
       init
       docker-compose --profile pbld build
       exit 0

@@ -151,6 +151,7 @@ if command -v host >/dev/null && host ${hst} | grep "not found" >/dev/null; then
       # then load the offline docker image
       echo "loading docker image from docker.${rel}.tar.bz2..."
       if ! command -v pv >/dev/null; then
+        echo "NOTE: installing pv will show 'docker load' progress"
         pipe=cat
       else
         pipe=pv
