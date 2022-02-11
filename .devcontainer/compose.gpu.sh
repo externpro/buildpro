@@ -22,13 +22,13 @@ do
   case ${opt} in
     b )
       composereq
-      pvreq
+      offlinereq
       init
       docker-compose --profile pbld build
       exit 0
       ;;
     c )
-      pvreq
+      offlinereq
       createContainerBundle
       exit 0
       ;;

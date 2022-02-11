@@ -39,10 +39,13 @@ function composereq
     exit 1
   fi
 }
-function pvreq
+function offlinereq
 {
   if ! command -v pv >/dev/null; then
     echo "NOTE: install pv before creating or using an offline container bundle"
+  fi
+  if ! command -v bzip2 >/dev/null; then
+    echo "NOTE: install bzip2 before creating or using an offline container bundle"
   fi
 }
 function runreq
