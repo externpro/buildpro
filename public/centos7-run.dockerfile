@@ -10,8 +10,7 @@ RUN yum -y update \
   && yum -y install --setopt=tsflags=nodocs \
      bzip2 `#firefox` \
      ffmpeg `#browser-video` \
-     gtk2.x86_64 \
-     gtk3.x86_64 `#firefox` \
+     gtk3.x86_64 `#firefox,wx` \
      iproute \
      libSM.x86_64 \
      libXt.x86_64 `#firefox` \
