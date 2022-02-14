@@ -11,7 +11,7 @@ function usage
   echo " -g      GPU container"
 }
 if [ $# -eq 0 ]; then
-  composereq
+  buildreq
   init
   docker-compose --profile pbld build
   docker-compose run --rm bld
@@ -21,7 +21,7 @@ while getopts "bcgh" opt
 do
   case ${opt} in
     b )
-      composereq
+      buildreq
       init
       docker-compose --profile pbld build
       exit 0
@@ -33,7 +33,7 @@ do
       ;;
     g )
       gpureq
-      composereq
+      buildreq
       init
       docker-compose --profile pgpu build
       docker-compose run --rm gpu

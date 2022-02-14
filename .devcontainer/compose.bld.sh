@@ -9,7 +9,7 @@ function usage
   echo " -b      build docker image(s)"
 }
 if [ $# -eq 0 ]; then
-  composereq
+  buildreq
   init
   docker-compose --profile pbld build
   docker-compose run --rm bld
@@ -19,7 +19,7 @@ while getopts "bh" opt
 do
   case ${opt} in
     b )
-      composereq
+      buildreq
       init
       docker-compose --profile pbld build
       exit 0

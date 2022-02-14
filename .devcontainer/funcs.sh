@@ -50,9 +50,15 @@ function composereq
     exit 1
   fi
 }
+function buildreq
+{
+  gitcfgreq
+  composereq
+}
 function sysreq
 {
   gitlfsreq
+  gitcfgreq
   composereq
 }
 function offlinereq

@@ -21,6 +21,7 @@ while getopts "bdhr" opt
 do
   case ${opt} in
     b )
+      buildreq
       init
       docker-compose --profile pbld --profile pdev --profile prun build
       exit 0
