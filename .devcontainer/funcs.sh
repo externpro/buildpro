@@ -39,6 +39,11 @@ function composereq
     exit 1
   fi
 }
+function sysreq
+{
+  gitlfsreq
+  composereq
+}
 function offlinereq
 {
   if ! command -v pv >/dev/null; then

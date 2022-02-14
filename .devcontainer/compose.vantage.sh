@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 source ./.devcontainer/funcs.sh
-function sysreq
-{
-  gitlfsreq
-  composereq
-}
 function usage
 {
   echo "`basename -- $0` usage:"
