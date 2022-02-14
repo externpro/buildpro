@@ -28,6 +28,17 @@ function gitlfsreq
     exit 1
   fi
 }
+function gitcfgreq
+{
+  if [[ ! -f ~/.gitconfig ]]; then
+    echo "~/.gitconfig does not exist, please create with"
+    echo "  git config --global user.name \"Someone Here\""
+    echo "  git config --global user.email someonehere@sdl.usu.edu"
+    echo "verify configuration with"
+    echo "  git config --global --list"
+    exit 1
+  fi
+}
 function composereq
 {
   if ! command -v docker-compose &>/dev/null; then
