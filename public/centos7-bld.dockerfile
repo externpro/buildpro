@@ -90,7 +90,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
   && yum clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # externpro
-ENV XP_VER=22.01
+ENV XP_VER=22.02
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
