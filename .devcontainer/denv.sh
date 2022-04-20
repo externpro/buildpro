@@ -57,7 +57,7 @@ fi
 ##############################
 # NOTE: EXTERN_DIR and GCC_VER need to match buildpro/image/centos7-pro.dockerfile
 EXTERN_DIR=/opt/extern
-GCC_VER=gcc731
+GCC_VER=gcc931
 ##############################
 function findVer
 {

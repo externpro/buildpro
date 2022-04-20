@@ -21,13 +21,13 @@ RUN yum -y update \
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
-     libtsan-7.3.1 \
-     devtoolset-7-binutils `#scl` \
-     devtoolset-7-gcc `#scl` \
-     devtoolset-7-gcc-c++ `#scl` \
-     devtoolset-7-libasan-devel `#scl` \
-     devtoolset-7-libtsan-devel `#scl` \
-     devtoolset-7-gdb `#scl` \
+     libtsan-9.3.1 \
+     devtoolset-9-binutils `#scl` \
+     devtoolset-9-gcc `#scl` \
+     devtoolset-9-gcc-c++ `#scl` \
+     devtoolset-9-libasan-devel `#scl` \
+     devtoolset-9-libtsan-devel `#scl` \
+     devtoolset-9-gdb `#scl` \
      git236 `#ius.io` \
      rh-python36 `#scl` \
   && echo "exclude=libtsan" >> /etc/yum.conf \
@@ -42,8 +42,8 @@ RUN export CMK_VER=3.24.2 \
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
 # environment: gcc version, enable scl binaries
-ENV GCC_VER=gcc731 \
-    PATH="/opt/rh/devtoolset-7/root/usr/bin:${PATH}" \
+ENV GCC_VER=gcc931 \
+    PATH="/opt/rh/devtoolset-9/root/usr/bin:${PATH}" \
     EXTERN_DIR=/opt/extern \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \
