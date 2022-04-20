@@ -6,6 +6,7 @@ x-all: &all-alias
   user: ${USER}
   stdin_open: true
   tty: true
+  working_dir: /bpvol/${COMPOSE_PROJECT_NAME}
 x-bld: &bld-alias
   cap_add:
     - SYS_PTRACE
