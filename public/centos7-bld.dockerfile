@@ -89,6 +89,15 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
      dotnet-sdk-3.1 \
   && yum clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
+# chrome
+RUN export CHR_VER=94.0.4606.81 \
+  && echo "repo_add_once=false" > /etc/default/google-chrome \
+  && yum -y update \
+  && yum clean all \
+  && yum -y install --setopt=tsflags=nodocs \
+     https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHR_VER}-1.x86_64.rpm \
+  && yum clean all \
+  && unset CHR_VER
 # externpro
 ENV XP_VER=22.02
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
