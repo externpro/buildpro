@@ -23,7 +23,7 @@ do
     b )
       buildreq
       init
-      docker-compose --profile pbld build
+      docker-compose --profile pbld --profile pgpu build
       exit 0
       ;;
     c )
