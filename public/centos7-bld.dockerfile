@@ -62,6 +62,12 @@ RUN export CUDA_VER=10.1.168-1 \
   && wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/${CUDA_RPM}" \
   && rpm --install ${CUDA_RPM} \
   && yum clean all \
+  # https://forums.developer.nvidia.com/t/updating-the-cuda-linux-gpg-repository-key/212897/10
+  # https://github.com/NVIDIA/cuda-repo-management/issues/4
+  && yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo \
+  # https://codingbee.net/uncategorized/yum-error-public-key-for-rpm-is-not-installed
+  && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA http://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/D42D0685.pub \
+  && rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA \
   && yum -y install \
      cuda-compiler-10-1 \
   `# cuda-libraries-dev-10-1` \
