@@ -73,7 +73,7 @@ function findVer
   echo "$fver"
 }
 ##############################
-wproVer="$(findVer 'set(webpro_REV' CMakeLists.txt */CMakeLists.txt */defaults.txt)"
+wproVer="$(findVer 'set(webpro_REV' CMakeLists.txt */CMakeLists.txt */toplevel.cmake */*/toplevel.cmake */defaults.txt)"
 if [[ -n "${wproVer}" ]]; then
   wproBase=webpro-${wproVer}-${GCC_VER}-64-Linux
   if [[ ${wproVer} < "20.05.1" ]]; then
