@@ -11,7 +11,7 @@ function usage
   echo " -r      run the runtime container"
 }
 if [ $# -eq 0 ]; then
-  sysreq
+  buildreq
   init
   docker-compose --profile pbld build
   docker-compose run --rm bld
@@ -27,7 +27,7 @@ do
       exit 0
       ;;
     d )
-      sysreq
+      buildreq
       runreq
       init
       docker-compose --profile pdev up -d --build
@@ -36,7 +36,7 @@ do
       exit 0
       ;;
     r )
-      sysreq
+      buildreq
       runreq
       init
       docker-compose --profile prun up -d --build

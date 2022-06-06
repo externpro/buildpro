@@ -55,12 +55,6 @@ function buildreq
   gitcfgreq
   composereq
 }
-function sysreq
-{
-  gitlfsreq
-  gitcfgreq
-  composereq
-}
 function offlinereq
 {
   if ! command -v pv >/dev/null; then
