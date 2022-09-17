@@ -55,37 +55,23 @@ RUN  tlmgr install collection-fontsrecommended \
   && tlmgr install tabu varwidth multirow wrapfig adjustbox collectbox sectsty tocloft `#collection-latexextra` \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
-# CUDA https://developer.nvidia.com/cuda-10.1-download-archive-update1
-# NOTE: only subset of cuda-libraries-dev to reduce layer sizes
-RUN export CUDA_VER=10.1.168-1 \
-  && export CUDA_RPM=cuda-repo-rhel7-${CUDA_VER}.x86_64.rpm \
-  && wget -q "https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/${CUDA_RPM}" \
-  && rpm --install ${CUDA_RPM} \
-  && yum clean all \
-  # https://forums.developer.nvidia.com/t/updating-the-cuda-linux-gpg-repository-key/212897/10
-  # https://github.com/NVIDIA/cuda-repo-management/issues/4
+# CUDA https://developer.nvidia.com/cuda-11-7-1-download-archive
+# NOTE: only subset of cuda-libraries-devel to reduce layer sizes
+RUN export CUDA_VER=11-7 \
   && yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo \
-  # https://codingbee.net/uncategorized/yum-error-public-key-for-rpm-is-not-installed
+  && yum clean all \
   && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA http://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/D42D0685.pub \
   && rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA \
   && yum -y install \
-     cuda-compiler-10-1 \
-  `# cuda-libraries-dev-10-1` \
-     cuda-cudart-dev-10-1 \
-     cuda-cufft-dev-10-1 \
-     cuda-cusolver-dev-10-1 \
-     cuda-cusparse-dev-10-1 \
-     libcublas-devel-10-2 \
-  && ln -s cuda-10.1 /usr/local/cuda \
+     cuda-compiler-${CUDA_VER} \
+     cuda-cudart-devel-${CUDA_VER} \
+  `# cuda-libraries-devel` \
+     libcublas-devel-${CUDA_VER} \
+     libcufft-devel-${CUDA_VER} \
+     libcusolver-devel-${CUDA_VER} \
+     libcusparse-devel-${CUDA_VER} \
   && yum clean all \
-  && rm ${CUDA_RPM} \
-  `# libcublas installed to 10.2, move to 10.1` \
-  && mv /usr/local/cuda-10.2/targets/x86_64-linux/include/* /usr/local/cuda-10.1/targets/x86_64-linux/include/ \
-  && mv /usr/local/cuda-10.2/targets/x86_64-linux/lib/stubs/* /usr/local/cuda-10.1/targets/x86_64-linux/lib/stubs/ \
-  && rmdir /usr/local/cuda-10.2/targets/x86_64-linux/lib/stubs/ \
-  && mv /usr/local/cuda-10.2/targets/x86_64-linux/lib/* /usr/local/cuda-10.1/targets/x86_64-linux/lib/ \
-  && rm -rf /usr/local/cuda-10.2 \
-  && unset CUDA_VER && unset CUDA_RPM
+  && unset CUDA_VER
 ENV PATH=$PATH:/usr/local/cuda/bin
 # dotnet
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm \
