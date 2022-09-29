@@ -91,7 +91,7 @@ RUN export CHR_VER=94.0.4606.81 \
   && yum clean all \
   && unset CHR_VER
 # externpro
-ENV XP_VER=22.04
+ENV XP_VER=22.05
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
