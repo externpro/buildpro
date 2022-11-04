@@ -1,4 +1,4 @@
-set(webpro_REV 22.12)
-set(internpro_REV 22.06)
+set(webpro_REV 22.13)
+set(internpro_REV 22.07)
 set(PluginSDK_REV v3.4.4.0)
-set(CRTOOL_REV "22.02")
+set(CRTOOL_REV "22.03")
