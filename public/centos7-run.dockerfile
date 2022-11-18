@@ -21,6 +21,8 @@ RUN yum -y update \
      unixODBC \
      wget \
      which \
+     xeyes \
+     Xvfb \
   && yum clean all
 # cmake
 RUN export CMK_VER=3.24.2 \

@@ -15,6 +15,7 @@ RUN yum -y update \
      rpm-build \
      unixODBC-devel \
      xeyes \
+     Xvfb \
      https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
   && yum clean all
 RUN yum -y update \
