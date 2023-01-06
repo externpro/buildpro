@@ -28,7 +28,7 @@ RUN yum -y update \
      devtoolset-7-libasan-devel `#scl` \
      devtoolset-7-libtsan-devel `#scl` \
      devtoolset-7-gdb `#scl` \
-     git224 `#ius.io` \
+     git236 `#ius.io` \
      rh-python36 `#scl` \
   && echo "exclude=libtsan" >> /etc/yum.conf \
   && yum clean all
