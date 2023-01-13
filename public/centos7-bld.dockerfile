@@ -7,6 +7,7 @@ USER 0
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
+     cppcheck \
      ghostscript `#LaTeX` \
      gperftools \
      graphviz \
@@ -16,14 +17,23 @@ RUN yum -y update \
      unixODBC-devel \
      xeyes \
      Xvfb \
-     https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
   && yum clean all
+# lcov (and LaTeX?) deps
 RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
-     cppcheck `#epel` \
-     lcov `#epel` \
+     perl-Digest-MD5 \
+     perl-IO-Compress \
+     perl-JSON-XS \
+     perl-Module-Load-Conditional \
   && yum clean all
+# lcov
+RUN export LCOV_VER=1.16 \
+  && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
+  | tar -xz -C /usr/local/src \
+  && (cd /usr/local/src/lcov-${LCOV_VER} && make install > /dev/null) \
+  && rm -rf /usr/local/src/lcov-${LCOV_VER} \
+  && unset LCOV_VER
 # git-lfs
 RUN export LFS_VER=2.12.1 \
   && mkdir /usr/local/src/lfs \
