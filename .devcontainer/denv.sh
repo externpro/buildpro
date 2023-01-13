@@ -55,7 +55,7 @@ else
   env="${env}\nADDSRC2=_bld/*.sh"
 fi
 ##############################
-# NOTE: EXTERN_DIR and GCC_VER need to match public/centos7-pro.dockerfile
+# NOTE: EXTERN_DIR and GCC_VER need to match buildpro's public/centos7-pro.dockerfile
 EXTERN_DIR=/opt/extern
 GCC_VER=gcc931
 ##############################
