@@ -93,7 +93,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
   && yum clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # chrome
-RUN export CHR_VER=94.0.4606.81 \
+RUN export CHR_VER=108.0.5359.124 \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && yum -y update \
   && yum clean all \
