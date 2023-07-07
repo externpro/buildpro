@@ -31,6 +31,7 @@ Dockerfile text eol=lf
 *.svg text eol=lf
 *.ts text eol=lf
 *.txt text eol=lf
+*.type text eol=lf
 *.xml text eol=lf
 *.xpm text eol=lf
 *.xsd text eol=lf
