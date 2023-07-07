@@ -40,7 +40,7 @@ RUN export CHR_VER=108.0.5359.124 \
   && yum clean all \
   && unset CHR_VER
 # firefox
-RUN export FOX_VER=78.15.0esr \
+RUN export FOX_VER=102.13.0esr \
   && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
   | tar -xj -C /opt/ \
   && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
