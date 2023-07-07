@@ -101,6 +101,12 @@ RUN export CHR_VER=108.0.5359.124 \
      https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHR_VER}-1.x86_64.rpm \
   && yum clean all \
   && unset CHR_VER
+# firefox
+RUN export FOX_VER=102.13.0esr \
+  && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
+  | tar -xj -C /opt/ \
+  && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
+  && unset FOX_VER
 # externpro
 ENV XP_VER=23.02
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
