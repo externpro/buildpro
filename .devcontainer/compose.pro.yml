@@ -23,8 +23,7 @@ x-all-build-args: &all-build-args-alias
   TZ: ${TZ}
 services:
   bld:
-    <<: *all-alias
-    <<: *bld-alias
+    <<: [*all-alias, *bld-alias]
     build:
       context: .devcontainer
       dockerfile: centos7-pro.dockerfile

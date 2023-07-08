@@ -41,15 +41,13 @@ x-bld-build-args: &bld-build-args-alias
   CRTOOL: ${CRTOOL}
 services:
   bld:
-    <<: *all-alias
-    <<: *bld-alias
+    <<: [*all-alias, *bld-alias]
     build:
       context: .devcontainer
       dockerfile: centos7-bld.dockerfile
       network: host
       args:
-        <<: *all-build-args-alias
-        <<: *bld-build-args-alias
+        <<: [*all-build-args-alias, *bld-build-args-alias]
         ADDSRC1: ${ADDSRC1}
         ADDSRC2: ${ADDSRC2}
     hostname: ${HNAME}
@@ -57,8 +55,7 @@ services:
     profiles:
       - pbld
   run:
-    <<: *all-alias
-    <<: *run-alias
+    <<: [*all-alias, *run-alias]
     build:
       context: .devcontainer
       dockerfile: centos7-run.dockerfile
@@ -72,16 +69,13 @@ services:
     profiles:
       - prun
   dev:
-    <<: *all-alias
-    <<: *run-alias
-    <<: *bld-alias
+    <<: [*all-alias, *run-alias, *bld-alias]
     build:
       context: .devcontainer
       dockerfile: centos7-dev.dockerfile
       network: host
       args:
-        <<: *all-build-args-alias
-        <<: *bld-build-args-alias
+        <<: [*all-build-args-alias, *bld-build-args-alias]
     container_name: vantagedev
     hostname: vantage-dev
     ports:
