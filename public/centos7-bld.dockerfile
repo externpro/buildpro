@@ -93,7 +93,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
   && yum clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # chrome
-RUN export CHR_VER=108.0.5359.124 \
+RUN export CHR_VER=108.0.5359.98 \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && yum -y update \
   && yum clean all \
@@ -102,7 +102,7 @@ RUN export CHR_VER=108.0.5359.124 \
   && yum clean all \
   && unset CHR_VER
 # firefox
-RUN export FOX_VER=102.13.0esr \
+RUN export FOX_VER=102.6.0esr \
   && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
   | tar -xj -C /opt/ \
   && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
