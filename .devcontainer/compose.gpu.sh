@@ -13,8 +13,8 @@ function usage
 if [ $# -eq 0 ]; then
   buildreq
   init
-  docker-compose --profile pbld build
-  docker-compose run --rm bld
+  docker compose --profile pbld build
+  docker compose run --rm bld
   exit 0
 fi
 while getopts "bcgh" opt
@@ -23,7 +23,7 @@ do
     b )
       buildreq
       init
-      docker-compose --profile pbld --profile pgpu build
+      docker compose --profile pbld --profile pgpu build
       exit 0
       ;;
     c )
@@ -35,8 +35,8 @@ do
       gpureq
       buildreq
       init
-      docker-compose --profile pgpu build
-      docker-compose run --rm gpu
+      docker compose --profile pgpu build
+      docker compose run --rm gpu
       exit 0
       ;;
     h )

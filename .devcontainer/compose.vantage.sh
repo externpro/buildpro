@@ -13,8 +13,8 @@ function usage
 if [ $# -eq 0 ]; then
   buildreq
   init
-  docker-compose --profile pbld build
-  docker-compose run --rm bld
+  docker compose --profile pbld build
+  docker compose run --rm bld
   exit 0
 fi
 while getopts "bdhr" opt
@@ -23,25 +23,25 @@ do
     b )
       buildreq
       init
-      docker-compose --profile pbld --profile pdev --profile prun build
+      docker compose --profile pbld --profile pdev --profile prun build
       exit 0
       ;;
     d )
       buildreq
       runreq
       init
-      docker-compose --profile pdev up -d --build
+      docker compose --profile pdev up -d --build
       docker exec -it vantagedev bash
-      docker-compose --profile pdev down
+      docker compose --profile pdev down
       exit 0
       ;;
     r )
       buildreq
       runreq
       init
-      docker-compose --profile prun up -d --build
+      docker compose --profile prun up -d --build
       docker exec -it vantagerun bash
-      docker-compose --profile prun down
+      docker compose --profile prun down
       exit 0
       ;;
     h )

@@ -11,8 +11,8 @@ function usage
 if [ $# -eq 0 ]; then
   buildreq
   init
-  docker-compose --profile pbld build
-  docker-compose run --rm bld
+  docker compose --profile pbld build
+  docker compose run --rm bld
   exit 0
 fi
 while getopts "bh" opt
@@ -21,7 +21,7 @@ do
     b )
       buildreq
       init
-      docker-compose --profile pbld build
+      docker compose --profile pbld build
       exit 0
       ;;
     h )
