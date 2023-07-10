@@ -41,12 +41,14 @@ function gitcfgreq
 }
 function composereq
 {
-  if ! command -v docker-compose &>/dev/null; then
-    echo "docker-compose not installed, attempting (requires sudo)..."
-    sudo sh -c \
-     "curl -L 'https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)' \
-        -o /usr/local/bin/docker-compose \
-      && chmod +x /usr/local/bin/docker-compose"
+  if ! docker compose version &>/dev/null; then
+    echo "docker needs update to support 'docker compose', attempting (requires sudo)..."
+    sudo sh -c " \
+      mkdir -p /usr/local/lib/docker/cli-plugins \
+      && curl -SL 'https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-$(uname -s)-$(uname -m)' \
+           -o /usr/local/lib/docker/cli-plugins/docker-compose \
+      && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose \
+    "
     exit 1
   fi
 }
