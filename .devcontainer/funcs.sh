@@ -51,11 +51,6 @@ function composereq
     "
     exit 1
   fi
-  if command -v docker-compose &>/dev/null; then
-    echo "*** buildpro now utilizes 'docker compose' (compose plugin bundled with docker)"
-    echo "*** consider uninstalling docker-compose standalone, 'which docker-compose':"
-    echo "*** "$(which docker-compose)
-  fi
 }
 function buildreq
 {
