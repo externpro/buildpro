@@ -92,7 +92,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
      dotnet-sdk-3.1 \
   && yum clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
-# chrome
+# minimum chrome
 RUN export CHR_VER=108.0.5359.98 \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && yum -y update \
@@ -101,7 +101,7 @@ RUN export CHR_VER=108.0.5359.98 \
      https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHR_VER}-1.x86_64.rpm \
   && yum clean all \
   && unset CHR_VER
-# firefox
+# minimum firefox
 RUN export FOX_VER=102.6.0esr \
   && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
   | tar -xj -C /opt/ \
