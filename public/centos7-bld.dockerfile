@@ -111,7 +111,7 @@ RUN export FOX_VER=102.6.0esr \
 ENV XP_VER=23.02
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
-  && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-Linux.tar.xz \
+  && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
   && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
    | tar -xJ -C ${EXTERN_DIR} \
   && unset XP_DL

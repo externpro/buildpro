@@ -26,7 +26,7 @@ RUN yum -y update \
   && yum clean all
 # cmake
 RUN export CMK_VER=3.24.2 \
-  && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-Linux-x86_64.tar.gz \
+  && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-$(uname -s)-$(uname -m).tar.gz \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
