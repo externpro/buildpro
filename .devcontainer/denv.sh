@@ -42,7 +42,13 @@ cr8="${cr8}\necho \"saving docker image ${dkr}...\""
 cr8="${cr8}\ndocker save ${dkr} | pv -s \$(docker image inspect ${dkr} --format='{{.Size}}') | bzip2 > docker.${rel}.tar.bz2"
 ##############################
 isrhub=isrhub.usurf.usu.edu
-if command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null; then
+secure=isrhub.vip.local
+if command -v host >/dev/null && host ${secure} | grep "has address" >/dev/null; then
+  doisrhub=false
+  ver="docker image built offline"
+  env="${env}\nADDSRC1=_bld/*.tar.xz"
+  env="${env}\nADDSRC2=_bld/*.sh"
+elif command -v host >/dev/null && host ${isrhub} | grep "has address" >/dev/null; then
   urlPfx="https://${isrhub}"
   doisrhub=true
   ver="docker image built online"
