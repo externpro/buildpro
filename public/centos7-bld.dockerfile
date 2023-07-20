@@ -12,7 +12,7 @@ RUN yum -y update \
      gperftools \
      graphviz \
      iproute \
-     libSM-devel.x86_64 \
+     libSM-devel \
      rpm-build \
      unixODBC-devel \
      xeyes \

@@ -10,12 +10,12 @@ RUN yum -y update \
   && yum -y install --setopt=tsflags=nodocs \
      bzip2 `#firefox` \
      ffmpeg `#browser-video` \
-     gtk2.x86_64 `#old-wx` \
-     gtk3.x86_64 `#firefox,wx` \
+     gtk2 `#old-wx` \
+     gtk3 `#firefox,wx` \
      iproute \
-     libSM.x86_64 \
-     libXt.x86_64 `#firefox` \
-     mesa-libGLU.x86_64 \
+     libSM \
+     libXt `#firefox` \
+     mesa-libGLU \
      make \
      sudo \
      unixODBC \

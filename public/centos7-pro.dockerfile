@@ -9,9 +9,9 @@ RUN yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
      centos-release-scl \
-     gtk3-devel.x86_64 \
-     mesa-libGL-devel.x86_64 \
-     mesa-libGLU-devel.x86_64 \
+     gtk3-devel \
+     mesa-libGL-devel \
+     mesa-libGLU-devel \
      redhat-lsb-core \
      sudo \
      vim \
