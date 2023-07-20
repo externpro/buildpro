@@ -24,8 +24,7 @@ else
   display_env=${docker_host}:${display_screen}
   xauth_env=${xauth_file}
 fi
-env="COMPOSE_PROJECT_NAME=${PWD##*/}"
-env="${env}\nHNAME=${rel}"
+env="HNAME=${rel}"
 env="${env}\nUSERID=$(id -u ${USER})"
 env="${env}\nGROUPID=$(id -g ${USER})"
 if [[ -f /etc/timezone ]]; then
