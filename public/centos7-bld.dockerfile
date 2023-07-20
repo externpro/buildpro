@@ -69,9 +69,10 @@ ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # CUDA https://developer.nvidia.com/cuda-11-7-1-download-archive
 # NOTE: only subset of cuda-libraries-devel to reduce layer sizes
 RUN export CUDA_VER=11-7 \
-  && yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo \
+  && export CUDA_DL=https://developer.download.nvidia.com/compute/cuda/repos/rhel7/$(uname -m) \
+  && yum-config-manager --add-repo ${CUDA_DL}/cuda-rhel7.repo \
   && yum clean all \
-  && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA http://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/D42D0685.pub \
+  && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA ${CUDA_DL}/D42D0685.pub \
   && rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA \
   && yum -y install \
      cuda-compiler-${CUDA_VER} \
@@ -82,7 +83,7 @@ RUN export CUDA_VER=11-7 \
      libcusolver-devel-${CUDA_VER} \
      libcusparse-devel-${CUDA_VER} \
   && yum clean all \
-  && unset CUDA_VER
+  && unset CUDA_DL && unset CUDA_VER
 ENV PATH=$PATH:/usr/local/cuda/bin
 # dotnet
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm \
@@ -94,25 +95,25 @@ RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-p
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # minimum chrome
 RUN export CHR_VER=108.0.5359.98 \
+  && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
-     https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHR_VER}-1.x86_64.rpm \
+     https://dl.google.com/${CHR_DL} \
   && yum clean all \
-  && unset CHR_VER
+  && unset CHR_DL && unset CHR_VER
 # minimum firefox
 RUN export FOX_VER=102.6.0esr \
-  && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
-  | tar -xj -C /opt/ \
+  && export FOX_DL=pub/firefox/releases/${FOX_VER}/linux-$(uname -m)/en-US/firefox-${FOX_VER}.tar.bz2 \
+  && wget -qO- "https://ftp.mozilla.org/${FOX_DL}" | tar -xj -C /opt/ \
   && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
-  && unset FOX_VER
+  && unset FOX_DL && unset FOX_VER
 # externpro
 ENV XP_VER=23.02
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
-  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" \
-   | tar -xJ -C ${EXTERN_DIR} \
+  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" | tar -xJ -C ${EXTERN_DIR} \
   && unset XP_DL
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]

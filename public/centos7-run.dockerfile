@@ -32,19 +32,20 @@ RUN export CMK_VER=3.24.2 \
   && unset CMK_DL && unset CMK_VER
 # chrome
 RUN export CHR_VER=108.0.5359.98 \
+  && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && yum -y update \
   && yum clean all \
   && yum -y install --setopt=tsflags=nodocs \
-     https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHR_VER}-1.x86_64.rpm \
+     https://dl.google.com/${CHR_DL} \
   && yum clean all \
-  && unset CHR_VER
+  && unset CHR_DL && unset CHR_VER
 # firefox
 RUN export FOX_VER=102.6.0esr \
-  && wget -qO- "https://ftp.mozilla.org/pub/firefox/releases/${FOX_VER}/linux-x86_64/en-US/firefox-${FOX_VER}.tar.bz2" \
-  | tar -xj -C /opt/ \
+  && export FOX_DL=pub/firefox/releases/${FOX_VER}/linux-$(uname -m)/en-US/firefox-${FOX_VER}.tar.bz2 \
+  && wget -qO- "https://ftp.mozilla.org/${FOX_DL}" | tar -xj -C /opt/ \
   && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
-  && unset FOX_VER
+  && unset FOX_DL && unset FOX_VER
 # install database packages from yum repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN yum -y update \
