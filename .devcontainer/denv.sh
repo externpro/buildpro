@@ -81,7 +81,7 @@ function findVer
 ##############################
 wproVer="$(findVer 'set(webpro_REV' CMakeLists.txt */CMakeLists.txt */toplevel.cmake */*/toplevel.cmake */defaults.txt)"
 if [[ -n "${wproVer}" ]]; then
-  wproBase=webpro-${wproVer}-${GCC_VER}-64-Linux
+  wproBase=webpro-${wproVer}-${GCC_VER}-64-$(uname -s)
   if [[ ${wproVer} < "20.05.1" ]]; then
     if ${doisrhub}; then
       WEBPRO_DL="wget -q \"${urlPfx}/webpro/webpro/releases/download/${wproVer}/${wproBase}.sh\" \
@@ -102,7 +102,7 @@ env="${env}\nWEBPRO=${WEBPRO}"
 ##############################
 iproVer="$(findVer 'set(internpro_REV' CMakeLists.txt */toplevel.cmake */*/toplevel.cmake */defaults.txt)"
 if [[ -n "${iproVer}" ]] && ${doisrhub}; then
-  INTERNPRO_DL="wget ${urlPfx}/internpro/internpro/releases/download/${iproVer}/internpro-${iproVer}-${GCC_VER}-64-Linux.tar.xz"
+  INTERNPRO_DL="wget ${urlPfx}/internpro/internpro/releases/download/${iproVer}/internpro-${iproVer}-${GCC_VER}-64-$(uname -s).tar.xz"
   INTERNPRO="${INTERNPRO_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nINTERNPRO=${INTERNPRO}"
@@ -115,7 +115,7 @@ else
   pfx=SDL
 fi
 if [[ -n "${psdkVer}" ]] && ${doisrhub}; then
-  PLUGINSDK_DL="wget ${urlPfx}/PluginFramework/SDKSuper/releases/download/${psdkVer}/${pfx}PluginSDK-${psdkVer}-${GCC_VER}-64-Linux.tar.xz"
+  PLUGINSDK_DL="wget ${urlPfx}/PluginFramework/SDKSuper/releases/download/${psdkVer}/${pfx}PluginSDK-${psdkVer}-${GCC_VER}-64-$(uname -s).tar.xz"
   PLUGINSDK="${PLUGINSDK_DL} -qO- | tar -xJ -C ${EXTERN_DIR}"
 fi
 env="${env}\nPLUGINSDK=${PLUGINSDK}"
