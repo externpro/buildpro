@@ -1,4 +1,4 @@
-FROM ghcr.io/smanders/buildpro/rocky85-pro:latest
+FROM ghcr.io/smanders/buildpro/rocky9-pro:latest
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -13,7 +13,6 @@ RUN dnf -y update \
      iproute \
      libSM-devel \
      rpm-build \
-     unixODBC-devel \
      Xvfb \
   && dnf clean all
 # PowerTools, EPEL Repositories
@@ -22,18 +21,19 @@ RUN dnf -y update \
   && dnf -y install --setopt=tsflags=nodocs \
      dnf-plugins-core \
      epel-release \
-  && dnf config-manager --set-enabled powertools \
+  && dnf config-manager --set-enabled devel \
   && dnf -y update \
   && dnf -y install --setopt=tsflags=nodocs \
      cppcheck \
      gperftools \
-     xeyes \
+     unixODBC-devel \
   && dnf clean all
 # lcov (and LaTeX?) deps
 RUN dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
      perl-Digest-MD5 \
+     perl-File-Copy \
      perl-IO-Compress \
      perl-JSON-XS \
      perl-Module-Load-Conditional \

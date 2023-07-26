@@ -26,7 +26,7 @@ services:
     <<: [*all-alias, *bld-alias]
     build:
       context: .devcontainer
-      dockerfile: rocky85-pro.dockerfile
+      dockerfile: rocky9-pro.dockerfile
       network: host
       args:
         <<: *all-build-args-alias

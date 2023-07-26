@@ -1,4 +1,4 @@
-FROM ghcr.io/smanders/buildpro/rocky85-bld:latest
+FROM ghcr.io/smanders/buildpro/rocky9-bld:latest
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]

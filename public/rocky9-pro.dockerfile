@@ -1,4 +1,4 @@
-FROM ghcr.io/smanders/rockylinux:8.5
+FROM ghcr.io/smanders/rockylinux:9
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -14,7 +14,6 @@ RUN dnf -y update \
      mesa-libGL-devel \
      mesa-libGLU-devel \
      python3 \
-     redhat-lsb-core \
      sudo \
      vim \
      wget \
@@ -22,13 +21,12 @@ RUN dnf -y update \
 RUN dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
-     gcc-toolset-9-binutils \
-     gcc-toolset-9-gcc \
-     gcc-toolset-9-gcc-c++ \
-     gcc-toolset-9-gdb \
-     gcc-toolset-9-libasan-devel \
-     gcc-toolset-9-libtsan-devel \
-     gcc-toolset-9-make \
+     gcc-toolset-12-binutils \
+     gcc-toolset-12-gcc \
+     gcc-toolset-12-gcc-c++ \
+     gcc-toolset-12-gdb \
+     gcc-toolset-12-libasan-devel \
+     gcc-toolset-12-libtsan-devel \
   && dnf clean all
 # cmake
 RUN export CMK_VER=3.24.2 \
@@ -40,8 +38,8 @@ RUN export CMK_VER=3.24.2 \
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
 # environment: gcc version, enable scl binaries
-ENV GCC_VER=gcc921 \
-    PATH="/opt/rh/gcc-toolset-9/root/usr/bin:${PATH}" \
+ENV GCC_VER=gcc1221 \
+    PATH="/opt/rh/gcc-toolset-12/root/usr/bin:${PATH}" \
     EXTERN_DIR=/opt/extern \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \

@@ -1,2 +1,2 @@
 unset BASH_ENV PROMPT_COMMAND ENV
-[ -d /opt/rh/gcc-toolset-9 ] && source scl_source enable gcc-toolset-9
+[ -d /opt/rh/gcc-toolset-12 ] && source scl_source enable gcc-toolset-12
