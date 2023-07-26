@@ -1,32 +1,43 @@
-FROM ghcr.io/smanders/buildpro/centos7-pro:23.03.1
+FROM ghcr.io/smanders/buildpro/rocky85-pro:latest
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
-# yum repositories
-RUN yum -y update \
-  && yum clean all \
-  && yum -y install --setopt=tsflags=nodocs \
-     cppcheck \
+# https://rockylinux.pkgs.org https://rhel.pkgs.org
+# AppStream, BaseOS Repositories
+RUN dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
      ghostscript `#LaTeX` \
-     gperftools \
      graphviz \
      iproute \
      libSM-devel \
      rpm-build \
      unixODBC-devel \
-     xeyes \
      Xvfb \
-  && yum clean all
+  && dnf clean all
+# PowerTools, EPEL Repositories
+RUN dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
+     dnf-plugins-core \
+     epel-release \
+  && dnf config-manager --set-enabled powertools \
+  && dnf -y update \
+  && dnf -y install --setopt=tsflags=nodocs \
+     cppcheck \
+     gperftools \
+     xeyes \
+  && dnf clean all
 # lcov (and LaTeX?) deps
-RUN yum -y update \
-  && yum clean all \
-  && yum -y install --setopt=tsflags=nodocs \
+RUN dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
      perl-Digest-MD5 \
      perl-IO-Compress \
      perl-JSON-XS \
      perl-Module-Load-Conditional \
-  && yum clean all
+  && dnf clean all
 # lcov
 RUN export LCOV_VER=1.16 \
   && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
@@ -70,11 +81,11 @@ ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
 # NOTE: only subset of cuda-libraries-devel to reduce layer sizes
 RUN export CUDA_VER=11-7 \
   && export CUDA_DL=https://developer.download.nvidia.com/compute/cuda/repos/rhel7/$(uname -m) \
-  && yum-config-manager --add-repo ${CUDA_DL}/cuda-rhel7.repo \
-  && yum clean all \
+  && dnf config-manager --add-repo ${CUDA_DL}/cuda-rhel7.repo \
+  && dnf clean all \
   && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA ${CUDA_DL}/D42D0685.pub \
   && rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA \
-  && yum -y install \
+  && dnf -y install \
      cuda-compiler-${CUDA_VER} \
      cuda-cudart-devel-${CUDA_VER} \
   `# cuda-libraries-devel` \
@@ -82,26 +93,26 @@ RUN export CUDA_VER=11-7 \
      libcufft-devel-${CUDA_VER} \
      libcusolver-devel-${CUDA_VER} \
      libcusparse-devel-${CUDA_VER} \
-  && yum clean all \
+  && dnf clean all \
   && unset CUDA_DL && unset CUDA_VER
 ENV PATH=$PATH:/usr/local/cuda/bin
 # dotnet
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm \
-  && yum -y update \
-  && yum clean all \
-  && yum -y install --setopt=tsflags=nodocs \
+  && dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
      dotnet-sdk-3.1 \
-  && yum clean all
+  && dnf clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # minimum chrome
 RUN export CHR_VER=108.0.5359.98 \
   && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
-  && yum -y update \
-  && yum clean all \
-  && yum -y install --setopt=tsflags=nodocs \
+  && dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
      https://dl.google.com/${CHR_DL} \
-  && yum clean all \
+  && dnf clean all \
   && unset CHR_DL && unset CHR_VER
 # minimum firefox
 RUN export FOX_VER=102.6.0esr \

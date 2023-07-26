@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
-rel=$(grep FROM .devcontainer/centos7-bld.dockerfile)
-dkr=$(echo "${rel}" | cut -d" " -f2) # ghcr.io/smanders/buildpro/centos7-bld:TAG
+rel=$(grep FROM .devcontainer/rocky85-bld.dockerfile)
+dkr=$(echo "${rel}" | cut -d" " -f2) # ghcr.io/smanders/buildpro/rocky85-bld:TAG
 hst=$(echo "${dkr}" | cut -d/ -f1) # ghcr.io
 rel=$(echo "${rel}" | cut -d- -f2) # bld:TAG
 rel=${rel//:}
