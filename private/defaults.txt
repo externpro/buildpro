@@ -1,6 +1,3 @@
-set(webpro_REV 23.08)
-set(internpro_REV 23.04)
-set(PluginSDK_REV v3.4.6.0)
 set(CRTOOL_REV "22.03")
 # https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable (drop -1 at end)
 set(laterChrome_VER 114.0.5735.198)
