@@ -10,6 +10,7 @@ do
   pkg=ghcr.io/smanders/buildpro/${img}:${gtag}
   time docker image build \
     --network=host \
+    --build-arg BPROTAG=${gtag} \
     --file ${img}.dockerfile \
     --tag ghcr.io/smanders/buildpro/${img}:latest \
     --tag ${pkg} .
