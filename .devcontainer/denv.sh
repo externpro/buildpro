@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
+source ./.devcontainer/funcs.sh
 rel=$(grep FROM .devcontainer/centos7-bld.dockerfile)
 dkr=$(echo "${rel}" | cut -d" " -f2) # ghcr.io/smanders/buildpro/centos7-bld:TAG
 hst=$(echo "${dkr}" | cut -d/ -f1) # ghcr.io
@@ -69,20 +70,6 @@ fi
 # NOTE: EXTERN_DIR and GCC_VER need to match buildpro's public/centos7-pro.dockerfile
 EXTERN_DIR=/opt/extern
 GCC_VER=gcc931
-##############################
-function findVer
-{
-  local val=$1
-  shift
-  for loc in "$@"; do
-    if [ -f $loc ]; then
-      local gver=`grep "$val" $loc`
-      [[ ! -z "$gver" ]] && break
-    fi
-  done
-  local fver=`echo ${gver} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
-  echo "$fver"
-}
 ##############################
 wproVer="$(findVer 'set(webpro_REV' CMakeLists.txt */CMakeLists.txt */toplevel.cmake */*/toplevel.cmake */defaults.txt)"
 if [[ -n "${wproVer}" ]]; then

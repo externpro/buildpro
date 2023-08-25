@@ -6,6 +6,19 @@ function init
     cat .env
   fi
 }
+function findVer
+{
+  local val=$1
+  shift
+  for loc in "$@"; do
+    if [ -f $loc ]; then
+      local gver=`grep "$val" $loc`
+      [[ ! -z "$gver" ]] && break
+    fi
+  done
+  local fver=`echo ${gver} | awk '{$1=$1};1' | cut -d " " -f2 | cut -d ")" -f1`
+  echo "$fver"
+}
 function gitlfsreq
 {
   if ! command -v git-lfs &>/dev/null; then
