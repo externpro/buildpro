@@ -11,6 +11,7 @@ do
   awk -v r="${img}" -v t="${gtag}" '{gsub(/%BP_REPO%/,r);gsub(/%BP_TAG%/,t)} 1' bit.head.dockerfile > ${dfile}
   if [[ ${img} == *"-bld"* ]]; then
     cat bit.offline.dockerfile >> ${dfile}
+    cat bit.browsers.dockerfile >> ${dfile}
     cat bit.isrhub.dockerfile >> ${dfile}
     cat bit.user.dockerfile >> ${dfile}
   elif [[ ${img} == *"-run"* ]]; then
