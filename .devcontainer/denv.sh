@@ -5,7 +5,7 @@ source ./.devcontainer/funcs.sh
 BPROTAG="$(findVer 'set(buildpro_REV' */toplevel.cmake */*/toplevel.cmake)"
 if [ -z ${BPROTAG} ]; then
   BPROTAG=`git describe --tags`
-  if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then
+  if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${BPROTAG} == *"-g"* ]]; then
     BPROTAG=latest
   fi
 fi
