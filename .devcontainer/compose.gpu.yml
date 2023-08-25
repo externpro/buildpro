@@ -19,6 +19,7 @@ x-bld: &bld-alias
     - ~/.gitconfig:/home/${USER}/.gitconfig
     - /mnt/gitRepo:/mnt/gitRepo
 x-all-build-args: &all-build-args-alias
+  BPROTAG: ${BPROTAG}
   USERNAME: ${USER}
   USERID: ${USERID}
   GROUPID: ${GROUPID}

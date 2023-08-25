@@ -17,6 +17,7 @@ x-bld: &bld-alias
     - ~/.ssh:/home/${USER}/.ssh
     - ~/.gitconfig:/home/${USER}/.gitconfig
 x-all-build-args: &all-build-args-alias
+  BPROTAG: ${BPROTAG}
   USERNAME: ${USER}
   USERID: ${USERID}
   GROUPID: ${GROUPID}

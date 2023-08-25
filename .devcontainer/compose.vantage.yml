@@ -30,6 +30,7 @@ x-run: &run-alias
     - ..:/bpvol/workspace
     - /tmp/.X11-unix:/tmp/.X11-unix
 x-all-build-args: &all-build-args-alias
+  BPROTAG: ${BPROTAG}
   USERNAME: ${USER}
   USERID: ${USERID}
   GROUPID: ${GROUPID}
