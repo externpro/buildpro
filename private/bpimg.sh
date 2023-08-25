@@ -8,7 +8,7 @@ fi
 for img in centos7-run centos7-pro centos7-bld centos7-dev
 do
   dfile=../.devcontainer/${img}.dockerfile
-  awk -v r="${img}" -v t="${gtag}" '{gsub(/%BP_REPO%/,r);gsub(/%BP_TAG%/,t)} 1' bit.head.dockerfile > ${dfile}
+  awk -v r="${img}" '{gsub(/%BP_REPO%/,r)} 1' bit.head.dockerfile > ${dfile}
   if [[ ${img} == *"-bld"* ]]; then
     cat bit.offline.dockerfile >> ${dfile}
     cat bit.browsers.dockerfile >> ${dfile}
