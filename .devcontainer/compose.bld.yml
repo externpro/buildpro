@@ -14,12 +14,14 @@ x-bld: &bld-alias
     - .:/bpvol/${COMPOSE_PROJECT_NAME}
     - ..:/bpvol/workspace
     - /tmp/.X11-unix:/tmp/.X11-unix
+    - /var/run/docker.sock:/var/run/docker.sock
     - ~/.ssh:/home/${USER}/.ssh
     - ~/.gitconfig:/home/${USER}/.gitconfig
 x-all-build-args: &all-build-args-alias
   USERNAME: ${USER}
   USERID: ${USERID}
   GROUPID: ${GROUPID}
+  DOCKGID: ${DOCKGID}
   TZ: ${TZ}
 x-bld-build-args: &bld-build-args-alias
   WEBPRO: ${WEBPRO}

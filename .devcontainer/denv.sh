@@ -27,6 +27,12 @@ fi
 env="HNAME=${rel}"
 env="${env}\nUSERID=$(id -u ${USER})"
 env="${env}\nGROUPID=$(id -g ${USER})"
+dockerGID=$(stat -c %g /var/run/docker.sock)
+if $(getent group ${dockerGID} | grep -q ${USER}); then
+  env="${env}\nDOCKGID=${dockerGID}"
+else
+  env="${env}\nDOCKGID="
+fi
 if [[ -f /etc/timezone ]]; then
   env="${env}\nTZ=$(head -n 1 /etc/timezone)"
 elif command -v timedatectl >/dev/null; then

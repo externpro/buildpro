@@ -20,6 +20,7 @@ x-all-build-args: &all-build-args-alias
   USERNAME: ${USER}
   USERID: ${USERID}
   GROUPID: ${GROUPID}
+  DOCKGID: ${DOCKGID}
   TZ: ${TZ}
 services:
   bld:
