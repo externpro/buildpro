@@ -2,12 +2,19 @@
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
 source ./.devcontainer/funcs.sh
-rel=$(grep FROM .devcontainer/centos7-bld.dockerfile)
-dkr=$(echo "${rel}" | cut -d" " -f2) # ghcr.io/smanders/buildpro/centos7-bld:TAG
+BPROTAG="$(findVer 'set(buildpro_REV' */toplevel.cmake */*/toplevel.cmake)"
+if [ -z ${BPROTAG} ]; then
+  BPROTAG=`git describe --tags`
+  if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then
+    BPROTAG=latest
+  fi
+fi
+dkr="$(findVer 'FROM' .devcontainer/centos7-bld.dockerfile .devcontainer/centos7-pro.dockerfile)"
+dkr=$(eval echo ${dkr}) # ghcr.io/smanders/buildpro/centos7-[bld|pro]:TAG, where TAG=${BPROTAG}
 hst=$(echo "${dkr}" | cut -d/ -f1) # ghcr.io
-rel=$(echo "${rel}" | cut -d- -f2) # bld:TAG
-rel=${rel//:}
-rel=bp${rel/./-}
+rel=$(echo "${dkr}" | cut -d- -f2) # bld:TAG
+rel=${rel//:} # parameter expansion substitution
+rel=bp${rel//./-}
 display_host=$(echo ${DISPLAY} | cut -d: -f1)
 if [[ -z "${display_host}" ]]; then
   display_env=${DISPLAY}
@@ -25,7 +32,8 @@ else
   display_env=${docker_host}:${display_screen}
   xauth_env=${xauth_file}
 fi
-env="HNAME=${rel}"
+env="BPROTAG=${BPROTAG}"
+env="${env}\nHNAME=${rel}"
 env="${env}\nUSERID=$(id -u ${USER})"
 env="${env}\nGROUPID=$(id -g ${USER})"
 dockerGID=$(stat -c %g /var/run/docker.sock)
