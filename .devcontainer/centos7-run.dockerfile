@@ -23,7 +23,10 @@ RUN if [ ${USERID:-0} -ne 0 ] && [ ${GROUPID:-0} -ne 0 ]; then \
 ENV USER=${USERNAME}
 # docker group
 ARG DOCKGID
-RUN if [ ${DOCKGID:-0} -ne 0 ] && [ -x "$(command -v docker)" ]; then usermod -aG ${DOCKGID} ${USERNAME}; fi
+RUN if [ ${DOCKGID:-0} -ne 0 ] && [ -x "$(command -v docker)" ]; then \
+  getent group ${DOCKGID} || groupadd -g ${DOCKGID} bpdocker; \
+  usermod -aG ${DOCKGID} ${USERNAME}; \
+  fi
 # run container as non-root user from here onwards
 # so that build output files have the correct owner
 USER ${USERNAME}
