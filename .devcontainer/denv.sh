@@ -2,7 +2,7 @@
 cd "$( dirname "$0" )"
 pushd .. > /dev/null
 source ./.devcontainer/funcs.sh
-BPROTAG="$(findVer 'set(buildpro_REV' */toplevel.cmake */*/toplevel.cmake)"
+BPROTAG="$(findVer 'set(buildpro_REV' */toplevel.cmake */*/toplevel.cmake CMakeLists.txt)"
 if [ -z ${BPROTAG} ]; then
   BPROTAG=`git describe --tags`
   if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${BPROTAG} == *"-g"* ]]; then
