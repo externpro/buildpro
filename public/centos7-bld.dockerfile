@@ -49,7 +49,7 @@ RUN export LFS_VER=2.12.1 \
 RUN export DXY_VER=1.8.13 \
   && wget -qO- --no-check-certificate \
   "https://downloads.sourceforge.net/project/doxygen/rel-${DXY_VER}/doxygen-${DXY_VER}.linux.bin.tar.gz" \
-  | tar -xz -C /usr/local/ \
+  | tar --no-same-owner -xz -C /usr/local/ \
   && mv /usr/local/doxygen-${DXY_VER}/bin/doxygen /usr/local/bin/ \
   && rm -rf /usr/local/doxygen-${DXY_VER}/ \
   && unset DXY_VER
@@ -132,6 +132,6 @@ ENV XP_VER=23.03
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
-  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" | tar -xJ -C ${EXTERN_DIR} \
+  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" | tar --no-same-owner -xJ -C ${EXTERN_DIR} \
   && unset XP_DL
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
