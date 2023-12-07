@@ -1,5 +1,5 @@
 ARG BPROTAG
-FROM ghcr.io/smanders/buildpro/centos7-dev:${BPROTAG}
+FROM ghcr.io/smanders/buildpro/rocky85-dev:${BPROTAG}
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
 SHELL ["/bin/bash", "-c"]
