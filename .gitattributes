@@ -28,6 +28,7 @@ Dockerfile text eol=lf
 *.proto text eol=lf
 *.rc text eol=lf
 *.rch text eol=lf
+*.scss text eol=lf
 *.sh text eol=lf
 *.svg text eol=lf
 *.ts text eol=lf
@@ -37,6 +38,7 @@ Dockerfile text eol=lf
 *.xpm text eol=lf
 *.xsd text eol=lf
 *.yml text eol=lf
+.*rc text eol=lf
 ####################
 *.csproj.in text eol=crlf
 *.filters text eol=crlf
