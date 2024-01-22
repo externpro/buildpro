@@ -42,7 +42,7 @@
 
 #### X11 forwarding
 * if you're running `./docker-compose.sh` on a remote system you've connected to via `ssh -X` or `ssh -Y`
-  the [denv.sh](.devcontainer/denv.sh) script should automatically detect this case and will do additional
+  the [denv.sh](denv.sh) script should automatically detect this case and will do additional
   configuration and populate environment variables so that X display from the running container will (hopefully)
   work as expected
 * NOTE: the `-bld` images include the `xeyes` package, which can be run (`$ xeyes &`) from the
@@ -63,9 +63,9 @@
 * the `/etc/sysctl.d/README` explains the directory's relation to `/etc/sysctl.conf` and mentions
   > After making any changes, please run "service procps start"
   * I believe they meant `restart` instead of `start`
-* the script [check-bpnet-perform.sh](.devcontainer/check-bpnet-perform.sh) will help
+* the script [check-bpnet-perform.sh](check-bpnet-perform.sh) will help
   to check the values before applying the changes in
-  [90-bpnet-perform.conf](.devcontainer/90-bpnet-perform.conf) -- in case you'd like to
+  [90-bpnet-perform.conf](90-bpnet-perform.conf) -- in case you'd like to
   ever go back to the original, default values
   ```
   $ ./check-bpnet-perform.sh
@@ -95,7 +95,7 @@
   net.ipv4.udp_wmem_min = 8388608
   net.ipv4.udp_mem = 8388608	8388608	8388608
   ```
-* the bash function `runreq` in [funcs.sh](.devcontainer/funcs.sh) attempts to automate this
+* the bash function `runreq` in [funcs.sh](funcs.sh) attempts to automate this
 
 #### database
 * https://dev.mysql.com/doc/refman/8.0/en/docker-mysql-getting-started.html
