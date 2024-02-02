@@ -8,7 +8,6 @@ USER 0
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN dnf -y update \
   && dnf clean all \
-  # https://codingbee.net/uncategorized/yum-error-public-key-for-rpm-is-not-installed
   && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql https://repo.mysql.com/RPM-GPG-KEY-mysql-2022 \
   && rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql \
   && dnf -y install --setopt=tsflags=nodocs \
