@@ -8,7 +8,7 @@ USER 0
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN dnf -y update \
   && dnf clean all \
-  && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql https://repo.mysql.com/RPM-GPG-KEY-mysql-2022 \
+  && wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 \
   && rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-mysql \
   && dnf -y install --setopt=tsflags=nodocs \
      https://repo.mysql.com/mysql80-community-release-el8-9.noarch.rpm \
