@@ -1,6 +1,6 @@
-FROM ghcr.io/smanders/centos:7
+FROM ghcr.io/externpro/centos:7
 LABEL maintainer="smanders"
-LABEL org.opencontainers.image.source https://github.com/smanders/buildpro
+LABEL org.opencontainers.image.source https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
 VOLUME /bpvol
