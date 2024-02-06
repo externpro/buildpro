@@ -31,7 +31,7 @@ RUN dnf -y update \
      gcc-toolset-9-make \
   && dnf clean all
 # cmake
-RUN export CMK_VER=3.24.2 \
+RUN export CMK_VER=3.28.3 \
   && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-$(uname -s)-$(uname -m).tar.gz \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
