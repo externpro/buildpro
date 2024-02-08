@@ -138,7 +138,7 @@ RUN export FOX_VER=102.6.0esr \
   && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
   && unset FOX_DL && unset FOX_VER
 # externpro
-ENV XP_VER=24.01
+ENV XP_VER=24.02
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
