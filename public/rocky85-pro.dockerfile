@@ -29,6 +29,10 @@ RUN dnf -y update \
      gcc-toolset-9-libasan-devel \
      gcc-toolset-9-libtsan-devel \
      gcc-toolset-9-make \
+  && dnf config-manager --set-enabled powertools \
+  && dnf -y update \
+  && dnf -y install --setopt=tsflags=nodocs \
+     ninja-build \
   && dnf clean all
 # cmake
 RUN export CMK_VER=3.28.3 \
