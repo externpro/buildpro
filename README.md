@@ -1,7 +1,6 @@
 # buildpro
 
-build containers for [externpro](https://github.com/smanders/externpro)
-and projects that use externpro
+build images for projects that use [externpro](https://github.com/externpro/externpro)
 
 ## Table of Contents
 - [Getting started with docker](#getting-started-with-docker)
@@ -9,6 +8,7 @@ and projects that use externpro
   - [verify docker installation and configuration](#verify-docker-installation-and-configuration)
   - [short docker tutorial](#short-docker-tutorial)
   - [useful docker commands](#useful-docker-commands)
+- [buildpro packages](#buildpro-packages)
 - [Using buildpro](#using-buildpro)
 
 ## Getting started with docker
@@ -72,11 +72,19 @@ $ docker inspect <container_name> | grep -i ipaddress
 $ docker exec -it <container_name> bash
 ```
 
+## buildpro packages
+
+* the [public/ghimg.sh](public/ghimg.sh) script builds and publishes the public
+  [buildpro packages](https://github.com/orgs/externpro/packages?repo_name=buildpro)
+
 ## Using buildpro
 
-To use buildpro docker images
-* copy the contents of the [.devcontainer](.devcontainer) directory to a `.devcontainer` directory
-  in the root of the project wishing to use buildpro images
+To use buildpro images
+* add [externpro](https://github.com/externpro/externpro) as a submodule to the project wanting
+  to leverage buildpro images, optimally to .devcontainer
+  ```
+  git submodule add https://github.com/externpro/externpro .devcontainer
+  ```
 * create symbolic links to the `compose.*.[sh|yml]` file pair suitable for the project
   ```
   ln -s .devcontainer/compose.bld.sh docker-compose.sh
