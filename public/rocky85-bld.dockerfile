@@ -13,6 +13,7 @@ RUN dnf -y update \
      graphviz \
      iproute \
      libSM-devel \
+     postgresql-devel \
      rpm-build \
      unixODBC-devel \
      Xvfb \
