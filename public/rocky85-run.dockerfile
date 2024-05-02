@@ -22,8 +22,18 @@ RUN dnf -y update \
      unixODBC \
      wget \
      which \
-     xeyes \
      Xvfb \
+  && dnf clean all
+# PowerTools, EPEL Repositories
+RUN dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
+     dnf-plugins-core \
+     epel-release \
+  && dnf config-manager --set-enabled powertools \
+  && dnf -y update \
+  && dnf -y install --setopt=tsflags=nodocs \
+     xeyes \
   && dnf clean all
 # cmake
 RUN export CMK_VER=3.28.3 \
