@@ -21,7 +21,6 @@ RUN dnf -y update \
      sudo \
      unixODBC \
      wget \
-     which \
      Xvfb \
   && dnf clean all
 # PowerTools, EPEL Repositories
