@@ -10,7 +10,6 @@ RUN dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
      bzip2 `#firefox` \
-     ffmpeg `#browser-video` \
      gtk2 `#old-wx` \
      gtk3 `#firefox,wx` \
      iproute \
@@ -30,8 +29,10 @@ RUN dnf -y update \
      dnf-plugins-core \
      epel-release \
   && dnf config-manager --set-enabled powertools \
+  && dnf config-manager --add-repo=https://negativo17.org/repos/epel-multimedia.repo \
   && dnf -y update \
   && dnf -y install --setopt=tsflags=nodocs \
+     ffmpeg `#browser-video` \
      xeyes \
   && dnf clean all
 # cmake
