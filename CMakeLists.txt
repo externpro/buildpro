@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.28)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/.devcontainer/cmake)
+include(preproject)
+project(buildpro)
+set(externpro_REV 24.03)
+find_package(externpro REQUIRED)
+include(flags)
+xpFindPkg(PKGS fftw dde_lib pluginsdk sdvideo ng_gdp)
