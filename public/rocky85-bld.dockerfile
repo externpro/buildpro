@@ -115,11 +115,11 @@ RUN export DOCK_VER=24.0.5-1.el8 \
   && if [ $(getent group docker) ]; then groupdel docker; fi \
   && unset DOCK_VER
 # dotnet
-RUN rpm -Uvh https://packages.microsoft.com/config/centos/8/packages-microsoft-prod.rpm \
+RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-prod.rpm \
   && dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
-     dotnet-sdk-3.1 \
+     dotnet-sdk-8.0 \
   && dnf clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 RUN dotnet tool install dotnet-reportgenerator-globaltool --version 5.1.26 --global
