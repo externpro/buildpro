@@ -50,7 +50,9 @@ Dockerfile text eol=lf
 *.vcproj text eol=crlf
 *.vcxproj text eol=crlf
 ####################
+*.bin binary
 *.bmp binary
+*.db binary
 *.doc binary
 *.eap binary
 *.gif binary
