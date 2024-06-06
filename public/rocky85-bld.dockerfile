@@ -119,6 +119,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-pr
   && dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
+     dotnet-sdk-3.1 \
      dotnet-sdk-8.0 \
   && dnf clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
