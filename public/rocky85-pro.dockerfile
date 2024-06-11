@@ -6,6 +6,8 @@ USER 0
 VOLUME /bpvol
 # dnf repositories
 RUN dnf -y update \
+  && dnf clean all
+RUN dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
      coreutils-common \
