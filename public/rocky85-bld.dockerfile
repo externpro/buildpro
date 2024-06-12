@@ -123,7 +123,6 @@ RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-pr
      dotnet-sdk-8.0 \
   && dnf clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
-RUN dotnet tool install dotnet-reportgenerator-globaltool --version 5.1.26 --global
 # minimum chrome
 RUN export CHR_VER=115.0.5790.110 \
   && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
