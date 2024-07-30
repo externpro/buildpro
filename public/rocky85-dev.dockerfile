@@ -4,6 +4,12 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+# libnsl for centos-built executables that depend on activemq/apr
+RUN dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
+     libnsl \
+  && dnf clean all
 # install database packages from dnf repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN dnf -y update \

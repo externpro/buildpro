@@ -13,6 +13,7 @@ RUN dnf -y update \
      gtk2 `#old-wx` \
      gtk3 `#firefox,wx` \
      iproute \
+     libnsl `#centos-built-exes` \
      libSM \
      libXt `#firefox` \
      mesa-libGLU \
