@@ -124,7 +124,7 @@ RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-pr
   && dnf clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # minimum chrome
-RUN export CHR_VER=115.0.5790.110 \
+RUN export CHR_VER=116.0.5845.140 \
   && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && dnf -y update \
