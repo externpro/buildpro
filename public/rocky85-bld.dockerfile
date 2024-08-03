@@ -15,6 +15,7 @@ RUN dnf -y update \
      libSM-devel \
      postgresql-devel \
      rpm-build \
+     rpm-sign \
      unixODBC-devel \
      Xvfb \
   && dnf clean all
