@@ -43,7 +43,7 @@ RUN export CMK_VER=3.28.3 \
   | tar --strip-components=1 -xz -C /usr/local/ \
   && unset CMK_DL && unset CMK_VER
 # minimum chrome
-RUN export CHR_VER=116.0.5845.140 \
+RUN export CHR_VER=116.0.5845.179 \
   && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
   && echo "repo_add_once=false" > /etc/default/google-chrome \
   && dnf -y update \
