@@ -15,12 +15,13 @@ RUN dnf -y update \
      gtk3-devel \
      mesa-libGL-devel \
      mesa-libGLU-devel \
-     python3-devel \
+     python39-devel \
      redhat-lsb-core \
      sudo \
      vim \
      wget \
-  && dnf clean all
+  && dnf clean all \
+  && alternatives --set python3 $(command -v python3.9)
 RUN dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
