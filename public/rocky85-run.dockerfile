@@ -9,13 +9,11 @@ VOLUME /bpvol
 RUN dnf -y update \
   && dnf clean all \
   && dnf -y install --setopt=tsflags=nodocs \
-     bzip2 `#firefox` \
      gtk2 `#old-wx` \
-     gtk3 `#firefox,wx` \
+     gtk3 `#wx` \
      iproute \
      libnsl `#centos-built-exes` \
      libSM \
-     libXt `#firefox` \
      mesa-libGLU \
      make \
      sudo \
@@ -52,12 +50,6 @@ RUN export CHR_VER=118.0.5993.88 \
      https://dl.google.com/${CHR_DL} \
   && dnf clean all \
   && unset CHR_DL && unset CHR_VER
-# minimum firefox
-RUN export FOX_VER=102.6.0esr \
-  && export FOX_DL=pub/firefox/releases/${FOX_VER}/linux-$(uname -m)/en-US/firefox-${FOX_VER}.tar.bz2 \
-  && wget -qO- "https://ftp.mozilla.org/${FOX_DL}" | tar -xj -C /opt/ \
-  && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
-  && unset FOX_DL && unset FOX_VER
 # install database packages from dnf repo
 #  https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html
 RUN dnf -y update \
