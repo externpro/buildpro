@@ -99,22 +99,6 @@ RUN export CUDA_VER=11-7 \
   && dnf clean all \
   && unset CUDA_DL && unset CUDA_VER
 ENV PATH=$PATH:/usr/local/cuda/bin
-# docker
-# to see list of available docker versions in the repository:
-#  sudo dnf list docker-ce --showduplicates | sort -r
-# install a specific version so version doesn't randomly change to latest when image is built
-RUN export DOCK_VER=24.0.5-1.el8 \
-  && dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo \
-  && dnf clean all \
-  && dnf -y install \
-     docker-ce-${DOCK_VER} \
-     docker-ce-cli-${DOCK_VER} \
-     containerd.io \
-     docker-buildx-plugin \
-     docker-compose-plugin \
-  && dnf clean all \
-  && if [ $(getent group docker) ]; then groupdel docker; fi \
-  && unset DOCK_VER
 # dotnet
 RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-prod.rpm \
   && dnf -y update \
