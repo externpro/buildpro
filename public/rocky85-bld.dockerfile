@@ -80,9 +80,9 @@ RUN  tlmgr install collection-fontsrecommended \
   && tlmgr install tabu varwidth multirow wrapfig adjustbox collectbox sectsty tocloft `#collection-latexextra` \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
-# CUDA https://developer.nvidia.com/cuda-11-7-1-download-archive
+# CUDA https://developer.nvidia.com/cuda-12-6-1-download-archive
 # NOTE: only subset of cuda-libraries-devel to reduce layer sizes
-RUN export CUDA_VER=11-7 \
+RUN export CUDA_VER=12-6 \
   && export CUDA_DL=https://developer.download.nvidia.com/compute/cuda/repos/rhel8/$(uname -m) \
   && dnf config-manager --add-repo ${CUDA_DL}/cuda-rhel8.repo \
   && dnf clean all \
