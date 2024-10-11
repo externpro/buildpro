@@ -80,6 +80,14 @@ RUN  tlmgr install collection-fontsrecommended \
   && tlmgr install tabu varwidth multirow wrapfig adjustbox collectbox sectsty tocloft `#collection-latexextra` \
   && tlmgr install epstopdf
 ENV PATH=$PATH:/usr/local/texlive/2017/bin/x86_64-linux
+# dotnet
+RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-prod.rpm \
+  && dnf -y update \
+  && dnf clean all \
+  && dnf -y install --setopt=tsflags=nodocs \
+     dotnet-sdk-8.0 \
+  && dnf clean all
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # CUDA https://developer.nvidia.com/cuda-12-6-2-download-archive
 # NOTE: only subset of cuda-libraries-devel to reduce layer sizes
 RUN export CUDA_VER=12-6 \
@@ -99,15 +107,6 @@ RUN export CUDA_VER=12-6 \
   && dnf clean all \
   && unset CUDA_DL && unset CUDA_VER
 ENV PATH=$PATH:/usr/local/cuda/bin
-# dotnet
-RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-prod.rpm \
-  && dnf -y update \
-  && dnf clean all \
-  && dnf -y install --setopt=tsflags=nodocs \
-     dotnet-sdk-3.1 \
-     dotnet-sdk-8.0 \
-  && dnf clean all
-ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # minimum chrome
 RUN export CHR_VER=119.0.6045.105 \
   && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
