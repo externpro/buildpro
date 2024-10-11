@@ -118,7 +118,7 @@ RUN export CHR_VER=119.0.6045.105 \
   && dnf clean all \
   && unset CHR_DL && unset CHR_VER
 # externpro
-ENV XP_VER=24.04
+ENV XP_VER=24.05
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
   && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
