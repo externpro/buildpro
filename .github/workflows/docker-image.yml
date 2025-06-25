@@ -8,16 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0   # fetches all history
-        fetch-tags: true # explicitly fetches tags
-        submodules: true
-
-    - name: Build the Docker image
-      run: ./public/ghimg.sh
+  ubuntu:
+    uses: externpro/buildpro/.github/workflows/jobs.yml@dev
+    with:
+      img: ubuntu

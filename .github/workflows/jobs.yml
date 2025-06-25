@@ -1,0 +1,35 @@
+name: Reusable jobs
+
+on:
+  workflow_call:
+    inputs:
+      img:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # fetches all history
+          fetch-tags: true # explicitly fetches tags
+          submodules: true
+
+      - name: determine tag
+        id: git_describe
+        shell: bash
+        run: |
+          gtag=`git describe --tags`
+          if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then
+            gtag=latest
+          fi
+          echo "tag=$gtag" >> $GITHUB_OUTPUT
+        working-directory: ${{ github.workspace }}
+
+      - name: build ghcr.io image
+        run: |
+          echo ${{ inputs.img }}
+          echo ${{ steps.git_describe.outputs.tag }}
