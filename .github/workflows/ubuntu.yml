@@ -1,14 +1,18 @@
-name: Docker Image CI
+name: Build ubuntu docker image
 
 on:
   push:
     branches: [ "dev" ]
+    paths:
+      - 'public/ubuntu.dockerfile'
   pull_request:
     branches: [ "dev" ]
+    paths:
+      - 'public/ubuntu.dockerfile'
   workflow_dispatch:
 
 jobs:
-  rocky:
+  ubuntu:
     uses: externpro/actpro/.github/workflows/buildpro.yml@main
     with:
-      img: rocky-pro
+      img: ubuntu
