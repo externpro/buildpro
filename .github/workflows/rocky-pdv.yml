@@ -1,18 +1,18 @@
-name: Build rocky-pro image
+name: Build rocky-pdv image
 
 on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky-pro.dockerfile'
+      - 'public/rocky-pdv.dockerfile'
   pull_request:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky-pro.dockerfile'
+      - 'public/rocky-pdv.dockerfile'
   workflow_dispatch:
 
 jobs:
-  rocky-pro:
+  rocky-pdv:
     uses: externpro/actpro/.github/workflows/buildpro.yml@main
     with:
-      img: rocky-pro
+      img: rocky-pdv

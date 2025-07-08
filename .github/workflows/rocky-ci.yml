@@ -1,18 +1,18 @@
-name: Build rocky-pro image
+name: Build rocky-ci image
 
 on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky-pro.dockerfile'
+      - 'public/rocky-ci.dockerfile'
   pull_request:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky-pro.dockerfile'
+      - 'public/rocky-ci.dockerfile'
   workflow_dispatch:
 
 jobs:
-  rocky-pro:
+  rocky-ci:
     uses: externpro/actpro/.github/workflows/buildpro.yml@main
     with:
-      img: rocky-pro
+      img: rocky-ci
