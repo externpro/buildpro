@@ -44,7 +44,7 @@ RUN export LFS_VER=2.12.1 \
   && unset LFS_VER \
   && git lfs install --system
 # cmake
-RUN export CMK_VER=3.31.7 \
+RUN export CMK_VER=3.31.6 \
   && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-$(uname -s)-$(uname -m).tar.gz \
   && wget -qO- "https://github.com/Kitware/CMake/${CMK_DL}" \
   | tar --strip-components=1 -xz -C /usr/local/ \
