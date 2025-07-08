@@ -1,4 +1,4 @@
-name: Build rocky-pin image
+name: rocky-pin
 
 on:
   push:

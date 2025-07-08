@@ -1,4 +1,4 @@
-name: Build rocky-ci image
+name: rocky-ci
 
 on:
   push:

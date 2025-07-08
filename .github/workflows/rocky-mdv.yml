@@ -1,4 +1,4 @@
-name: Build rocky-mdv image
+name: rocky-mdv
 
 on:
   push:

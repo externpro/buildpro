@@ -1,4 +1,4 @@
-name: Build rocky-pdv image
+name: rocky-pdv
 
 on:
   push:
