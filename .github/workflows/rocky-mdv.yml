@@ -10,6 +10,10 @@ on:
     paths:
       - 'public/rocky-mdv.dockerfile'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["rocky-pro"]
+    types:
+      - completed
 
 jobs:
   rocky-mdv:
