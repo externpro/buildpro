@@ -93,7 +93,7 @@ ENV PATH=$PATH:/usr/local/cuda/bin
 ENV XP_VER=24.05
 ENV EXTERNPRO_PATH=${EXTERN_DIR}/externpro-${XP_VER}-${GCC_VER}-64-Linux
 RUN mkdir ${EXTERN_DIR} \
-  && export XP_DL=releases/download/${XP_VER}/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
-  && wget -qO- "https://github.com/smanders/externpro/${XP_DL}" | tar --no-same-owner -xJ -C ${EXTERN_DIR} \
+  && export XP_DL=releases/download/24.09/externpro-${XP_VER}-${GCC_VER}-64-$(uname -s).tar.xz \
+  && wget -qO- "https://github.com/externpro/externpro/${XP_DL}" | tar --no-same-owner -xJ -C ${EXTERN_DIR} \
   && unset XP_DL
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
