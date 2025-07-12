@@ -1,4 +1,4 @@
-FROM ghcr.io/externpro/rockylinux:8.9
+FROM rockylinux:8.9
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]

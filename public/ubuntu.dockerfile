@@ -1,4 +1,4 @@
-FROM ghcr.io/externpro/ubuntu:20.04
+FROM ubuntu:20.04
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
