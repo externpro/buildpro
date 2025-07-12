@@ -4,6 +4,11 @@ LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
 VOLUME /bpvol
+# target architecture and OS
+ARG TARGETARCH # e.g., amd64, arm64
+ARG TARGETOS # e.g., linux
+RUN echo "Building for architecture ${TARGETARCH} on OS ${TARGETOS}"
+# dnf/microdnf (see https://github.com/externpro/buildpro/issues/107#issuecomment-2770817750)
 ENV DNF=dnf
 ENV DNFOPT="--setopt=tsflags=nodocs --setopt=install_weak_deps=0"
 # initial dnf update

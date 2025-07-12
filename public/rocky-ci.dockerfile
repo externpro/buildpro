@@ -4,6 +4,10 @@ LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
 USER 0
+# target architecture and OS
+ARG TARGETARCH # e.g., amd64, arm64
+ARG TARGETOS # e.g., linux
+RUN echo "Building for architecture ${TARGETARCH} on OS ${TARGETOS}"
 # install node
 ENV NODE_VERSION=20.18.0
 ENV NVM_DIR=/opt/.nvm
