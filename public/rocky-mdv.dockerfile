@@ -52,7 +52,7 @@ RUN export LCOV_VER=1.16 \
 # git-lfs
 RUN export LFS_VER=2.12.1 \
   && mkdir /usr/local/src/lfs \
-  && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-linux-amd64-v${LFS_VER}.tar.gz" \
+  && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
   | tar -xz -C /usr/local/src/lfs \
   && /usr/local/src/lfs/install.sh \
   && rm -rf /usr/local/src/lfs/ \
