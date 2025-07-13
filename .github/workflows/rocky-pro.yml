@@ -16,3 +16,4 @@ jobs:
     uses: externpro/actpro/.github/workflows/buildpro.yml@main
     with:
       img: rocky-pro
+      platforms: "linux/amd64,linux/arm64"
