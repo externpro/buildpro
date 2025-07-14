@@ -33,11 +33,6 @@ RUN add-apt-repository ppa:git-core/ppa -y \
   && apt -y autoremove \
   && apt clean autoclean \
   && rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
-# Bootlin Toolchain gcc 9.3
-RUN mkdir -p /opt/jetson/jetpack5-gcc \
-  && wget -qO- "https://developer.nvidia.com/embedded/jetson-linux/bootlin-toolchain-gcc-93" \
-  | tar -xz -C /opt/jetson/jetpack5-gcc
-ENV XPX=JetPack
 # git-lfs
 RUN export LFS_VER=2.12.1 \
   && mkdir /usr/local/src/lfs \
