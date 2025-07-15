@@ -20,6 +20,6 @@ jobs:
     if: |
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'
-    uses: externpro/actpro/.github/workflows/buildpro.yml@main
+    uses: externpro/externpro/.github/workflows/buildpro.yml@main
     with:
       img: rocky-pin
