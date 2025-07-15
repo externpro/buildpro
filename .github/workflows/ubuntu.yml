@@ -13,7 +13,7 @@ on:
 
 jobs:
   ubuntu:
-    uses: externpro/externpro/.github/workflows/buildpro.yml@main
+    uses: externpro/buildpro/.github/workflows/buildpro.yml@dev
     with:
       img: ubuntu
       platforms: "linux/amd64,linux/arm64"
