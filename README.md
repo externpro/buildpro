@@ -74,8 +74,9 @@ $ docker exec -it <container_name> bash
 
 ## buildpro packages
 
-* the [public/ghimg.sh](public/ghimg.sh) script builds and publishes the public
-  [buildpro packages](https://github.com/orgs/externpro/packages?repo_name=buildpro)
+* the public [buildpro packages](https://github.com/orgs/externpro/packages?repo_name=buildpro)
+  are built and published by [GitHub Actions](https://github.com/externpro/buildpro/tree/dev/.github/workflows)
+* the [public/ghimg.sh](public/ghimg.sh) script can be ran to develop/build/test local images
 
 ## Using buildpro
 
@@ -87,7 +88,17 @@ To use buildpro images
   ```
 * create symbolic links to the `compose.*.[sh|yml]` file pair suitable for the project
   ```
-  ln -s .devcontainer/compose.bld.sh docker-compose.sh
+  ln -s .devcontainer/compose.pro.sh docker-compose.sh
   ln -s .devcontainer/compose.bld.yml docker-compose.yml
   ```
 * `./docker-compose.sh -h` to display a help message showing usage and options
+* there are various `.devcontainer/compose.*.sh` scripts that use different buildpro docker images
+  (link to a different one to use a different buildpro image) 
+  | script                                                                            | buildpro image                                                                          |
+  | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+  | [compose.pro.sh](https://github.com/externpro/externpro/blob/main/compose.pro.sh) | [rocky-pro](https://github.com/externpro/buildpro/blob/dev/public/rocky-pro.dockerfile) |
+  | [compose.bld.sh](https://github.com/externpro/externpro/blob/main/compose.bld.sh) | [rocky-mdv](https://github.com/externpro/buildpro/blob/dev/public/rocky-mdv.dockerfile) |
+  | [compose.ci.sh](https://github.com/externpro/externpro/blob/main/compose.ci.sh)   | [rocky-ci](https://github.com/externpro/buildpro/blob/dev/public/rocky-ci.dockerfile)   |
+  | [compose.gpu.sh](https://github.com/externpro/externpro/blob/main/compose.gpu.sh) | [rocky-pin](https://github.com/externpro/buildpro/blob/dev/public/rocky-pin.dockerfile) or [rocky-pdv](https://github.com/externpro/buildpro/blob/dev/public/rocky-pdv.dockerfile) |
+
+* this [graph](https://github.com/externpro/externpro/blob/main/graph/graph.png) shows the image dependencies and what the various buildpro images have been used for
