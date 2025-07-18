@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 jobs:
   rocky-pro:
-    uses: externpro/buildpro/.github/workflows/buildpro.yml@dev
+    uses: ./.github/workflows/buildpro.yml
     with:
       img: rocky-pro
       platforms: "linux/amd64,linux/arm64"
