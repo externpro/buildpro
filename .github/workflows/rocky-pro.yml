@@ -1,5 +1,4 @@
 name: rocky-pro
-
 on:
   push:
     branches: [ "dev" ]
@@ -10,7 +9,6 @@ on:
     paths:
       - 'public/rocky-pro.dockerfile'
   workflow_dispatch:
-
 jobs:
   rocky-pro:
     uses: externpro/buildpro/.github/workflows/buildpro.yml@dev

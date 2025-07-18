@@ -1,5 +1,4 @@
 name: rocky-ci
-
 on:
   push:
     branches: [ "dev" ]
@@ -14,7 +13,6 @@ on:
     workflows: ["rocky-mdv"]
     types:
       - completed
-
 jobs:
   rocky-ci:
     if: |

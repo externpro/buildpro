@@ -1,5 +1,4 @@
 name: rocky-pdv
-
 on:
   push:
     branches: [ "dev" ]
@@ -14,7 +13,6 @@ on:
     workflows: ["rocky-pro"]
     types:
       - completed
-
 jobs:
   rocky-pdv:
     if: |

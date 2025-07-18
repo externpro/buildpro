@@ -1,5 +1,4 @@
 name: ubuntu
-
 on:
   push:
     branches: [ "dev" ]
@@ -10,7 +9,6 @@ on:
     paths:
       - 'public/ubuntu.dockerfile'
   workflow_dispatch:
-
 jobs:
   ubuntu:
     uses: externpro/buildpro/.github/workflows/buildpro.yml@dev
