@@ -1,0 +1,21 @@
+name: Build
+on:
+  workflow_dispatch:
+jobs:
+  linux:
+    uses: ./.devcontainer/.github/workflows/build-linux.yml
+    with:
+      cmake-workflow-preset: LinuxReleaseNoInstall
+      runon: ubuntu-latest
+    secrets: inherit
+  linux-arm64:
+    uses: ./.devcontainer/.github/workflows/build-linux.yml
+    with:
+      cmake-workflow-preset: LinuxReleaseNoInstall
+      runon: ubuntu-24.04-arm
+    secrets: inherit
+  windows:
+    uses: ./.devcontainer/.github/workflows/build-windows.yml
+    with:
+      cmake-workflow-preset: WindowsReleaseNoInstall
+    secrets: inherit
