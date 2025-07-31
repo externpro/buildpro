@@ -21,4 +21,3 @@ jobs:
     uses: ./.github/workflows/buildpro.yml
     with:
       img: rocky-pdv
-      platforms: "linux/amd64,linux/arm64"
