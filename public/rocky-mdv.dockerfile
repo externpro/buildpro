@@ -8,56 +8,6 @@ USER 0
 ARG TARGETARCH # e.g., amd64, arm64
 ARG TARGETOS # e.g., linux
 RUN echo "Building for architecture ${TARGETARCH} on OS ${TARGETOS}"
-# https://rockylinux.pkgs.org https://rhel.pkgs.org
-# AppStream, BaseOS Repositories
-RUN ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install ${DNFOPT} \
-     epel-release \
-     iproute \
-     libSM-devel \
-     postgresql-devel \
-     rpm-build \
-     rpm-sign \
-     Xvfb \
-  && ${DNF} clean all
-# PowerTools Repository
-RUN ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=powertools ${DNFOPT} \
-     cppcheck \
-     xeyes \
-  && ${DNF} clean all
-# EPEL Repository
-RUN ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=epel ${DNFOPT} \
-     gperftools \
-  && ${DNF} clean all
-# lcov deps
-RUN ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=powertools ${DNFOPT} \
-     perl-IO-Compress \
-     perl-JSON-XS \
-     perl-Module-Load-Conditional \
-  && ${DNF} clean all
-# lcov
-RUN export LCOV_VER=1.16 \
-  && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
-  | tar -xz -C /usr/local/src \
-  && (cd /usr/local/src/lcov-${LCOV_VER} && make install > /dev/null) \
-  && rm -rf /usr/local/src/lcov-${LCOV_VER} \
-  && unset LCOV_VER
-# git-lfs
-RUN export LFS_VER=2.12.1 \
-  && mkdir /usr/local/src/lfs \
-  && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
-  | tar -xz -C /usr/local/src/lfs \
-  && /usr/local/src/lfs/install.sh \
-  && rm -rf /usr/local/src/lfs/ \
-  && unset LFS_VER \
-  && git lfs install --system
 # doxygen
 RUN export DXY_VER=1.8.13 \
   && wget -qO- --no-check-certificate \
