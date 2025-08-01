@@ -37,6 +37,8 @@ RUN ${DNF} -y update \
      sudo \
      vim \
      wget \
+     xorg-x11-utils \
+     xorg-x11-xauth \
      Xvfb \
      xz \
   && ${DNF} clean all \
