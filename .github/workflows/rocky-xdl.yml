@@ -1,0 +1,23 @@
+name: rocky-mdv
+on:
+  push:
+    branches: [ "dev" ]
+    paths:
+      - 'public/rocky-mdv.dockerfile'
+  pull_request:
+    branches: [ "dev" ]
+    paths:
+      - 'public/rocky-mdv.dockerfile'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["rocky-pro"]
+    types:
+      - completed
+jobs:
+  rocky-mdv:
+    if: |
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    uses: ./.github/workflows/buildpro.yml
+    with:
+      img: rocky-mdv
