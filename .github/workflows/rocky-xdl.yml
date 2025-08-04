@@ -1,23 +1,24 @@
-name: rocky-mdv
+name: rocky-xdl
 on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky-mdv.dockerfile'
+      - 'public/rocky-xdl.dockerfile'
   pull_request:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky-mdv.dockerfile'
+      - 'public/rocky-xdl.dockerfile'
   workflow_dispatch:
   workflow_run:
     workflows: ["rocky-pro"]
     types:
       - completed
 jobs:
-  rocky-mdv:
+  rocky-xdl:
     if: |
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'
     uses: ./.github/workflows/buildpro.yml
     with:
-      img: rocky-mdv
+      img: rocky-xdl
+      platforms: "linux/amd64,linux/arm64"
