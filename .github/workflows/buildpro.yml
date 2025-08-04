@@ -45,9 +45,14 @@ jobs:
           echo "img: ${{ inputs.img }}"
           echo "latest: ${{ steps.tags.outputs.latest }}"
           echo "tagged: ${{ steps.tags.outputs.tagged }}"
-          docker pull ${{ steps.tags.outputs.latest }}
-          docker images
-          docker rmi ${{ steps.tags.outputs.latest }}
+          # Only run docker commands if the latest tag exists
+          if docker manifest inspect ${{ steps.tags.outputs.latest }} >/dev/null 2>&1; then
+            docker pull ${{ steps.tags.outputs.latest }}
+            docker images
+            docker rmi ${{ steps.tags.outputs.latest }}
+          else
+            echo "latest tag does not exist, skipping docker commands"
+          fi
       -
         name: Set up Docker Buildx (for multi-platform builds)
         uses: docker/setup-buildx-action@v3
