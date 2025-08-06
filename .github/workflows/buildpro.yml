@@ -103,6 +103,31 @@ jobs:
           docker images
           docker rmi ${{ steps.tags.outputs.latest }}
       -
+        name: Determine multi-platform package SHAs
+        id: multi-arch
+        run: |
+          # Initialize an empty array to store all digests
+          declare -a digests_array=()
+          # Get all tags
+          tags=$(skopeo list-tags docker://${{ env.REGISTRY }}/${{ github.repository }}/${{ inputs.img }} | jq -r '.Tags[]' | paste -s -d ' ' -)
+          echo "Found tags: ${tags}"
+          # Convert space-separated string to array for iteration
+          IFS=' ' read -r -a tag_array <<< "$tags"
+          # Loop through each tag and inspect its manifest
+          for tag in "${tag_array[@]}"; do
+            echo "Inspecting manifest for tag: $tag"
+            if digests_tag=$(docker manifest inspect ${{ env.REGISTRY }}/${{ github.repository }}/${{ inputs.img }}:$tag 2>/dev/null | jq -r '.manifests[].digest' | paste -s -d ' ' -); then
+              echo "Digests for $tag: $digests_tag"
+              # Append to the digests array
+              digests_array+=("$digests_tag")
+            else
+              echo "Warning: Could not get digests for tag $tag"
+            fi
+          done
+          # Output all collected digests
+          echo "All digests: ${digests_array[*]}"
+          echo "digests=${digests_array[*]}" >> $GITHUB_OUTPUT
+      -
         name: Delete untagged images from ghcr
         uses: snok/container-retention-policy@v3.0.0
         with:
@@ -110,5 +135,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           image-names: ${{ github.event.repository.name }}/${{ inputs.img }}
           tag-selection: untagged
+          skip-shas: ${{ steps.multi-arch.outputs.digests }}
           cut-off: 1m
           dry-run: false
