@@ -35,7 +35,7 @@ RUN export CHR_VER=133.0.6943.98 \
   && ${DNF} clean all \
   && unset CHR_DL && unset CHR_VER
 # exdlpro
-ENV XP_VER=25.01
+ENV XP_VER=25.02
 RUN mkdir -p ${EXTERN_DIR} \
   && OS="$(uname -s)" \
   && ARCH="$(uname -m)" \

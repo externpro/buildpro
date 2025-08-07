@@ -43,7 +43,7 @@ RUN ${DNF} clean all \
   && ${DNF} clean all
 ENV PATH=$PATH:/usr/local/cuda/bin
 # exdlpro
-ENV XP_VER=25.01
+ENV XP_VER=25.02
 RUN mkdir -p ${EXTERN_DIR} \
   && OS="$(uname -s)" \
   && ARCH="$(uname -m)" \
