@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/.devcontainer/cmake)
 include(preproject)
-project(buildpro)
+project(buildpro VERSION 25.05.1)
 include(flags)
 include(deps)
 xpFindPkg(PKGS exdlpro fecpp wxinclude hdf5 librttopo libspatialite nasm node-addon-api nodeng nvjpeg2000 patch spatialite-tools)
