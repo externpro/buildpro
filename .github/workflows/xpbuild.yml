@@ -9,22 +9,22 @@ jobs:
   linux:
     uses: externpro/externpro/.github/workflows/build-linux.yml@25.05.1
     with:
-      cmake-workflow-preset: LinuxReleaseNoInstall
+      cmake-workflow-preset: Linux
       runon: ubuntu-latest
     secrets: inherit
   linux-arm64:
     uses: externpro/externpro/.github/workflows/build-linux.yml@25.05.1
     with:
-      cmake-workflow-preset: LinuxReleaseNoInstall
+      cmake-workflow-preset: Linux
       runon: ubuntu-24.04-arm
     secrets: inherit
   macos:
     uses: externpro/externpro/.github/workflows/build-macos.yml@25.05.1
     with:
-      cmake-workflow-preset: DarwinReleaseNoInstall
+      cmake-workflow-preset: Darwin
     secrets: inherit
   windows:
     uses: externpro/externpro/.github/workflows/build-windows.yml@25.05.1
     with:
-      cmake-workflow-preset: WindowsReleaseNoInstall
+      cmake-workflow-preset: Windows
     secrets: inherit
