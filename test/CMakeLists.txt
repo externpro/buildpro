@@ -23,6 +23,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     spatialite-tools
     )
 endif()
+set(googletest_deps xpro::gtest_main)
 foreach(pro ${pros})
   xpFindPkg(PKGS ${pro})
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cpp)
