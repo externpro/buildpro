@@ -1,6 +1,7 @@
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(pros
   googletest
+  argon2
   fmt
   spdlog
   )
@@ -24,6 +25,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     )
 endif()
 set(googletest_deps xpro::gtest_main)
+set(argon2_deps xpro::argon2)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(spdlog_deps xpro::spdlog xpro::gtest_main)
 set(spdlog_compile_features cxx_std_17)
