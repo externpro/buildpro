@@ -1,73 +1,116 @@
+#include <string>
+#include <vector>
+
 #include <argon2/argon2.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <gtest/gtest.h>
 
-#define HASHLEN 32
-#define SALTLEN 16
-#define PWD "password"
-
-int main(void)
+class Argon2Test : public ::testing::Test
 {
-  uint8_t hash1[HASHLEN];
-  uint8_t hash2[HASHLEN];
+protected:
+  static constexpr size_t HASHLEN = 32;
+  static constexpr size_t SALTLEN = 16;
+  static constexpr const char* PWD = "password";
 
-  uint8_t salt[SALTLEN];
-  memset(salt, 0x00, SALTLEN);
+  std::vector<uint8_t> hash1;
+  std::vector<uint8_t> hash2;
+  std::vector<uint8_t> salt;
+  std::vector<uint8_t> pwd;
+  uint32_t pwdlen;
 
-  uint8_t* pwd = (uint8_t*)strdup(PWD);
-  uint32_t pwdlen = strlen((char*)pwd);
+  void SetUp() override
+  {
+    hash1.resize(HASHLEN);
+    hash2.resize(HASHLEN);
+    salt.assign(SALTLEN, 0x00);
 
-  uint32_t t_cost = 2;         // 1-pass computation
-  uint32_t m_cost = (1 << 16); // 64 mebibytes memory usage
+    pwdlen = strlen(PWD);
+    pwd.assign(PWD, PWD + pwdlen);
+  }
+};
+
+TEST_F(Argon2Test, HighLevelAndLowLevelApisProduceSameHash)
+{
+  uint32_t t_cost = 2;         // 2-pass computation
+  uint32_t m_cost = (1 << 10); // Reduced for faster tests (1 MiB)
   uint32_t parallelism = 1;    // number of threads and lanes
 
-  // high-level API
-  argon2i_hash_raw(
-    t_cost, m_cost, parallelism, pwd, pwdlen, salt, SALTLEN, hash1, HASHLEN);
+  // Test high-level API
+  int rc = argon2i_hash_raw(t_cost,
+                            m_cost,
+                            parallelism,
+                            pwd.data(),
+                            pwdlen,
+                            salt.data(),
+                            salt.size(),
+                            hash1.data(),
+                            hash1.size());
+  ASSERT_EQ(ARGON2_OK, rc) << "High-level API failed: "
+                           << argon2_error_message(rc);
 
-  // low-level API
+  // Test low-level API
   argon2_context context = {
-    hash2,   /* output array, at least HASHLEN in size */
-    HASHLEN, /* digest length */
-    pwd,     /* password array */
-    pwdlen,  /* password length */
-    salt,    /* salt array */
-    SALTLEN, /* salt length */
-    NULL,
-    0, /* optional secret data */
-    NULL,
-    0, /* optional associated data */
-    t_cost,
-    m_cost,
-    parallelism,
-    parallelism,
-    ARGON2_VERSION_13, /* algorithm version */
-    NULL,
-    NULL, /* custom memory allocation / deallocation functions */
-    /* by default only internal memory is cleared (pwd is not wiped) */
+    hash2.data(),                        // output array
+    static_cast<uint32_t>(hash2.size()), // output length
+    pwd.data(),                          // password array
+    pwdlen,                              // password length
+    salt.data(),                         // salt array
+    static_cast<uint32_t>(salt.size()),  // salt length
+    nullptr,
+    0, // secret data
+    nullptr,
+    0,                 // associated data
+    t_cost,            // time cost
+    m_cost,            // memory cost
+    parallelism,       // lanes
+    parallelism,       // threads
+    ARGON2_VERSION_13, // algorithm version
+    nullptr,           // custom memory allocation
+    nullptr,           // custom deallocation
     ARGON2_DEFAULT_FLAGS};
 
-  int rc = argon2i_ctx(&context);
-  if (ARGON2_OK != rc)
-  {
-    printf("Error: %s\n", argon2_error_message(rc));
-    exit(1);
-  }
-  free(pwd);
+  rc = argon2i_ctx(&context);
+  ASSERT_EQ(ARGON2_OK, rc) << "Low-level API failed: "
+                           << argon2_error_message(rc);
 
-  for (int i = 0; i < HASHLEN; ++i)
-    printf("%02x", hash1[i]);
-  printf("\n");
-  if (memcmp(hash1, hash2, HASHLEN))
-  {
-    for (int i = 0; i < HASHLEN; ++i)
-    {
-      printf("%02x", hash2[i]);
-    }
-    printf("\nfail\n");
-  }
-  else
-    printf("ok\n");
-  return 0;
+  // Compare results from both APIs
+  EXPECT_EQ(hash1, hash2)
+    << "High-level and low-level APIs produced different hashes";
+}
+
+TEST_F(Argon2Test, DifferentPasswordsProduceDifferentHashes)
+{
+  uint32_t t_cost = 2;
+  uint32_t m_cost = (1 << 10);
+  uint32_t parallelism = 1;
+
+  std::vector<uint8_t> other_pwd = {
+    'd', 'i', 'f', 'f', 'e', 'r', 'e', 'n', 't'};
+  std::vector<uint8_t> other_hash(HASHLEN);
+
+  // Hash with original password
+  int rc = argon2i_hash_raw(t_cost,
+                            m_cost,
+                            parallelism,
+                            pwd.data(),
+                            pwdlen,
+                            salt.data(),
+                            salt.size(),
+                            hash1.data(),
+                            hash1.size());
+  ASSERT_EQ(ARGON2_OK, rc);
+
+  // Hash with different password
+  rc = argon2i_hash_raw(t_cost,
+                        m_cost,
+                        parallelism,
+                        other_pwd.data(),
+                        other_pwd.size(),
+                        salt.data(),
+                        salt.size(),
+                        other_hash.data(),
+                        other_hash.size());
+  ASSERT_EQ(ARGON2_OK, rc);
+
+  // Hashes should be different
+  EXPECT_NE(hash1, other_hash) << "Different passwords produced the same hash";
 }
