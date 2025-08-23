@@ -7,7 +7,6 @@ set(pros
   )
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
-    exdlpro
     # exdlpro projects
     fecpp
     wxinclude
