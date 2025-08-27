@@ -2,6 +2,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(pros
   googletest
   argon2
+  bzip2
   fmt
   nlohmann_json
   spdlog
@@ -27,6 +28,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 set(googletest_deps xpro::gtest_main)
 set(argon2_deps xpro::argon2 xpro::gtest_main)
+set(bzip2_deps xpro::bz2 xpro::gtest_main)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
