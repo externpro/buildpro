@@ -1,0 +1,18 @@
+execute_process(COMMAND ${patch_EXE} --version | head -n 1
+  OUTPUT_VARIABLE patch_ver OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE result
+  )
+if(NOT result EQUAL 0)
+  message(FATAL_ERROR "patch --version failed with exit code ${result}")
+endif()
+execute_process(COMMAND uname -s OUTPUT_VARIABLE uname_s OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" patch_ver3 ${patch_ver})
+string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" patch_VER3 ${patch_VER})
+message(STATUS "cmake patch version: [${patch_VER3}] ${patch_VER}")
+message(STATUS "executable patch version: [${patch_ver3}] ${patch_ver}")
+if(patch_VER3 VERSION_EQUAL patch_ver3)
+  message(STATUS "patch version match: ${patch_VER3} == ${patch_ver3}")
+elseif(uname_s STREQUAL "Darwin")
+  message(STATUS "ignoring patch version mismatch on macOS: ${patch_VER} != ${patch_ver}")
+else()
+  message(FATAL_ERROR "patch version mismatch: ${patch_VER3} != ${patch_ver3}")
+endif()
