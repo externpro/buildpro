@@ -7,6 +7,7 @@ set(pros
   nlohmann_json
   patch
   spdlog
+  zlib
   )
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
@@ -34,6 +35,7 @@ set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
 set(spdlog_deps xpro::spdlog xpro::gtest_main)
 set(spdlog_compile_features cxx_std_17)
+set(zlib_deps xpro::zlibstatic xpro::gtest_main)
 foreach(pro ${pros})
   find_package(${pro})
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cpp)
