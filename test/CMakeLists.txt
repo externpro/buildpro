@@ -47,11 +47,17 @@ foreach(pro ${pros})
       target_compile_features(${pro}_test PRIVATE ${${pro}_compile_features})
     endif()
     add_test(NAME ${pro}_test COMMAND ${pro}_test)
-  elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cmake)
+  endif()
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cmake)
     xpGetPkgVar(${pro} VER)
     xpGetPkgVar(${pro} EXE)
-    add_test(NAME ${pro}_test COMMAND ${CMAKE_COMMAND}
-      -D${pro}_VER=${${pro}_VER} -D${pro}_EXE=${${pro}_EXE}
+    if(TARGET ${${pro}_EXE})
+      set(${pro}_EXE_PATH $<TARGET_FILE:${${pro}_EXE}>)
+    else()
+      set(${pro}_EXE_PATH ${${pro}_EXE})
+    endif()
+    add_test(NAME ${pro}_exe_test COMMAND ${CMAKE_COMMAND}
+      -D${pro}_VER='${${pro}_VER}' -D${pro}_EXE='${${pro}_EXE_PATH}'
       -P ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cmake
       )
   endif()

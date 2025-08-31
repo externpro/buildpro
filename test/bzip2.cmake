@@ -1,5 +1,5 @@
-set(pro patch)
-set(cmd "${${pro}_EXE} --version")
+set(pro bzip2)
+set(cmd "${${pro}_EXE} --help")
 execute_process(COMMAND bash -c "${cmd} 2>&1 | head -n 1"
   ERROR_VARIABLE ${pro}_err ERROR_STRIP_TRAILING_WHITESPACE
   OUTPUT_VARIABLE ${pro}_out OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -13,15 +13,12 @@ if(${pro}_out)
 elseif(${pro}_err)
   set(${pro}_ver ${${pro}_err})
 endif()
-execute_process(COMMAND uname -s OUTPUT_VARIABLE uname_s OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" ${pro}_ver3 ${${pro}_ver})
 string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" ${pro}_VER3 ${${pro}_VER})
 message(STATUS "cmake ${pro} version: [${${pro}_VER3}] ${${pro}_VER}")
 message(STATUS "executable ${pro} version: [${${pro}_ver3}] ${${pro}_ver}")
 if(${pro}_VER3 VERSION_EQUAL ${pro}_ver3)
   message(STATUS "${pro} version match: ${${pro}_VER3} == ${${pro}_ver3}")
-elseif(uname_s STREQUAL "Darwin")
-  message(STATUS "ignoring ${pro} version mismatch on macOS: ${${pro}_VER} != ${${pro}_ver}")
 else()
   message(FATAL_ERROR "${pro} version mismatch: ${${pro}_VER3} != ${${pro}_ver3}")
 endif()
