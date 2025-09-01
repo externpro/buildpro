@@ -3,6 +3,7 @@ set(pros
   googletest
   argon2
   bzip2
+  flatbuffers
   fmt
   nlohmann_json
   patch
@@ -30,6 +31,8 @@ endif()
 set(googletest_deps xpro::gtest_main)
 set(argon2_deps xpro::argon2 xpro::gtest_main)
 set(bzip2_deps xpro::bz2 xpro::gtest_main)
+set(flatbuffers_deps xpro::flatbuffers xpro::gtest_main)
+set(flatbuffers_compile_features cxx_std_17)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
@@ -60,6 +63,9 @@ foreach(pro ${pros})
       -D${pro}_VER='${${pro}_VER}' -D${pro}_EXE='${${pro}_EXE_PATH}'
       -P ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cmake
       )
+  endif()
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}/CMakeLists.txt)
+    add_subdirectory(${pro})
   endif()
 endforeach()
 xpSourceListAppend()

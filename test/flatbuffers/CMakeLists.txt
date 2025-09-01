@@ -1,0 +1,8 @@
+set(pro flatbuffers)
+set(tgt ${pro}_test)
+set(fbs_srcs schema.fbs)
+add_executable(${tgt} ${pro}.cpp)
+xpFlatBuffersBuild(TARGET ${tgt} SCHEMAS ${fbs_srcs})
+target_link_libraries(${tgt} PRIVATE ${${pro}_deps})
+target_compile_features(${tgt} PRIVATE ${${pro}_compile_features})
+add_test(NAME ${tgt} COMMAND ${tgt})
