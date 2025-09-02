@@ -3,6 +3,7 @@ set(pros
   googletest
   argon2
   bzip2
+  eigen
   flatbuffers
   fmt
   nlohmann_json
@@ -31,6 +32,7 @@ endif()
 set(googletest_deps xpro::gtest_main)
 set(argon2_deps xpro::argon2 xpro::gtest_main)
 set(bzip2_deps xpro::bz2 xpro::gtest_main)
+set(eigen_deps xpro::Eigen xpro::gtest_main)
 set(flatbuffers_deps xpro::flatbuffers xpro::gtest_main)
 set(flatbuffers_compile_features cxx_std_17)
 set(fmt_deps xpro::fmt xpro::gtest_main)
