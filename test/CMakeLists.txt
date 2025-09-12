@@ -1,6 +1,7 @@
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(pros
   googletest
+  apr
   argon2
   bzip2
   ceres-solver
@@ -31,6 +32,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     )
 endif()
 set(googletest_deps xpro::gtest_main)
+set(apr_deps xpro::apr-1 xpro::gtest_main)
 set(argon2_deps xpro::argon2 xpro::gtest_main)
 set(bzip2_deps xpro::bz2 xpro::gtest_main)
 set(ceres-solver_deps xpro::ceres xpro::gtest_main)
