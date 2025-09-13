@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include <H5Cpp.h>
 #include <gtest/gtest.h>
+#include <hdf5/H5Cpp.h>
 
 using namespace H5;
 
