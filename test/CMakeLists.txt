@@ -10,6 +10,7 @@ set(pros
   fmt
   geos
   hdf5
+  librttopo
   nlohmann_json
   patch
   spdlog
@@ -23,7 +24,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     )
   list(APPEND pros
     # standalone externpro devel packages
-    librttopo
     libspatialite
     nasm
     #node-addon-api
@@ -43,6 +43,7 @@ set(flatbuffers_compile_features cxx_std_17)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(geos_deps xpro::geos_c xpro::gtest_main)
 set(hdf5_deps xpro::hdf5_cpp-static xpro::gtest_main)
+set(librttopo_deps xpro::librttopo xpro::gtest_main)
 set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
 set(spdlog_deps xpro::spdlog xpro::gtest_main)
