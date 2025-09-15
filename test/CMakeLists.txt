@@ -8,6 +8,7 @@ set(pros
   eigen
   flatbuffers
   fmt
+  geos
   hdf5
   nlohmann_json
   patch
@@ -40,6 +41,7 @@ set(eigen_deps xpro::Eigen xpro::gtest_main)
 set(flatbuffers_deps xpro::flatbuffers xpro::gtest_main)
 set(flatbuffers_compile_features cxx_std_17)
 set(fmt_deps xpro::fmt xpro::gtest_main)
+set(geos_deps xpro::geos_c xpro::gtest_main)
 set(hdf5_deps xpro::hdf5_cpp-static xpro::gtest_main)
 set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
