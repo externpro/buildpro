@@ -20,14 +20,23 @@ protected:
       throw std::runtime_error("Failed to initialize iconv");
     }
 
+    // Set up input buffer
     size_t inbytesleft = input.size();
-    size_t outbytesleft = inbytesleft * 4; // Sufficiently large buffer
-    std::vector<char> outbuf(outbytesleft);
+    char* inbuf = const_cast<char*>(input.data());
 
-    char* inptr = const_cast<char*>(input.data());
+    // Allocate output buffer with some extra space
+    size_t outbuf_size = (inbytesleft + 1) * 4; // Extra space for worst case
+    std::vector<char> outbuf(outbuf_size);
+
+    // Set up output buffer pointers
     char* outptr = outbuf.data();
+    size_t outbytesleft = outbuf_size;
 
-    size_t result = iconv(cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
+    // Reset conversion descriptor
+    iconv(cd, nullptr, nullptr, nullptr, nullptr);
+
+    // Perform the conversion
+    size_t result = iconv(cd, &inbuf, &inbytesleft, &outptr, &outbytesleft);
 
     if (result == (size_t)-1)
     {
@@ -35,8 +44,10 @@ protected:
       throw std::runtime_error("Conversion failed");
     }
 
+    // Close the conversion descriptor
     iconv_close(cd);
 
+    // Return the converted string (excluding any unused space)
     return std::string(outbuf.data(), outptr - outbuf.data());
   }
 };
