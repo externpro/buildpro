@@ -15,6 +15,7 @@ set(pros
   libspatialite
   nlohmann_json
   patch
+  spatialite-tools
   spdlog
   sqlite3
   zlib
@@ -31,7 +32,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     #node-addon-api
     nodeng
     nvjpeg2000
-    spatialite-tools
     )
 endif()
 set(googletest_deps xpro::gtest_main)
