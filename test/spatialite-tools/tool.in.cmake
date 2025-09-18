@@ -1,7 +1,8 @@
 # Function to extract just the numeric version part
 function(extract_numeric_version output_var version_string)
   # Extract just the X.Y.Z part, ignoring any suffix
-  string(REGEX MATCH "([0-9]+\.[0-9]+\.[0-9]+)" numeric_version "${version_string}")
+  # Note: Double backslashes are needed to escape the dots in the regex pattern
+  string(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" numeric_version "${version_string}")
   if(numeric_version)
     set(${output_var} ${CMAKE_MATCH_1} PARENT_SCOPE)
   else()
@@ -53,12 +54,12 @@ endif()
 # Function to find and extract version from a pattern
 function(extract_version output_var pattern)
   # Try to match the pattern at the start of a line, followed by optional spaces and dots, then a colon and version
-  string(REGEX MATCH "${pattern}[ .:]+([0-9]+\.[0-9]+\.[0-9]+[a-z]?)" matched "${ver}")
+  string(REGEX MATCH "${pattern}[ .:]+([0-9]+\\.[0-9]+\\.[0-9]+[a-z]?)" matched "${ver}")
   if(matched)
     set(${output_var} ${CMAKE_MATCH_1} PARENT_SCOPE)
   else()
     # Try alternative pattern with different spacing
-    string(REGEX MATCH "${pattern}[ ]*:[ ]*([0-9]+\.[0-9]+\.[0-9]+[a-z]?)" matched "${ver}")
+    string(REGEX MATCH "${pattern}[ ]*:[ ]*([0-9]+\\.[0-9]+\\.[0-9]+[a-z]?)" matched "${ver}")
     if(matched)
       set(${output_var} ${CMAKE_MATCH_1} PARENT_SCOPE)
     else()
