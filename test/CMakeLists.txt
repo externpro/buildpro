@@ -13,6 +13,7 @@ set(pros
   libiconv
   librttopo
   libspatialite
+  nasm
   nlohmann_json
   patch
   spatialite-tools
@@ -28,7 +29,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     )
   list(APPEND pros
     # standalone externpro devel packages
-    nasm
     #node-addon-api
     nodeng
     nvjpeg2000
