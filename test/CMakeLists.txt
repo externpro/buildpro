@@ -15,6 +15,7 @@ set(pros
   libspatialite
   nasm
   nlohmann_json
+  nvjpeg2000
   patch
   spatialite-tools
   spdlog
@@ -31,7 +32,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # standalone externpro devel packages
     #node-addon-api
     nodeng
-    nvjpeg2000
     )
 endif()
 set(googletest_deps xpro::gtest_main)
@@ -63,6 +63,9 @@ foreach(pro ${pros})
     endif()
     if(DEFINED ${pro}_compile_features)
       target_compile_features(${pro}_test PRIVATE ${${pro}_compile_features})
+    endif()
+    if(DEFINED ${pro}_compile_definitions)
+      target_compile_definitions(${pro}_test PRIVATE ${${pro}_compile_definitions})
     endif()
     add_test(NAME ${pro}_test COMMAND ${pro}_test)
   endif()
