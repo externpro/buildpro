@@ -15,6 +15,7 @@ set(pros
   libspatialite
   nasm
   nlohmann_json
+  nodeng
   nvjpeg2000
   patch
   spatialite-tools
@@ -31,7 +32,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
     # standalone externpro devel packages
     #node-addon-api
-    nodeng
     )
 endif()
 set(googletest_deps xpro::gtest_main)
