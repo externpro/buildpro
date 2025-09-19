@@ -16,6 +16,7 @@ set(pros
   nasm
   nlohmann_json
   nodeng
+  nodexp
   nvjpeg2000
   patch
   spatialite-tools
