@@ -92,8 +92,109 @@ try {
   console.log('✓ BigInt error handling test passed: correctly rejected non-BigInt input');
 }
 
-// Display Node.js version for reference
-console.log('Node.js version:', process.version);
-console.log('Using node-addon-api C++ wrapper');
+// Test ArrayBuffer support - new in v8.x
+try {
+  const arrayBuffer = addon.testArrayBuffer();
+  console.log('testArrayBuffer() =', arrayBuffer);
+  console.assert(arrayBuffer instanceof ArrayBuffer, 'Result should be an ArrayBuffer');
+  console.assert(arrayBuffer.byteLength === 16, 'ArrayBuffer should be 16 bytes');
+  
+  // Check the data
+  const view = new Uint8Array(arrayBuffer);
+  console.assert(view[0] === 0 && view[1] === 2 && view[2] === 4, 'ArrayBuffer data should be correct');
+  console.log('✓ ArrayBuffer test passed');
+} catch (error) {
+  console.error('✗ ArrayBuffer test failed:', error.message);
+  process.exit(1);
+}
 
-console.log('All tests passed!');
+// Test TypedArray support - enhanced in v8.x
+try {
+  const typedArray = addon.testTypedArray();
+  console.log('testTypedArray() =', typedArray);
+  console.assert(typedArray instanceof Uint32Array, 'Result should be a Uint32Array');
+  console.assert(typedArray.length === 4, 'TypedArray should have 4 elements');
+  console.assert(typedArray[0] === 1000 && typedArray[1] === 2000, 'TypedArray data should be correct');
+  console.log('✓ TypedArray test passed');
+} catch (error) {
+  console.error('✗ TypedArray test failed:', error.message);
+  process.exit(1);
+}
+
+// Test Promise support - available in v8.x
+try {
+  const promise = addon.testPromise();
+  console.log('testPromise() =', promise);
+  console.assert(promise instanceof Promise, 'Result should be a Promise');
+  
+  // Test the promise resolution
+  promise.then(result => {
+    console.log('Promise resolved with:', result);
+    console.assert(result === 'Promise resolved successfully', 'Promise should resolve with correct value');
+    console.log('✓ Promise test passed');
+  }).catch(error => {
+    console.error('✗ Promise test failed:', error.message);
+    process.exit(1);
+  });
+} catch (error) {
+  console.error('✗ Promise test failed:', error.message);
+  process.exit(1);
+}
+
+// Test enhanced type checking - improved in v8.x
+try {
+  // Test with different types
+  const testValues = [
+    42,
+    'hello',
+    true,
+    null,
+    undefined,
+    [],
+    {},
+    new Date(),
+    123n,
+    new Uint8Array(4),
+    new ArrayBuffer(8),
+    Promise.resolve('test')
+  ];
+
+  testValues.forEach((value, index) => {
+    const result = addon.testTypeChecking(value);
+    console.log(`Type checking for value ${index} (${typeof value}):`, result);
+    
+    // Verify some expected results
+    if (typeof value === 'number') {
+      console.assert(result.isNumber === true, 'Should detect number correctly');
+    }
+    if (typeof value === 'string') {
+      console.assert(result.isString === true, 'Should detect string correctly');
+    }
+    if (typeof value === 'bigint') {
+      console.assert(result.isBigInt === true, 'Should detect BigInt correctly');
+    }
+    if (Array.isArray(value)) {
+      console.assert(result.isArray === true, 'Should detect array correctly');
+    }
+    if (value instanceof ArrayBuffer) {
+      console.assert(result.isArrayBuffer === true, 'Should detect ArrayBuffer correctly');
+    }
+    if (value instanceof Promise) {
+      console.assert(result.isPromise === true, 'Should detect Promise correctly');
+    }
+  });
+  
+  console.log('✓ Enhanced type checking test passed');
+} catch (error) {
+  console.error('✗ Enhanced type checking test failed:', error.message);
+  process.exit(1);
+}
+
+// Display Node.js version and node-addon-api version for reference
+console.log('Node.js version:', process.version);
+console.log('Using node-addon-api v8.5.0.1 C++ wrapper');
+
+// Wait a bit for the Promise test to complete
+setTimeout(() => {
+  console.log('All tests passed!');
+}, 100);

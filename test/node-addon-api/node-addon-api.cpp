@@ -99,6 +99,95 @@ Napi::Value AddOneToBigInt(const Napi::CallbackInfo& info)
   return Napi::BigInt::New(env, value + 1);
 }
 
+// Test ArrayBuffer and TypedArray support - new in v8.x
+Napi::Value TestArrayBuffer(const Napi::CallbackInfo& info)
+{
+  Napi::Env env = info.Env();
+
+  // Create an ArrayBuffer with 16 bytes
+  size_t length = 16;
+  Napi::ArrayBuffer arrayBuffer = Napi::ArrayBuffer::New(env, length);
+
+  // Fill it with some test data
+  uint8_t* data = static_cast<uint8_t*>(arrayBuffer.Data());
+  for (size_t i = 0; i < length; i++)
+  {
+    data[i] = static_cast<uint8_t>(i * 2);
+  }
+
+  return arrayBuffer;
+}
+
+// Test TypedArray operations - enhanced in v8.x
+Napi::Value TestTypedArray(const Napi::CallbackInfo& info)
+{
+  Napi::Env env = info.Env();
+
+  // Create a Uint32Array with 4 elements
+  size_t length = 4;
+  Napi::Uint32Array typedArray = Napi::Uint32Array::New(env, length);
+
+  // Fill with test data
+  uint32_t* data = typedArray.Data();
+  for (size_t i = 0; i < length; i++)
+  {
+    data[i] = static_cast<uint32_t>((i + 1) * 1000);
+  }
+
+  return typedArray;
+}
+
+// Test Promise support - available in v8.x
+Napi::Value TestPromise(const Napi::CallbackInfo& info)
+{
+  Napi::Env env = info.Env();
+
+  // Create a promise that resolves immediately
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+  // Resolve with a test value
+  deferred.Resolve(Napi::String::New(env, "Promise resolved successfully"));
+
+  return deferred.Promise();
+}
+
+// Test improved type checking - enhanced in v8.x
+Napi::Value TestTypeChecking(const Napi::CallbackInfo& info)
+{
+  Napi::Env env = info.Env();
+
+  if (info.Length() < 1)
+  {
+    Napi::TypeError::New(env, "Expected 1 argument")
+      .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  Napi::Value value = info[0];
+  Napi::Object result = Napi::Object::New(env);
+
+  // Test all the new type checking methods
+  result.Set("isArray", value.IsArray());
+  result.Set("isArrayBuffer", value.IsArrayBuffer());
+  result.Set("isBigInt", value.IsBigInt());
+  result.Set("isBoolean", value.IsBoolean());
+  result.Set("isBuffer", value.IsBuffer());
+  result.Set("isDataView", value.IsDataView());
+  result.Set("isDate", value.IsDate());
+  result.Set("isExternal", value.IsExternal());
+  result.Set("isFunction", value.IsFunction());
+  result.Set("isNull", value.IsNull());
+  result.Set("isNumber", value.IsNumber());
+  result.Set("isObject", value.IsObject());
+  result.Set("isPromise", value.IsPromise());
+  result.Set("isString", value.IsString());
+  result.Set("isSymbol", value.IsSymbol());
+  result.Set("isTypedArray", value.IsTypedArray());
+  result.Set("isUndefined", value.IsUndefined());
+
+  return result;
+}
+
 // Initialize the addon using node-addon-api C++ interface
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -107,6 +196,10 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set("getNapiVersion", Napi::Function::New(env, GetNapiVersion));
   exports.Set("testBigInt", Napi::Function::New(env, TestBigInt));
   exports.Set("addOneToBigInt", Napi::Function::New(env, AddOneToBigInt));
+  exports.Set("testArrayBuffer", Napi::Function::New(env, TestArrayBuffer));
+  exports.Set("testTypedArray", Napi::Function::New(env, TestTypedArray));
+  exports.Set("testPromise", Napi::Function::New(env, TestPromise));
+  exports.Set("testTypeChecking", Napi::Function::New(env, TestTypeChecking));
   return exports;
 }
 
