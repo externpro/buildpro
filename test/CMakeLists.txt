@@ -16,6 +16,8 @@ set(pros
   nasm
   nlohmann_json
   nodeng
+  nodexp
+  node-addon-api
   nvjpeg2000
   patch
   spatialite-tools
@@ -28,10 +30,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # exdlpro projects
     fecpp
     wxinclude
-    )
-  list(APPEND pros
-    # standalone externpro devel packages
-    #node-addon-api
     )
 endif()
 set(googletest_deps xpro::gtest_main)
