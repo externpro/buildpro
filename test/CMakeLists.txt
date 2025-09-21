@@ -12,6 +12,7 @@ set(pros
   hdf5
   libiconv
   librttopo
+  libsodium
   libspatialite
   nasm
   nlohmann_json
@@ -45,6 +46,7 @@ set(geos_deps xpro::geos_c xpro::gtest_main)
 set(hdf5_deps xpro::hdf5_cpp-static xpro::gtest_main)
 set(libiconv_deps xpro::libiconv xpro::gtest_main)
 set(librttopo_deps xpro::librttopo xpro::gtest_main)
+set(libsodium_deps xpro::sodium xpro::gtest_main)
 set(libspatialite_deps xpro::libspatialite xpro::gtest_main)
 set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
