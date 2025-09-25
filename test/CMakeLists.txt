@@ -27,11 +27,43 @@ set(pros
   sqlite3
   zlib
   )
+list(APPEND pros
+  # exdlpro projects on all platforms
+  activemqcpp
+  cares
+  cppzmq
+  curl
+  expat
+  glew
+  jpegxp
+  libgit2
+  libssh2
+  lua
+  openh264
+  openssl
+  protobuf
+  rapidxml
+  shapelib
+  zmqpp
+  )
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
-    # exdlpro projects
+    # exdlpro projects not on macOS
+    azmq
+    boost
+    clangformat
     fecpp
+    ffmpeg
+    geotiff
+    geotrans
+    jasper
+    jxrlib
+    libstrophe
+    rapidjson
+    wirehair
     wxinclude
+    wxwidgets
+    wxx
     )
 endif()
 set(googletest_deps xpro::gtest_main)
