@@ -3,10 +3,22 @@
 #include <vector>
 
 #include <ares.h>
-#include <arpa/inet.h>
 #include <gtest/gtest.h>
+
+#ifdef _WIN32
+#include <windows.h>
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+// Windows doesn't define these error codes
+#ifndef EINVAL
+#define EINVAL WSAEINVAL
+#endif
+#else
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/socket.h>
+#endif
 
 class CaresTest : public ::testing::Test
 {
@@ -15,6 +27,13 @@ protected:
 
   void SetUp() override
   {
+#ifdef _WIN32
+    // Initialize Winsock on Windows
+    WSADATA wsaData;
+    int wsaResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    ASSERT_EQ(0, wsaResult) << "Failed to initialize Winsock";
+#endif
+
     // Initialize c-ares library
     int status = ares_library_init(ARES_LIB_INIT_ALL);
     ASSERT_EQ(ARES_SUCCESS, status) << "Failed to initialize c-ares library";
@@ -35,6 +54,11 @@ protected:
     // Clean up
     ares_destroy(channel);
     ares_library_cleanup();
+
+#ifdef _WIN32
+    // Clean up Winsock on Windows
+    WSACleanup();
+#endif
   }
 
   static void callback(void* arg,
@@ -60,12 +84,25 @@ protected:
     {
       if (host->h_addrtype == AF_INET)
       {
+#ifdef _WIN32
+        // Windows has different function names for IP conversion
+        struct in_addr addr;
+        memcpy(&addr, host->h_addr_list[i], sizeof(struct in_addr));
+        InetNtopA(AF_INET, &addr, ip, sizeof(ip));
+#else
         inet_ntop(AF_INET, host->h_addr_list[i], ip, sizeof(ip));
+#endif
         result->push_back("IPv4: " + std::string(ip));
       }
       else if (host->h_addrtype == AF_INET6)
       {
+#ifdef _WIN32
+        struct in6_addr addr;
+        memcpy(&addr, host->h_addr_list[i], sizeof(struct in6_addr));
+        InetNtopA(AF_INET6, &addr, ip, sizeof(ip));
+#else
         inet_ntop(AF_INET6, host->h_addr_list[i], ip, sizeof(ip));
+#endif
         result->push_back("IPv6: " + std::string(ip));
       }
     }
@@ -97,10 +134,30 @@ protected:
       tvp = ares_timeout(channel, NULL, &tv);
 
       count = select(nfds, &readers, &writers, NULL, tvp);
-      if (count < 0 && errno != EINVAL)
+      if (count < 0)
       {
-        result.push_back("select() failed: " + std::string(strerror(errno)));
-        break;
+#ifdef _WIN32
+        int error = WSAGetLastError();
+        if (error != WSAEINVAL)
+        {
+          char errorMsg[256];
+          FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,
+                         NULL,
+                         error,
+                         0,
+                         errorMsg,
+                         sizeof(errorMsg),
+                         NULL);
+          result.push_back("select() failed: " + std::string(errorMsg));
+          break;
+        }
+#else
+        if (errno != EINVAL)
+        {
+          result.push_back("select() failed: " + std::string(strerror(errno)));
+          break;
+        }
+#endif
       }
 
       ares_process(channel, &readers, &writers);
