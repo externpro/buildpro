@@ -1,14 +1,62 @@
 #include <cstdlib>
-#include <filesystem>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
 
+#include <dirent.h>
 #include <git2.h>
 #include <git2/sys/commit.h>
 #include <gtest/gtest.h>
+#include <sys/stat.h>
 
-namespace fs = std::filesystem;
+// Helper functions to replace std::filesystem
+bool path_exists(const std::string& path)
+{
+  struct stat buffer;
+  return (stat(path.c_str(), &buffer) == 0);
+}
+
+// Recursively remove a directory and its contents
+int remove_directory(const std::string& path)
+{
+  DIR* dir = opendir(path.c_str());
+  if (dir == nullptr)
+  {
+    return -1;
+  }
+
+  struct dirent* entry;
+  while ((entry = readdir(dir)) != nullptr)
+  {
+    // Skip . and .. entries
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+    {
+      continue;
+    }
+
+    std::string full_path = path + "/" + entry->d_name;
+    struct stat statbuf;
+    if (stat(full_path.c_str(), &statbuf) == -1)
+    {
+      continue;
+    }
+
+    if (S_ISDIR(statbuf.st_mode))
+    {
+      // Recursively remove subdirectory
+      remove_directory(full_path);
+    }
+    else
+    {
+      // Remove file
+      unlink(full_path.c_str());
+    }
+  }
+
+  closedir(dir);
+  return rmdir(path.c_str());
+}
 
 class LibGit2Test : public ::testing::Test
 {
@@ -39,9 +87,9 @@ protected:
     git_libgit2_shutdown();
 
     // Remove the test directory
-    if (!testRepoPath.empty() && fs::exists(testRepoPath))
+    if (!testRepoPath.empty() && path_exists(testRepoPath))
     {
-      fs::remove_all(testRepoPath);
+      remove_directory(testRepoPath);
     }
   }
 
@@ -136,7 +184,7 @@ TEST_F(LibGit2Test, RepositoryInitialization)
 
   // Check if the .git directory was created
   std::string gitDir = testRepoPath + "/.git";
-  EXPECT_TRUE(fs::exists(gitDir)) << ".git directory not found";
+  EXPECT_TRUE(path_exists(gitDir)) << ".git directory not found";
 
   // Cleanup
   git_repository_free(repo);
@@ -163,7 +211,7 @@ TEST_F(LibGit2Test, BasicGitOperations)
 
   // Check if the .git directory exists
   std::string gitDir = std::string(workdir) + ".git";
-  EXPECT_TRUE(fs::exists(gitDir)) << ".git directory not found";
+  EXPECT_TRUE(path_exists(gitDir)) << ".git directory not found";
 
   // Cleanup
   git_repository_free(repo);
