@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include <sodium.h>
 #include <zmq.h>
-#include <zmq_utils.h>
 
 class ZMQTest : public ::testing::Test
 {
