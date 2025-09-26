@@ -27,36 +27,82 @@ set(pros
   sqlite3
   zlib
   )
+list(APPEND pros
+  # exdlpro projects on all platforms
+  activemqcpp
+  cares
+  cppzmq
+  curl
+  expat
+  glew
+  jpegxp
+  libgit2
+  libssh2
+  lua
+  openh264
+  openssl
+  protobuf
+  rapidxml
+  shapelib
+  zmqpp
+  )
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
-    # exdlpro projects
+    # exdlpro projects not on macOS
+    azmq
+    boost
+    clangformat
     fecpp
+    ffmpeg
+    geotiff
+    geotrans
+    jasper
+    jxrlib
+    libstrophe
+    rapidjson
+    wirehair
     wxinclude
+    wxwidgets
+    wxx
     )
 endif()
 set(googletest_deps xpro::gtest_main)
+set(activemqcpp_deps xpro::activemqcpp xpro::gtest_main)
 set(apr_deps xpro::apr-1 xpro::gtest_main)
 set(argon2_deps xpro::argon2 xpro::gtest_main)
 set(bzip2_deps xpro::bz2 xpro::gtest_main)
+set(cares_deps c-ares::cares xpro::gtest_main)
 set(ceres-solver_deps xpro::ceres xpro::gtest_main)
+set(cppzmq_deps xpro::cppzmq-static xpro::gtest_main)
+set(curl_deps xpro::libcurl xpro::gtest_main)
 set(eigen_deps xpro::Eigen xpro::gtest_main)
+set(expat_deps xpro::expat xpro::gtest_main)
 set(flatbuffers_deps xpro::flatbuffers xpro::gtest_main)
-set(flatbuffers_compile_features cxx_std_17)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(geos_deps xpro::geos_c xpro::gtest_main)
+set(glew_deps GLEW::glew_s xpro::gtest_main)
 set(hdf5_deps xpro::hdf5_cpp-static xpro::gtest_main)
+set(libgit2_deps xpro::git2 xpro::gtest_main)
 set(libiconv_deps xpro::libiconv xpro::gtest_main)
 set(librttopo_deps xpro::librttopo xpro::gtest_main)
 set(libsodium_deps xpro::sodium xpro::gtest_main)
 set(libspatialite_deps xpro::libspatialite xpro::gtest_main)
+set(libssh2_deps xpro::libssh2 xpro::gtest_main)
 set(libzmq_deps xpro::libzmq-static xpro::gtest_main)
 set(libzmq_compile_features cxx_std_17)
+set(lua_deps xpro::liblua xpro::gtest_main)
 set(nlohmann_json_deps xpro::nlohmann_json xpro::gtest_main)
 set(nlohmann_json_compile_features cxx_std_17)
+set(openh264_deps xpro::openh264 xpro::gtest_main)
+set(openssl_deps xpro::crypto xpro::ssl xpro::gtest_main)
+set(protobuf_deps xpro::libprotobuf xpro::gtest_main)
+set(rapidxml_deps xpro::rapidxml xpro::gtest_main)
+set(shapelib_deps xpro::shape xpro::gtest_main)
 set(spdlog_deps xpro::spdlog xpro::gtest_main)
 set(spdlog_compile_features cxx_std_17)
 set(sqlite3_deps xpro::SQLite3 xpro::gtest_main)
 set(zlib_deps xpro::zlibstatic xpro::gtest_main)
+set(zmqpp_deps xpro::zmqpp-static xpro::gtest_main)
 foreach(pro ${pros})
   find_package(${pro})
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cpp)
@@ -77,6 +123,11 @@ foreach(pro ${pros})
     xpGetPkgVar(${pro} EXE)
     if(TARGET ${${pro}_EXE})
       set(${pro}_EXE_PATH $<TARGET_FILE:${${pro}_EXE}>)
+    elseif(pro STREQUAL "protobuf")
+      xpGetPkgVar(${pro} PROTOC_EXECUTABLE)
+      if(TARGET ${${pro}_PROTOC_EXECUTABLE})
+        set(${pro}_EXE_PATH $<TARGET_FILE:${${pro}_PROTOC_EXECUTABLE}>)
+      endif()
     else()
       set(${pro}_EXE_PATH ${${pro}_EXE})
     endif()
