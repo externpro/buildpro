@@ -3,6 +3,7 @@ set(pros
   googletest
   apr
   argon2
+  boost
   bzip2
   ceres-solver
   eigen
@@ -50,7 +51,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
     # exdlpro projects not on macOS
     azmq
-    boost
     clangformat
     fecpp
     ffmpeg
@@ -70,6 +70,7 @@ set(googletest_deps xpro::gtest_main)
 set(activemqcpp_deps xpro::activemqcpp xpro::gtest_main)
 set(apr_deps xpro::apr-1 xpro::gtest_main)
 set(argon2_deps xpro::argon2 xpro::gtest_main)
+set(boost_deps Boost::filesystem Boost::program_options Boost::regex xpro::gtest_main)
 set(bzip2_deps xpro::bz2 xpro::gtest_main)
 set(cares_deps c-ares::cares xpro::gtest_main)
 set(ceres-solver_deps xpro::ceres xpro::gtest_main)
