@@ -55,7 +55,22 @@ TEST(BoostProgramOptionsTest, BasicFunctionality)
 // Test for Boost::filesystem
 TEST(BoostFilesystemTest, PathOperations)
 {
-  boost::filesystem::path p("/usr/local/include");
+  // Create a platform-independent path
+  boost::filesystem::path p;
+
+#ifdef _WIN32
+  // Windows-style path
+  p = "C:\\Program Files\\include";
+
+  EXPECT_EQ(p.filename().string(), "include");
+  EXPECT_EQ(p.parent_path().string(), "C:\\Program Files");
+
+  boost::filesystem::path p2 = p / "boost";
+  // Use generic_string() for platform-independent path representation
+  EXPECT_EQ(p2.generic_string(), "C:/Program Files/include/boost");
+#else
+  // Unix-style path
+  p = "/usr/local/include";
 
   EXPECT_EQ(p.string(), "/usr/local/include");
   EXPECT_EQ(p.filename().string(), "include");
@@ -63,6 +78,13 @@ TEST(BoostFilesystemTest, PathOperations)
 
   boost::filesystem::path p2 = p / "boost";
   EXPECT_EQ(p2.string(), "/usr/local/include/boost");
+#endif
+
+  // Test platform-independent operations
+  boost::filesystem::path generic_path("dir/subdir/file.txt");
+  EXPECT_EQ(generic_path.filename().string(), "file.txt");
+  EXPECT_EQ(generic_path.stem().string(), "file");
+  EXPECT_EQ(generic_path.extension().string(), ".txt");
 }
 
 // Test for Boost::algorithm::string
