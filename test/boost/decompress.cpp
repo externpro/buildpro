@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+
 #include <boost/filesystem.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
 #pragma warning(push)
@@ -18,7 +19,8 @@ int main(int argc, char** argv)
   bfs::path exepath = bfs::path(std::string(argv[0]));
   if (argc != 2)
   {
-    std::cerr << "usage: " << exepath.filename().string() << " file.[bz2|gz|Z]" << std::endl;
+    std::cerr << "usage: " << exepath.filename().string() << " file.[bz2|gz|Z]"
+              << std::endl;
     return 1;
   }
   try
@@ -39,14 +41,15 @@ int main(int argc, char** argv)
       in.push(bio::zlib_decompressor());
     else
     {
-      std::cerr << filepath.filename().string() << ": unsupported extension (must be .[bz2|gz|Z])" << std::endl;
+      std::cerr << filepath.filename().string()
+                << ": unsupported extension (must be .[bz2|gz|Z])" << std::endl;
       return 1;
     }
     std::ifstream file(argv[1], std::ios_base::in | std::ios_base::binary);
     in.push(file);
     bio::copy(in, std::cout);
   }
-  //catch (const bio::bzip2_error& e)
+  // catch (const bio::bzip2_error& e)
   catch (const bio::zlib_error& e)
   {
     int err = e.error();
