@@ -7,6 +7,7 @@ set(pros
   bzip2
   ceres-solver
   eigen
+  fecpp
   flatbuffers
   fmt
   geos
@@ -52,7 +53,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # exdlpro projects not on macOS
     azmq
     clangformat
-    fecpp
     ffmpeg
     geotiff
     geotrans
@@ -78,6 +78,7 @@ set(cppzmq_deps xpro::cppzmq-static xpro::gtest_main)
 set(curl_deps xpro::libcurl xpro::gtest_main)
 set(eigen_deps xpro::Eigen xpro::gtest_main)
 set(expat_deps xpro::expat xpro::gtest_main)
+set(fecpp_deps xpro::fecpp xpro::gtest_main)
 set(flatbuffers_deps xpro::flatbuffers xpro::gtest_main)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(geos_deps xpro::geos_c xpro::gtest_main)
