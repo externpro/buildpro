@@ -28,6 +28,7 @@ set(pros
   spatialite-tools
   spdlog
   sqlite3
+  wxinclude
   zlib
   )
 list(APPEND pros
@@ -61,7 +62,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     libstrophe
     rapidjson
     wirehair
-    wxinclude
     wxwidgets
     wxx
     )
