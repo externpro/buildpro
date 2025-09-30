@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "## OS and Kernel Information" >> $GITHUB_STEP_SUMMARY
           # OS Version
-          echo "### OS Version" >> $GITHUB_STEP_SUMMARY
+          echo "**OS Version**" >> $GITHUB_STEP_SUMMARY
           if [ "$RUNNER_OS" == "Linux" ]; then
             echo '```' >> $GITHUB_STEP_SUMMARY
             cat /etc/os-release >> $GITHUB_STEP_SUMMARY
@@ -41,7 +41,7 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
           # Kernel Version
-          echo "### Kernel Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Kernel Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           uname -a >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
@@ -53,13 +53,13 @@ jobs:
         run: |
           echo "## OS and Kernel Information" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           # OS Version
-          echo "### OS Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo "**OS Version**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           (Get-CimInstance -ClassName Win32_OperatingSystem).Caption | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           (Get-CimInstance -ClassName Win32_OperatingSystem).Version | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           # Kernel Version
-          echo "### Kernel Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo "**Kernel Version**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           (Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
@@ -70,7 +70,7 @@ jobs:
         run: |
           echo "## Development Tools Information" >> $GITHUB_STEP_SUMMARY
           ########## Clang version
-          echo "### Clang Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Clang Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v clang &> /dev/null; then
             clang --version >> $GITHUB_STEP_SUMMARY
@@ -79,7 +79,7 @@ jobs:
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           ########## Clang-format version
-          echo "### Clang-format Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Clang-format Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v clang-format &> /dev/null; then
             clang-format --version >> $GITHUB_STEP_SUMMARY
@@ -88,7 +88,7 @@ jobs:
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           ########## GNU C++ version
-          echo "### GNU C++ Version" >> $GITHUB_STEP_SUMMARY
+          echo "**GNU C++ Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v g++ &> /dev/null; then
             g++ --version >> $GITHUB_STEP_SUMMARY
@@ -97,7 +97,7 @@ jobs:
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           ########## Python version
-          echo "### Python Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Python Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v python &> /dev/null; then
             python --version >> $GITHUB_STEP_SUMMARY
@@ -114,7 +114,7 @@ jobs:
         run: |
           echo "## Build Tools Information" >> $GITHUB_STEP_SUMMARY
           ########## CMake version
-          echo "### CMake Version" >> $GITHUB_STEP_SUMMARY
+          echo "**CMake Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v cmake &> /dev/null; then
             cmake --version >> $GITHUB_STEP_SUMMARY
@@ -123,7 +123,7 @@ jobs:
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           ########## Ninja version
-          echo "### Ninja Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Ninja Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v ninja &> /dev/null; then
             ninja --version >> $GITHUB_STEP_SUMMARY
@@ -138,7 +138,7 @@ jobs:
         run: |
           echo "## Version Control Tools Information" >> $GITHUB_STEP_SUMMARY
           ########## Git version
-          echo "### Git Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Git Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v git &> /dev/null; then
             git --version >> $GITHUB_STEP_SUMMARY
@@ -147,7 +147,7 @@ jobs:
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           ########## Git LFS version
-          echo "### Git LFS Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Git LFS Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v git-lfs &> /dev/null; then
             git-lfs --version >> $GITHUB_STEP_SUMMARY
@@ -162,7 +162,7 @@ jobs:
         run: |
           echo "## Docker Information" >> $GITHUB_STEP_SUMMARY
           ########## Docker version
-          echo "### Docker Version" >> $GITHUB_STEP_SUMMARY
+          echo "**Docker Version**" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           if command -v docker &> /dev/null; then
             docker --version >> $GITHUB_STEP_SUMMARY
@@ -178,7 +178,7 @@ jobs:
         run: |
           echo "## Windows-specific Tools Information" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           ########## Visual Studio version
-          echo "### Visual Studio Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo "**Visual Studio Version**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
           if ($vsPath) {
@@ -190,12 +190,36 @@ jobs:
           }
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           ########## Clang-format version bundled with Visual Studio
-          echo "### Clang-format Version (Visual Studio)" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo "**Clang-format Version (Visual Studio)**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           if ($vsPath) {
-            $clangFormatPath = Get-ChildItem -Path $vsPath -Filter "clang-format.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+            # Try to find clang-format in architecture-specific locations
+            $clangFormatPath = $null
+            # Check x64 location first
+            $x64Path = Join-Path -Path $vsPath -ChildPath "VC\Tools\Llvm\x64\bin\clang-format.exe"
+            if (Test-Path $x64Path) {
+              $clangFormatPath = $x64Path
+            }
+            # Check 32-bit location if x64 not found
+            if (-not $clangFormatPath) {
+              $x86Path = Join-Path -Path $vsPath -ChildPath "VC\Tools\Llvm\bin\clang-format.exe"
+              if (Test-Path $x86Path) {
+                $clangFormatPath = $x86Path
+              }
+            }
+            # If still not found, try a general search but exclude ARM64 paths
+            if (-not $clangFormatPath) {
+              $clangFormatPath = Get-ChildItem -Path $vsPath -Filter "clang-format.exe" -Recurse -ErrorAction SilentlyContinue |
+                                Where-Object { $_.FullName -notlike "*ARM64*" } |
+                                Select-Object -First 1 -ExpandProperty FullName
+            }
             if ($clangFormatPath) {
-              & $clangFormatPath --version | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+              try {
+                echo "Path: $clangFormatPath" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+                & $clangFormatPath --version | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+              } catch {
+                echo "Error running clang-format: $_" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+              }
             } else {
               echo "Clang-format not found in Visual Studio installation" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
             }
@@ -204,7 +228,7 @@ jobs:
           }
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           ########## WiX Toolset version
-          echo "### WiX Toolset Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo "**WiX Toolset Version**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           $wixPath = Get-Command candle.exe -ErrorAction SilentlyContinue
           if ($wixPath) {
