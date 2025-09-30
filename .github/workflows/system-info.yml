@@ -6,7 +6,7 @@ on:
 
 jobs:
   system-info:
-    name: Collect System Information
+    name: System Information
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15, windows-latest, windows-2022]
@@ -23,8 +23,9 @@ jobs:
           echo "# Runner: ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       -
-        name: OS and Kernel Information
-        id: os-info
+        name: OS and Kernel Information (Linux/macOS)
+        id: os-info-unix
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           echo "## OS and Kernel Information" >> $GITHUB_STEP_SUMMARY
@@ -38,16 +39,30 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
             sw_vers >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            systeminfo | findstr /B /C:"OS Name" /C:"OS Version" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
           # Kernel Version
           echo "### Kernel Version" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           uname -a >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+      -
+        name: OS and Kernel Information (Windows)
+        id: os-info-windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          echo "## OS and Kernel Information" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          # OS Version
+          echo "### OS Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          (Get-CimInstance -ClassName Win32_OperatingSystem).Caption | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          (Get-CimInstance -ClassName Win32_OperatingSystem).Version | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          # Kernel Version
+          echo "### Kernel Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          (Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
       -
         name: Development Tools Information
         id: dev-tools
