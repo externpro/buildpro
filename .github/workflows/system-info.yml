@@ -1,0 +1,207 @@
+name: System Information
+on:
+  workflow_dispatch:  # Allows manual triggering
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sunday at midnight UTC
+
+jobs:
+  system-info:
+    name: Collect System Information
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15, windows-latest, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
+      -
+        name: Runner Information
+        id: runner-info
+        shell: bash
+        run: |
+          echo "# Runner: ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+      -
+        name: OS and Kernel Information
+        id: os-info
+        shell: bash
+        run: |
+          echo "## OS and Kernel Information" >> $GITHUB_STEP_SUMMARY
+          # OS Version
+          echo "### OS Version" >> $GITHUB_STEP_SUMMARY
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat /etc/os-release >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            sw_vers >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            systeminfo | findstr /B /C:"OS Name" /C:"OS Version" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          # Kernel Version
+          echo "### Kernel Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          uname -a >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      -
+        name: Development Tools Information
+        id: dev-tools
+        shell: bash
+        run: |
+          echo "## Development Tools Information" >> $GITHUB_STEP_SUMMARY
+          ########## Clang version
+          echo "### Clang Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v clang &> /dev/null; then
+            clang --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Clang not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ########## Clang-format version
+          echo "### Clang-format Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v clang-format &> /dev/null; then
+            clang-format --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Clang-format not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ########## GNU C++ version
+          echo "### GNU C++ Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v g++ &> /dev/null; then
+            g++ --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "GNU C++ not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ########## Python version
+          echo "### Python Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v python &> /dev/null; then
+            python --version >> $GITHUB_STEP_SUMMARY
+          elif command -v python3 &> /dev/null; then
+            python3 --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Python not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      -
+        name: Build Tools Information
+        id: build-tools
+        shell: bash
+        run: |
+          echo "## Build Tools Information" >> $GITHUB_STEP_SUMMARY
+          ########## CMake version
+          echo "### CMake Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v cmake &> /dev/null; then
+            cmake --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "CMake not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ########## Ninja version
+          echo "### Ninja Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v ninja &> /dev/null; then
+            ninja --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Ninja not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      -
+        name: Version Control Tools Information
+        id: vcs-tools
+        shell: bash
+        run: |
+          echo "## Version Control Tools Information" >> $GITHUB_STEP_SUMMARY
+          ########## Git version
+          echo "### Git Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v git &> /dev/null; then
+            git --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Git not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ########## Git LFS version
+          echo "### Git LFS Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v git-lfs &> /dev/null; then
+            git-lfs --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Git LFS not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      -
+        name: Docker Information
+        id: docker-info
+        shell: bash
+        run: |
+          echo "## Docker Information" >> $GITHUB_STEP_SUMMARY
+          ########## Docker version
+          echo "### Docker Version" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if command -v docker &> /dev/null; then
+            docker --version >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Docker not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      -
+        name: Windows-specific Tools
+        id: windows-tools
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          echo "## Windows-specific Tools Information" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          ########## Visual Studio version
+          echo "### Visual Studio Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          if ($vsPath) {
+            $vsVersion = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property catalog.productDisplayVersion
+            echo "Visual Studio $vsVersion" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+            echo "Path: $vsPath" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          } else {
+            echo "Visual Studio not found" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          }
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          ########## Clang-format version bundled with Visual Studio
+          echo "### Clang-format Version (Visual Studio)" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          if ($vsPath) {
+            $clangFormatPath = Get-ChildItem -Path $vsPath -Filter "clang-format.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+            if ($clangFormatPath) {
+              & $clangFormatPath --version | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+            } else {
+              echo "Clang-format not found in Visual Studio installation" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+            }
+          } else {
+            echo "Visual Studio not found" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          }
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          ########## WiX Toolset version
+          echo "### WiX Toolset Version" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          $wixPath = Get-Command candle.exe -ErrorAction SilentlyContinue
+          if ($wixPath) {
+            & candle.exe -? | Select-String -Pattern "Windows Installer XML Toolset Compiler" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          } else {
+            echo "WiX Toolset not found" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+          }
+          echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+      -
+        name: Summary
+        shell: bash
+        run: |
+          echo "## System Information Summary" >> $GITHUB_STEP_SUMMARY
+          echo "System information collected for ${{ runner.os }} runner (${{ matrix.os }})." >> $GITHUB_STEP_SUMMARY
+          echo "Check the detailed sections above for specific version information." >> $GITHUB_STEP_SUMMARY
