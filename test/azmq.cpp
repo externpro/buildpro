@@ -1,7 +1,10 @@
 #include <array>
+#include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -50,13 +53,31 @@ TEST_F(AzmqTest, SocketCreation)
 // Test basic REQ/REP pattern
 TEST_F(AzmqTest, ReqRepPattern)
 {
-  // Create REP socket
+  // Create REP socket with a specific port
   azmq::rep_socket rep_socket(*ios);
-  ASSERT_NO_THROW({ rep_socket.bind("tcp://127.0.0.1:5555"); });
+  std::string endpoint = "tcp://127.0.0.1:5555";
+  boost::system::error_code ec;
+  rep_socket.bind(endpoint, ec);
+  if (ec)
+  {
+    std::cout << "Failed to bind REP socket to port 5555, trying 5556..."
+              << std::endl;
+    endpoint = "tcp://127.0.0.1:5556";
+    ec.clear();
+    rep_socket.bind(endpoint, ec);
+    ASSERT_FALSE(ec) << "Failed to bind REP socket: " << ec.message();
+  }
+  std::cout << "REP socket bound to: " << endpoint << std::endl;
 
   // Create REQ socket
   azmq::req_socket req_socket(*ios);
-  ASSERT_NO_THROW({ req_socket.connect("tcp://127.0.0.1:5555"); });
+  ASSERT_NO_THROW({ req_socket.connect(endpoint); });
+
+  // Create synchronization primitives
+  std::mutex mutex;
+  std::condition_variable cv;
+  std::atomic<bool> rep_ready{false};
+  std::atomic<bool> rep_done{false};
 
   // Create a thread for the REP socket
   std::thread rep_thread(
@@ -67,9 +88,19 @@ TEST_F(AzmqTest, ReqRepPattern)
         std::array<char, 256> buffer;
         boost::system::error_code ec;
 
-        // Receive the request
+        // Signal that we're ready to receive
+        rep_ready = true;
+        cv.notify_one();
+
+        // Receive the request with timeout
+        // Note: azmq doesn't directly expose timeout options, so we'll rely on
+        // the async operations
         std::size_t size = rep_socket.receive(asio::buffer(buffer), 0, ec);
-        ASSERT_FALSE(ec) << "Error receiving message: " << ec.message();
+        if (ec)
+        {
+          ADD_FAILURE() << "Error receiving message: " << ec.message();
+          return;
+        }
 
         std::string received(buffer.data(), size);
         EXPECT_EQ(received, "Hello");
@@ -77,7 +108,13 @@ TEST_F(AzmqTest, ReqRepPattern)
         // Send the reply
         std::string reply = "World";
         rep_socket.send(asio::buffer(reply), 0, ec);
-        ASSERT_FALSE(ec) << "Error sending reply: " << ec.message();
+        if (ec)
+        {
+          ADD_FAILURE() << "Error sending reply: " << ec.message();
+          return;
+        }
+
+        rep_done = true;
       }
       catch (const std::exception& e)
       {
@@ -85,9 +122,19 @@ TEST_F(AzmqTest, ReqRepPattern)
       }
     });
 
+  // Wait for REP socket to be ready
+  {
+    std::unique_lock<std::mutex> lock(mutex);
+    cv.wait_for(
+      lock, std::chrono::seconds(5), [&] { return rep_ready.load(); });
+  }
+
+  // Note: azmq doesn't directly expose timeout options in the same way as raw
+  // ZeroMQ
+
   // Send a request from the REQ socket
   std::string request = "Hello";
-  boost::system::error_code ec;
+  ec.clear(); // Reuse the error_code from above
   req_socket.send(asio::buffer(request), 0, ec);
   ASSERT_FALSE(ec) << "Error sending request: " << ec.message();
 
@@ -109,22 +156,42 @@ TEST_F(AzmqTest, ReqRepPattern)
 // Test PUB/SUB pattern
 TEST_F(AzmqTest, PubSubPattern)
 {
-  // Create PUB socket
+  // Create PUB socket with a specific port
   azmq::pub_socket pub_socket(*ios);
-  ASSERT_NO_THROW({ pub_socket.bind("tcp://127.0.0.1:5556"); });
+  std::string pub_endpoint = "tcp://127.0.0.1:5557";
+  boost::system::error_code pub_ec;
+  pub_socket.bind(pub_endpoint, pub_ec);
+  if (pub_ec)
+  {
+    std::cout << "Failed to bind PUB socket to port 5557, trying 5558..."
+              << std::endl;
+    pub_endpoint = "tcp://127.0.0.1:5558";
+    pub_ec.clear();
+    pub_socket.bind(pub_endpoint, pub_ec);
+    ASSERT_FALSE(pub_ec) << "Failed to bind PUB socket: " << pub_ec.message();
+  }
+  std::cout << "PUB socket bound to: " << pub_endpoint << std::endl;
 
   // Create SUB socket
   azmq::sub_socket sub_socket(*ios);
   ASSERT_NO_THROW({
-    sub_socket.connect("tcp://127.0.0.1:5556");
+    sub_socket.connect(pub_endpoint);
     sub_socket.set_option(azmq::socket::subscribe("NASDAQ"));
   });
+
+  // Note: azmq doesn't directly expose timeout options in the same way as raw
+  // ZeroMQ
 
   // Give time for the connection to establish
   std::this_thread::sleep_for(100ms);
 
-  // Create a thread for the SUB socket
+  // Create synchronization primitives for PUB/SUB test
   std::atomic<bool> message_received{false};
+  std::atomic<bool> sub_ready{false};
+  std::condition_variable sub_cv;
+  std::mutex sub_mutex;
+
+  // Create a thread for the SUB socket
   std::thread sub_thread(
     [&]()
     {
@@ -133,23 +200,34 @@ TEST_F(AzmqTest, PubSubPattern)
         std::array<char, 256> buffer;
         boost::system::error_code ec;
 
+        // Signal that we're ready to receive
+        sub_ready = true;
+        sub_cv.notify_one();
+
         // Try to receive a message with timeout
         for (int i = 0; i < 5 && !message_received; ++i)
         {
           try
           {
-            std::size_t size = sub_socket.receive(asio::buffer(buffer), 0);
+            std::size_t size = sub_socket.receive(asio::buffer(buffer), 0, ec);
+            if (!ec)
             {
               std::string received(buffer.data(), size);
               EXPECT_EQ(received, "NASDAQ:AAPL 123.45");
               message_received = true;
               break;
             }
+            else if (ec != boost::asio::error::operation_aborted &&
+                     ec != boost::asio::error::timed_out)
+            {
+              std::cerr << "Error in receive attempt " << i << ": "
+                        << ec.message() << std::endl;
+            }
           }
           catch (const std::exception& e)
           {
-            std::cerr << "Error in receive attempt " << i << ": " << e.what()
-                      << std::endl;
+            std::cerr << "Exception in receive attempt " << i << ": "
+                      << e.what() << std::endl;
           }
           std::this_thread::sleep_for(100ms);
         }
@@ -160,13 +238,28 @@ TEST_F(AzmqTest, PubSubPattern)
       }
     });
 
+  // Wait for SUB socket to be ready
+  {
+    std::unique_lock<std::mutex> lock(sub_mutex);
+    sub_cv.wait_for(
+      lock, std::chrono::seconds(5), [&] { return sub_ready.load(); });
+  }
+
+  // Note: azmq doesn't directly expose timeout options in the same way as raw
+  // ZeroMQ
+
   // Send a few messages from the PUB socket to ensure delivery
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 5 && !message_received; ++i)
   {
     std::string message = "NASDAQ:AAPL 123.45";
-    boost::system::error_code ec;
-    pub_socket.send(asio::buffer(message), 0);
-    std::this_thread::sleep_for(100ms);
+    pub_ec.clear(); // Reuse the error_code
+    pub_socket.send(asio::buffer(message), 0, pub_ec);
+    if (pub_ec)
+    {
+      std::cerr << "Error sending PUB message: " << pub_ec.message()
+                << std::endl;
+    }
+    std::this_thread::sleep_for(200ms);
   }
 
   // Wait for the subscriber thread
@@ -185,7 +278,9 @@ TEST_F(AzmqTest, ExampleCode)
   // connections but demonstrates the same API usage
 
   // Create a local endpoint for testing
-  std::string endpoint = "inproc://example_test";
+  // Using inproc:// protocol which is more reliable for in-process
+  // communication
+  std::string example_endpoint = "inproc://example_test";
 
   // Create publisher thread
   std::thread pub_thread(
@@ -195,7 +290,7 @@ TEST_F(AzmqTest, ExampleCode)
       {
         asio::io_service ios;
         azmq::pub_socket publisher(ios);
-        publisher.bind(endpoint);
+        publisher.bind(example_endpoint);
 
         // Send a few test messages
         for (int i = 0; i < 3; ++i)
@@ -218,7 +313,9 @@ TEST_F(AzmqTest, ExampleCode)
   // Create subscriber
   asio::io_service sub_ios;
   azmq::sub_socket subscriber(sub_ios);
-  subscriber.connect(endpoint);
+  subscriber.connect(example_endpoint);
+  // Note: azmq doesn't directly expose timeout options in the same way as raw
+  // ZeroMQ
   subscriber.set_option(azmq::socket::subscribe("NASDAQ"));
 
   // Create a buffer and receive messages
@@ -231,12 +328,19 @@ TEST_F(AzmqTest, ExampleCode)
     boost::system::error_code ec;
     try
     {
-      auto size = subscriber.receive(asio::buffer(buf), 0);
+      auto size = subscriber.receive(asio::buffer(buf), 0, ec);
+      if (!ec)
       {
         std::string message(buf.data(), size);
         EXPECT_EQ(message, "NASDAQ:MSFT 234.56");
         received = true;
         break;
+      }
+      else if (ec != boost::asio::error::operation_aborted &&
+               ec != boost::asio::error::timed_out)
+      {
+        std::cerr << "Error in receive attempt " << i << ": " << ec.message()
+                  << std::endl;
       }
     }
     catch (const std::exception& e)
@@ -244,7 +348,7 @@ TEST_F(AzmqTest, ExampleCode)
       std::cerr << "Error in receive attempt " << i << ": " << e.what()
                 << std::endl;
     }
-    std::this_thread::sleep_for(100ms);
+    std::this_thread::sleep_for(200ms);
   }
 
   // Clean up
