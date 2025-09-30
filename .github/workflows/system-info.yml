@@ -192,18 +192,11 @@ jobs:
           ########## CMake MSVC Variables
           echo "**CMake MSVC Variables**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
-          # Create a temporary CMake script
-          $cmakeScript = "message(STATUS \"MSVC_VERSION: `${MSVC_VERSION}\")\nmessage(STATUS \"MSVC_TOOLSET_VERSION: [vc]`${MSVC_TOOLSET_VERSION}\")\n"
-          $scriptPath = Join-Path -Path $env:TEMP -ChildPath "msvc_info.cmake"
-          Set-Content -Path $scriptPath -Value $cmakeScript
-          # Execute the CMake script
           if (Get-Command cmake -ErrorAction SilentlyContinue) {
-            & cmake -P $scriptPath 2>&1 | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+            & cmake -P "${{ github.workspace }}/.github/workflows/msvc_info.cmake" 2>&1 | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           } else {
             echo "CMake not found, cannot determine MSVC variables" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           }
-          # Clean up the temporary script
-          Remove-Item -Path $scriptPath -ErrorAction SilentlyContinue
           echo '```' | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
           ########## Clang-format version bundled with Visual Studio
           echo "**Clang-format Version (Visual Studio)**" | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
