@@ -7,6 +7,7 @@ set(pros
   boost
   bzip2
   ceres-solver
+  clang-format
   eigen
   fecpp
   flatbuffers
@@ -53,7 +54,6 @@ list(APPEND pros
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND pros
     # exdlpro projects not on macOS
-    clangformat
     ffmpeg
     geotiff
     geotrans
