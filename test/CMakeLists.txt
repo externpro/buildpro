@@ -14,6 +14,7 @@ set(pros
   fmt
   geos
   hdf5
+  jxrlib
   libiconv
   librttopo
   libsodium
@@ -58,7 +59,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     geotiff
     geotrans
     jasper
-    jxrlib
     libstrophe
     rapidjson
     wirehair
@@ -85,6 +85,7 @@ set(fmt_deps xpro::fmt xpro::gtest_main)
 set(geos_deps xpro::geos_c xpro::gtest_main)
 set(glew_deps GLEW::glew_s xpro::gtest_main)
 set(hdf5_deps xpro::hdf5_cpp-static xpro::gtest_main)
+set(jxrlib_deps xpro::jxrlib xpro::gtest_main)
 set(libgit2_deps xpro::git2 xpro::gtest_main)
 set(libiconv_deps xpro::libiconv xpro::gtest_main)
 set(librttopo_deps xpro::librttopo xpro::gtest_main)
