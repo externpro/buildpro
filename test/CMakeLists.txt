@@ -28,6 +28,7 @@ set(pros
   node-addon-api
   nvjpeg2000
   patch
+  rapidjson
   spatialite-tools
   spdlog
   sqlite3
@@ -60,7 +61,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     geotiff
     geotrans
     libstrophe
-    rapidjson
     wirehair
     wxwidgets
     wxx
@@ -101,6 +101,7 @@ set(nlohmann_json_compile_features cxx_std_17)
 set(openh264_deps xpro::openh264 xpro::gtest_main)
 set(openssl_deps xpro::crypto xpro::ssl xpro::gtest_main)
 set(protobuf_deps xpro::libprotobuf xpro::gtest_main)
+set(rapidjson_deps xpro::RapidJSON xpro::gtest_main)
 set(rapidxml_deps xpro::rapidxml xpro::gtest_main)
 set(shapelib_deps xpro::shape xpro::gtest_main)
 set(spdlog_deps xpro::spdlog xpro::gtest_main)
