@@ -32,6 +32,7 @@ set(pros
   spatialite-tools
   spdlog
   sqlite3
+  wirehair
   wxinclude
   zlib
   )
@@ -61,7 +62,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     geotiff
     geotrans
     libstrophe
-    wirehair
     wxwidgets
     wxx
     )
@@ -107,6 +107,7 @@ set(shapelib_deps xpro::shape xpro::gtest_main)
 set(spdlog_deps xpro::spdlog xpro::gtest_main)
 set(spdlog_compile_features cxx_std_17)
 set(sqlite3_deps xpro::SQLite3 xpro::gtest_main)
+set(wirehair_deps xpro::wirehair xpro::gtest_main)
 set(zlib_deps xpro::zlibstatic xpro::gtest_main)
 set(zmqpp_deps xpro::zmqpp-static xpro::gtest_main)
 foreach(pro ${pros})
