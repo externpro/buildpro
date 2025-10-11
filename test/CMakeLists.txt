@@ -20,6 +20,7 @@ set(pros
   librttopo
   libsodium
   libspatialite
+  libstrophe
   libzmq
   nasm
   nlohmann_json
@@ -61,7 +62,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     ffmpeg
     geotiff
     geotrans
-    libstrophe
     wxwidgets
     wxx
     )
@@ -93,6 +93,7 @@ set(librttopo_deps xpro::librttopo xpro::gtest_main)
 set(libsodium_deps xpro::sodium xpro::gtest_main)
 set(libspatialite_deps xpro::libspatialite xpro::gtest_main)
 set(libssh2_deps xpro::libssh2 xpro::gtest_main)
+set(libstrophe_deps xpro::libstrophe xpro::gtest_main)
 set(libzmq_deps xpro::libzmq-static xpro::gtest_main)
 set(libzmq_compile_features cxx_std_17)
 set(lua_deps xpro::liblua xpro::gtest_main)
