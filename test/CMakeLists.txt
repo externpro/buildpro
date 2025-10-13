@@ -13,6 +13,7 @@ set(pros
   flatbuffers
   fmt
   geos
+  geotranz
   hdf5
   jasper
   jxrlib
@@ -61,7 +62,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # exdlpro projects not on macOS
     ffmpeg
     geotiff
-    geotrans
     wxwidgets
     wxx
     )
@@ -83,6 +83,9 @@ set(fecpp_deps xpro::fecpp xpro::gtest_main)
 set(flatbuffers_deps xpro::flatbuffers xpro::gtest_main)
 set(fmt_deps xpro::fmt xpro::gtest_main)
 set(geos_deps xpro::geos_c xpro::gtest_main)
+set(geotranz_deps xpro::geotranz xpro::gtest_main)
+xpGetPkgVar(geotranz DATA_DIR) # sets GEOTRANZ_DATA_DIR
+set(geotranz_compile_definitions "GEOTRANS_DATA=\"${GEOTRANZ_DATA_DIR}\"")
 set(glew_deps GLEW::glew_s xpro::gtest_main)
 set(hdf5_deps xpro::hdf5_cpp-static xpro::gtest_main)
 set(jasper_deps xpro::libjasper xpro::gtest_main)
