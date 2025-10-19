@@ -36,6 +36,8 @@ set(pros
   sqlite3
   wirehair
   wxinclude
+  wxtetris
+  wxwidgets
   zlib
   )
 list(APPEND pros
@@ -62,7 +64,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # exdlpro projects not on macOS
     ffmpeg
     geotiff
-    wxwidgets
     wxx
     )
 endif()
@@ -112,6 +113,7 @@ set(spdlog_deps xpro::spdlog xpro::gtest_main)
 set(spdlog_compile_features cxx_std_17)
 set(sqlite3_deps xpro::SQLite3 xpro::gtest_main)
 set(wirehair_deps xpro::wirehair xpro::gtest_main)
+set(wxwidgets_deps wx::base wx::core xpro::gtest_main)
 set(zlib_deps xpro::zlibstatic xpro::gtest_main)
 set(zmqpp_deps xpro::zmqpp-static xpro::gtest_main)
 foreach(pro ${pros})
