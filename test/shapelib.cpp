@@ -85,7 +85,7 @@ namespace shapelib_test
         std::string full_path = path + "\\" + ffd.cFileName;
         if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         {
-          remove_directory(full_path);
+          removeDirectory(full_path);
         }
         else
         {
