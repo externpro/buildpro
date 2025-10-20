@@ -159,6 +159,10 @@ endforeach()
 list(REMOVE_DUPLICATES all_deps)
 list(REMOVE_DUPLICATES all_compile_features)
 list(REMOVE_DUPLICATES all_compile_definitions)
+# TRICKY: libsodium includes argon2, so we need to remove it
+# from the lists to avoid duplicate symbols at link-time
+list(REMOVE_ITEM all_srcs argon2.cpp)
+list(REMOVE_ITEM all_deps ${argon2_deps})
 if(TRUE)
   add_executable(toda ${all_srcs})
   target_link_libraries(toda PRIVATE ${all_deps})
