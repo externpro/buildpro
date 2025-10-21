@@ -38,6 +38,7 @@ set(pros
   wxinclude
   wxtetris
   wxwidgets
+  wxx
   zlib
   )
 list(APPEND pros
@@ -64,7 +65,6 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # exdlpro projects not on macOS
     ffmpeg
     geotiff
-    wxx
     )
 endif()
 set(googletest_deps xpro::gtest_main)
@@ -113,6 +113,7 @@ set(spdlog_compile_features cxx_std_17)
 set(sqlite3_deps xpro::SQLite3)
 set(wirehair_deps xpro::wirehair)
 set(wxwidgets_deps wx::base wx::core)
+set(wxx_deps wxx::plotctrl wxx::things wxx::tlc)
 set(zlib_deps xpro::zlibstatic)
 set(zmqpp_deps xpro::zmqpp-static)
 foreach(pro ${pros})
