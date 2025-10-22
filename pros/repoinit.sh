@@ -18,8 +18,8 @@ do
     git clone ${repo}
     pushd ${dir} >/dev/null
     branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-    if [ "${branch}" != "development" ]; then
-      git ls-remote --exit-code --heads origin refs/heads/development >/dev/null && git checkout -b development origin/development
+    if [ "${branch}" != "dev" ]; then
+      git ls-remote --exit-code --heads origin refs/heads/dev >/dev/null && git checkout -b dev origin/dev
     fi
     if [ -f ".gitmodules" ]; then
       git submodule init
