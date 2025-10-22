@@ -1,0 +1,7 @@
+GITHUB="https://github.com"
+REPOS="
+  ${GITHUB}/smanders/Dockerfile.vim
+  ${GITHUB}/smanders/centrifybomb
+  ${GITHUB}/externpro-archive/node
+  "
+SRCDIR=~/Code/pros
