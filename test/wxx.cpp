@@ -5,6 +5,9 @@
 #include <wx/treelistctrl/treelistctrl.h>
 #include <wx/wx.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <gtest/gtest.h>
 
 // Forward declarations
@@ -25,6 +28,32 @@ protected:
     // Initialize wxWidgets once for all tests
     int argc = 0;
     char** argv = nullptr;
+
+// Platform-specific initialization
+#ifdef _WIN32
+    // On Windows, we need to create a hidden window for the message loop
+    WNDCLASS wc = {0};
+    wc.lpfnWndProc = DefWindowProc;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.lpszClassName = L"TestWindowClass";
+    RegisterClass(&wc);
+    HWND hwnd = CreateWindow(L"TestWindowClass",
+                             L"Test",
+                             0,
+                             0,
+                             0,
+                             0,
+                             0,
+                             NULL,
+                             NULL,
+                             GetModuleHandle(NULL),
+                             NULL);
+    if (!hwnd)
+    {
+      FAIL() << "Failed to create test window";
+    }
+#endif
+
     static wxInitializer initializer(argc, argv);
     if (!initializer.IsOk())
     {
