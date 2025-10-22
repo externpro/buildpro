@@ -38,6 +38,7 @@ set(pros
   wxinclude
   wxtetris
   wxwidgets
+  wxx
   zlib
   )
 list(APPEND pros
@@ -64,8 +65,11 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # exdlpro projects not on macOS
     ffmpeg
     geotiff
-    wxx
     )
+endif()
+find_program(XVFB_RUN_EXEC xvfb-run)
+if(XVFB_RUN_EXEC)
+  set(xvfb_cmd ${XVFB_RUN_EXEC})
 endif()
 # NOTE: set ${pro}_libs if ${PRJ}_LIBRARIES isn't sufficient
 set(googletest_libs xpro::gtest_main)
@@ -81,6 +85,7 @@ set(nlohmann_json_compile_features cxx_std_17)
 set(spdlog_libs xpro::spdlog)
 set(spdlog_compile_features cxx_std_17)
 set(wxwidgets_libs wx::base wx::core)
+set(wxx_xvfb ${xvfb_cmd})
 foreach(pro ${pros})
   find_package(${pro})
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cpp)
@@ -102,7 +107,10 @@ foreach(pro ${pros})
       target_compile_definitions(${pro}_test PRIVATE ${${pro}_compile_definitions})
       list(APPEND all_compile_definitions ${${pro}_compile_definitions})
     endif()
-    add_test(NAME ${pro}_test COMMAND $<TARGET_FILE:${pro}_test>)
+    if(DEFINED ${pro}_xvfb)
+      message(STATUS "cmd: ${${pro}_xvfb} $<TARGET_FILE:${pro}_test>")
+    endif()
+    add_test(NAME ${pro}_test COMMAND ${${pro}_xvfb} $<TARGET_FILE:${pro}_test>)
   endif()
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cmake)
     xpGetPkgVar(${pro} VER)
