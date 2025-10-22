@@ -29,43 +29,38 @@ protected:
     int argc = 0;
     char** argv = nullptr;
 
-// Platform-specific initialization
-#ifdef _WIN32
-    // On Windows, we need to create a hidden window for the message loop
-    WNDCLASS wc = {0};
-    wc.lpfnWndProc = DefWindowProc;
-    wc.hInstance = GetModuleHandle(NULL);
-    wc.lpszClassName = L"TestWindowClass";
-    RegisterClass(&wc);
-    HWND hwnd = CreateWindow(L"TestWindowClass",
-                             L"Test",
-                             0,
-                             0,
-                             0,
-                             0,
-                             0,
-                             NULL,
-                             NULL,
-                             GetModuleHandle(NULL),
-                             NULL);
-    if (!hwnd)
-    {
-      FAIL() << "Failed to create test window";
-    }
-#endif
-
+    // Initialize wxWidgets first
     static wxInitializer initializer(argc, argv);
     if (!initializer.IsOk())
     {
       FAIL() << "Failed to initialize wxWidgets";
+    }
+
+    // Initialize the application
+    if (!wxTheApp || !wxTheApp->CallOnInit())
+    {
+      FAIL() << "Failed to initialize wxWidgets application";
+    }
+  }
+
+  static void TearDownTestSuite()
+  {
+    if (wxTheApp)
+    {
+      wxTheApp->OnExit();
     }
   }
 
   void SetUp() override
   {
     // Create a test frame and panel
-    m_frame = new wxFrame(nullptr, wxID_ANY, "Test Frame");
+    m_frame = new wxFrame(
+      nullptr, wxID_ANY, "Test Frame", wxDefaultPosition, wxSize(800, 600));
     m_panel = new wxPanel(m_frame);
+    m_frame->Show();
+
+    // Process any pending events
+    wxYield();
   }
 
   void TearDown() override
@@ -74,6 +69,9 @@ protected:
     {
       m_frame->Destroy();
       m_frame = nullptr;
+
+      // Process any pending events
+      wxYield();
     }
   }
 
