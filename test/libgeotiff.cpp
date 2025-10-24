@@ -1,5 +1,8 @@
+#include <chrono>
+#include <ctime>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
 #include <boost/filesystem.hpp>
 
@@ -15,25 +18,62 @@ namespace libgeotiff_test
 
   std::string createTempDirectory()
   {
-    // Create a unique temporary directory
-    const auto tempDir =
-      bfs::temp_directory_path() / "libgeotiff_test_%%%%-%%%%";
-    const auto finalPath = bfs::unique_path(tempDir);
+    // Create a simple directory name with timestamp
+    const auto baseDir = bfs::temp_directory_path() / "gt_test";
+    const auto finalPath = baseDir / std::to_string(std::time(nullptr));
 
-    if (!bfs::create_directories(finalPath))
+    try
     {
-      throw std::runtime_error("Failed to create temporary directory: " +
-                               finalPath.string());
+      // Try to create the directory
+      if (bfs::exists(finalPath))
+      {
+        bfs::remove_all(finalPath);
+      }
+      if (!bfs::create_directories(finalPath))
+      {
+        throw std::runtime_error("Failed to create directory: " +
+                                 finalPath.string());
+      }
+      return finalPath.string();
     }
-
-    return finalPath.string();
+    catch (const std::exception& e)
+    {
+      // Fallback to current directory if temp dir creation fails
+      const auto fallback = bfs::current_path() / "gt_test_temp";
+      if (!bfs::exists(fallback))
+      {
+        bfs::create_directories(fallback);
+      }
+      return fallback.string();
+    }
   }
 
   void removeDirectory(const std::string& path)
   {
-    if (bfs::exists(path))
+    if (!bfs::exists(path))
     {
-      bfs::remove_all(path);
+      return;
+    }
+
+    // Try multiple times to handle Windows file locking
+    int attempts = 3;
+    while (attempts-- > 0)
+    {
+      try
+      {
+        bfs::remove_all(path);
+        return;
+      }
+      catch (const std::exception& e)
+      {
+        if (attempts == 0)
+        {
+          std::cerr << "Warning: Failed to remove directory " << path << ": "
+                    << e.what() << std::endl;
+          return;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      }
     }
   }
 
@@ -49,10 +89,30 @@ namespace libgeotiff_test
 
     void TearDown() override
     {
-      // Clean up test files
-      if (bfs::exists(test_dir))
+      // Clean up test files with retry logic for Windows
+      int attempts = 3;
+      while (attempts-- > 0)
       {
-        removeDirectory(test_dir);
+        try
+        {
+          if (bfs::exists(test_dir))
+          {
+            removeDirectory(test_dir);
+          }
+          break;
+        }
+        catch (const std::exception& e)
+        {
+          if (attempts == 0)
+          {
+            std::cerr << "Warning: Failed to clean up test directory: "
+                      << e.what() << std::endl;
+          }
+          else
+          {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          }
+        }
       }
     }
 
