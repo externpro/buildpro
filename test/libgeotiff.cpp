@@ -1,38 +1,68 @@
-#include <cstdio>
-#include <cstring>
-#include <filesystem>
+#include <stdexcept>
 #include <string>
+
+#include <boost/filesystem.hpp>
 
 #include <gtest/gtest.h>
 #include <libgeotiff/geo_normalize.h>
 #include <libgeotiff/geotiffio.h>
 #include <libgeotiff/xtiffio.h>
 
-namespace fs = std::filesystem;
+namespace bfs = boost::filesystem;
 
-class LibGeoTIFFTest : public ::testing::Test
+namespace libgeotiff_test
 {
-protected:
-  void SetUp() override
+
+  std::string createTempDirectory()
   {
-    // Create a temporary directory for test files
-    test_dir = fs::temp_directory_path() / "libgeotiff_test";
-    fs::create_directories(test_dir);
-    test_file = test_dir / "test.tif";
+    // Create a unique temporary directory
+    const auto tempDir =
+      bfs::temp_directory_path() / "libgeotiff_test_%%%%-%%%%";
+    const auto finalPath = bfs::unique_path(tempDir);
+
+    if (!bfs::create_directories(finalPath))
+    {
+      throw std::runtime_error("Failed to create temporary directory: " +
+                               finalPath.string());
+    }
+
+    return finalPath.string();
   }
 
-  void TearDown() override
+  void removeDirectory(const std::string& path)
   {
-    // Clean up test files
-    if (fs::exists(test_dir))
+    if (bfs::exists(path))
     {
-      fs::remove_all(test_dir);
+      bfs::remove_all(path);
     }
   }
 
-  std::string test_file;
-  std::filesystem::path test_dir;
-};
+  class LibGeoTIFFTest : public ::testing::Test
+  {
+  protected:
+    void SetUp() override
+    {
+      // Create a temporary directory for test files
+      test_dir = createTempDirectory();
+      test_file = (bfs::path(test_dir) / "test.tif").string();
+    }
+
+    void TearDown() override
+    {
+      // Clean up test files
+      if (bfs::exists(test_dir))
+      {
+        removeDirectory(test_dir);
+      }
+    }
+
+    std::string test_file;
+    std::string test_dir;
+  };
+
+} // namespace libgeotiff_test
+
+using namespace libgeotiff_test;
 
 TEST_F(LibGeoTIFFTest, BasicInitialization)
 {

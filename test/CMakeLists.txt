@@ -79,7 +79,7 @@ set(fmt_libs xpro::fmt)
 xpGetPkgVar(geotranz DATA_DIR) # sets GEOTRANZ_DATA_DIR
 set(geotranz_compile_definitions "GEOTRANS_DATA=\"${GEOTRANZ_DATA_DIR}\"")
 set(hdf5_libs xpro::hdf5_cpp-static)
-set(libgeotiff_compile_features cxx_std_17)
+set(libgeotiff_libs xpro::libgeotiff Boost::filesystem)
 set(libiconv_libs xpro::libiconv)
 set(libzmq_compile_features cxx_std_17)
 set(nlohmann_json_compile_features cxx_std_17)
