@@ -1,8 +1,10 @@
 #include <chrono>
 #include <ctime>
+#include <future>
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 
@@ -16,29 +18,78 @@ namespace bfs = boost::filesystem;
 namespace libgeotiff_test
 {
 
+  // Simple RAII wrapper for TIFF files
+  class TiffFile
+  {
+  public:
+    TiffFile(const std::string& path, const char* mode)
+      : tif_(XTIFFOpen(path.c_str(), mode))
+    {
+    }
+
+    ~TiffFile()
+    {
+      if (tif_)
+        XTIFFClose(tif_);
+    }
+
+    operator bool() const { return tif_ != nullptr; }
+    TIFF* get() const { return tif_; }
+
+    // Disable copying
+    TiffFile(const TiffFile&) = delete;
+    TiffFile& operator=(const TiffFile&) = delete;
+
+  private:
+    TIFF* tif_;
+  };
+
+  // RAII wrapper for GTIF
+  class GtifHandle
+  {
+  public:
+    GtifHandle(TIFF* tif) : gtif_(GTIFNew(tif)) { }
+    ~GtifHandle()
+    {
+      if (gtif_)
+        GTIFFree(gtif_);
+    }
+
+    operator bool() const { return gtif_ != nullptr; }
+    GTIF* get() const { return gtif_; }
+
+    // Disable copying
+    GtifHandle(const GtifHandle&) = delete;
+    GtifHandle& operator=(const GtifHandle&) = delete;
+
+  private:
+    GTIF* gtif_;
+  };
+
   std::string createTempDirectory()
   {
-    // Create a simple directory name with timestamp
-    const auto baseDir = bfs::temp_directory_path() / "gt_test";
-    const auto finalPath = baseDir / std::to_string(std::time(nullptr));
+    // Use a fixed directory with a timestamp to avoid cleanup issues
+    const auto finalPath = bfs::temp_directory_path() / "gt_test_libgeotiff";
 
     try
     {
-      // Try to create the directory
+      // Clean up any previous test run
       if (bfs::exists(finalPath))
       {
         bfs::remove_all(finalPath);
       }
+
       if (!bfs::create_directories(finalPath))
       {
         throw std::runtime_error("Failed to create directory: " +
                                  finalPath.string());
       }
+
       return finalPath.string();
     }
     catch (const std::exception& e)
     {
-      // Fallback to current directory if temp dir creation fails
+      // If we can't create in temp dir, try current directory
       const auto fallback = bfs::current_path() / "gt_test_temp";
       if (!bfs::exists(fallback))
       {
@@ -124,59 +175,95 @@ namespace libgeotiff_test
 
 using namespace libgeotiff_test;
 
+// Helper function to run a test with timeout
+#define RUN_TEST_WITH_TIMEOUT(ms, test_func)                                   \
+  do                                                                           \
+  {                                                                            \
+    std::promise<bool> completed;                                              \
+    auto future = completed.get_future();                                      \
+    std::thread(                                                               \
+      [&]()                                                                    \
+      {                                                                        \
+        try                                                                    \
+        {                                                                      \
+          test_func();                                                         \
+          completed.set_value(true);                                           \
+        }                                                                      \
+        catch (...)                                                            \
+        {                                                                      \
+          completed.set_exception(std::current_exception());                   \
+        }                                                                      \
+      })                                                                       \
+      .detach();                                                               \
+    if (future.wait_for(std::chrono::milliseconds(ms)) ==                      \
+        std::future_status::timeout)                                           \
+    {                                                                          \
+      FAIL() << "Test timed out after " << ms << "ms";                         \
+    }                                                                          \
+    future.get();                                                              \
+  } while (0)
+
 TEST_F(LibGeoTIFFTest, BasicInitialization)
 {
-  // Test basic TIFF and GeoTIFF initialization
-  TIFF* tif = XTIFFOpen(test_file.c_str(), "w");
-  ASSERT_NE(tif, nullptr) << "Failed to create TIFF file";
+  RUN_TEST_WITH_TIMEOUT(5000, [&]() {  // 5 second timeout
+    // Test basic TIFF and GeoTIFF initialization
+    TiffFile tif(test_file, "w");
+    ASSERT_TRUE(tif) << "Failed to create TIFF file";
 
-  GTIF* gtif = GTIFNew(tif);
-  ASSERT_NE(gtif, nullptr) << "Failed to create GeoTIFF handle";
+    GtifHandle gtif(tif.get());
+    ASSERT_TRUE(gtif) << "Failed to create GeoTIFF handle";
 
-  // Set some basic TIFF tags
-  TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, 100);
-  TIFFSetField(tif, TIFFTAG_IMAGELENGTH, 100);
-  TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, 8);
-  TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, 1);
-  TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, 1);
-  TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+    // Set some basic TIFF tags
+    TIFFSetField(tif.get(), TIFFTAG_IMAGEWIDTH, 100);
+    TIFFSetField(tif.get(), TIFFTAG_IMAGELENGTH, 100);
+    TIFFSetField(tif.get(), TIFFTAG_BITSPERSAMPLE, 8);
+    TIFFSetField(tif.get(), TIFFTAG_SAMPLESPERPIXEL, 1);
+    TIFFSetField(tif.get(), TIFFTAG_ROWSPERSTRIP, 1);
+    TIFFSetField(tif.get(), TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 
-  // Set some basic GeoTIFF keys
-  GTIFKeySet(gtif, GTModelTypeGeoKey, TYPE_SHORT, 1, ModelTypeProjected);
-  GTIFKeySet(
-    gtif, ProjectedCSTypeGeoKey, TYPE_SHORT, 1, 32601); // WGS84 / UTM zone 1N
+    // Set some basic GeoTIFF keys
+    GTIFKeySet(gtif.get(), GTModelTypeGeoKey, TYPE_SHORT, 1, ModelTypeProjected);
+    GTIFKeySet(gtif.get(), ProjectedCSTypeGeoKey, TYPE_SHORT, 1, 32601); // WGS84 / UTM zone 1N
 
-  // Write a simple image
-  unsigned char buf[100];
-  for (int i = 0; i < 100; ++i)
-  {
-    buf[i] = static_cast<unsigned char>(i);
-    TIFFWriteScanline(tif, buf, i, 0);
-  }
+    // Write a simple image
+    std::vector<unsigned char> buf(100);
+    for (int i = 0; i < 100; ++i) {
+      buf[i] = static_cast<unsigned char>(i);
+      if (TIFFWriteScanline(tif.get(), buf.data(), i, 0) != 1) {
+        throw std::runtime_error("Failed to write scanline " + std::to_string(i));
+      }
+    }
 
-  // Write GeoTIFF tags
-  GTIFWriteKeys(gtif);
-  GTIFFree(gtif);
-  XTIFFClose(tif);
+    // Write and close
+    GTIFWriteKeys(gtif.get());
+  }); // End of timeout wrapper
 
-  // Now try to read it back
-  tif = XTIFFOpen(test_file.c_str(), "r");
-  ASSERT_NE(tif, nullptr) << "Failed to open created TIFF file";
+  // Now try to read it back in a separate operation
+  RUN_TEST_WITH_TIMEOUT(
+    5000,
+    [&]()
+    {
+      TiffFile tif(test_file, "r");
+      ASSERT_TRUE(tif) << "Failed to open created TIFF file";
 
-  gtif = GTIFNew(tif);
-  ASSERT_NE(gtif, nullptr) << "Failed to create GeoTIFF handle for reading";
+      GtifHandle gtif(tif.get());
+      ASSERT_TRUE(gtif) << "Failed to create GeoTIFF handle for reading";
 
-  // Verify the GeoTIFF keys
-  short model;
-  GTIFKeyGet(gtif, GTModelTypeGeoKey, &model, 0, 1);
-  EXPECT_EQ(model, ModelTypeProjected) << "Unexpected model type";
+      // Verify the GeoTIFF keys
+      short model;
+      if (!GTIFKeyGet(gtif.get(), GTModelTypeGeoKey, &model, 0, 1))
+      {
+        throw std::runtime_error("Failed to get GTModelTypeGeoKey");
+      }
+      EXPECT_EQ(model, ModelTypeProjected) << "Unexpected model type";
 
-  short pcs;
-  GTIFKeyGet(gtif, ProjectedCSTypeGeoKey, &pcs, 0, 1);
-  EXPECT_EQ(pcs, 32601) << "Unexpected PCS value";
-
-  GTIFFree(gtif);
-  XTIFFClose(tif);
+      short pcs;
+      if (!GTIFKeyGet(gtif.get(), ProjectedCSTypeGeoKey, &pcs, 0, 1))
+      {
+        throw std::runtime_error("Failed to get ProjectedCSTypeGeoKey");
+      }
+      EXPECT_EQ(pcs, 32601) << "Unexpected PCS value";
+    });
 }
 
 TEST_F(LibGeoTIFFTest, GeoKeyManipulation)
