@@ -1,9 +1,11 @@
+#include <chrono>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include <boost/filesystem.hpp>
 
@@ -62,13 +64,29 @@ protected:
 
   void TearDown() override
   {
-    // Cleanup libgit2
+    // Ensure all git resources are released
+    git_libgit2_opts(GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION, 0);
     git_libgit2_shutdown();
 
-    // Remove the test directory
+    // Try multiple times with a small delay between attempts
+    // This helps handle cases where the OS is slow to release file handles
     if (!testRepoPath.empty() && fs::exists(testRepoPath))
     {
-      libgit2_test::removeDirectory(testRepoPath);
+      for (int i = 0; i < 5; ++i)
+      {
+        try
+        {
+          libgit2_test::removeDirectory(testRepoPath);
+          break; // Success, exit the retry loop
+        }
+        catch (const std::exception& e)
+        {
+          if (i == 4) // Last attempt
+            throw;
+          // Sleep briefly before retrying
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+      }
     }
   }
 
