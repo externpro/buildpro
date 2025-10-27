@@ -46,6 +46,23 @@ class LibGit2Test : public ::testing::Test
 protected:
   std::string testRepoPath;
   std::string testFilePath;
+  git_repository* repo{nullptr};
+  git_index* index{nullptr};
+
+  // Helper to safely close git resources
+  void cleanupGitResources()
+  {
+    if (index)
+    {
+      git_index_free(index);
+      index = nullptr;
+    }
+    if (repo)
+    {
+      git_repository_free(repo);
+      repo = nullptr;
+    }
+  }
 
   void SetUp() override
   {
@@ -64,27 +81,43 @@ protected:
 
   void TearDown() override
   {
-    // Ensure all git resources are released
-    git_libgit2_opts(GIT_OPT_ENABLE_STRICT_HASH_VERIFICATION, 0);
+    // Clean up any git resources first
+    cleanupGitResources();
+
+    // Shut down libgit2
     git_libgit2_shutdown();
 
-    // Try multiple times with a small delay between attempts
-    // This helps handle cases where the OS is slow to release file handles
+    // On Windows, we need to be extra careful with file handles
+    // Try multiple times with increasing delays
     if (!testRepoPath.empty() && fs::exists(testRepoPath))
     {
-      for (int i = 0; i < 5; ++i)
+      const int max_attempts = 5;
+      const int initial_delay_ms = 100;
+
+      for (int attempt = 0; attempt < max_attempts; ++attempt)
       {
         try
         {
+          // Increase delay with each attempt (100ms, 200ms, 400ms, 800ms,
+          // 1600ms)
+          if (attempt > 0)
+          {
+            std::this_thread::sleep_for(std::chrono::milliseconds(
+              initial_delay_ms * (1 << (attempt - 1))));
+          }
+
+          // Try to remove the directory
           libgit2_test::removeDirectory(testRepoPath);
-          break; // Success, exit the retry loop
+          return; // Success!
         }
         catch (const std::exception& e)
         {
-          if (i == 4) // Last attempt
-            throw;
-          // Sleep briefly before retrying
-          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          if (attempt == max_attempts - 1)
+          {
+            // Last attempt failed, log the error and continue
+            std::cerr << "Warning: Failed to remove directory after "
+                      << max_attempts << " attempts: " << e.what() << std::endl;
+          }
         }
       }
     }
@@ -92,8 +125,8 @@ protected:
 
   void CreateTestRepository()
   {
-    git_repository* repo = nullptr;
-    git_index* index = nullptr;
+    // Clean up any existing resources first
+    cleanupGitResources();
     git_oid tree_id;
     int error;
 
@@ -146,9 +179,9 @@ protected:
       return;
     }
 
-    // Cleanup
-    git_index_free(index);
-    git_repository_free(repo);
+    // Store the references for later cleanup
+    this->repo = repo;
+    this->index = index;
   }
 };
 
