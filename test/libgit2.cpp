@@ -1,136 +1,43 @@
+#include <chrono>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <thread>
 
-#ifdef _WIN32
-#include <windows.h>
+#include <boost/filesystem.hpp>
 
-#include <direct.h>
-#include <io.h>
-#define ACCESS _access
-#define MKDIR(d) _mkdir(d)
-#else
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#define ACCESS access
-#define MKDIR(d) mkdir(d, 0700)
-#endif
+namespace fs = boost::filesystem;
 
 #include <git2.h>
 #include <git2/sys/commit.h>
 #include <gtest/gtest.h>
 
-// Helper functions to replace std::filesystem until it can be used on all
-// platforms, in a unique namespace because other tests also implement these
-// functions
+// Helper functions using Boost.Filesystem
 namespace libgit2_test
 {
-  bool pathExists(const std::string& path)
-  {
-    return ACCESS(path.c_str(), 0) == 0;
-  }
-
   std::string createTempDirectory()
   {
-    std::string tempDir;
-
-#ifdef _WIN32
-    // Get the Windows temporary path
-    char tempPath[MAX_PATH];
-    if (GetTempPathA(MAX_PATH, tempPath) == 0)
-    {
-      throw std::runtime_error("Failed to get temporary path");
-    }
-
-    // Create a unique directory name
-    char tempDirName[MAX_PATH];
-    if (GetTempFileNameA(tempPath, "git", 0, tempDirName) == 0)
-    {
-      throw std::runtime_error("Failed to generate temporary directory name");
-    }
-
-    // Delete the file and create a directory instead
-    DeleteFileA(tempDirName);
-    if (MKDIR(tempDirName) != 0)
+    fs::path tempDir = fs::temp_directory_path() /
+                       fs::unique_path("libgit2_test_%%%%-%%%%-%%%%-%%%%");
+    // Create the directory
+    if (!fs::create_directory(tempDir))
     {
       throw std::runtime_error("Failed to create temporary directory");
     }
-    tempDir = tempDirName;
-#else
-    char tempDirTemplate[] = "/tmp/git_test_XXXXXX";
-    char* dirName = mkdtemp(tempDirTemplate);
-    if (dirName == nullptr)
-    {
-      throw std::runtime_error("Failed to create temporary directory");
-    }
-    tempDir = dirName;
-#endif
 
-    return tempDir;
+    return tempDir.string();
   }
 
   void removeDirectory(const std::string& path)
   {
-#ifdef _WIN32
-    WIN32_FIND_DATAA findData;
-    std::string findPath = path + "\\*";
-    HANDLE hFind = FindFirstFileA(findPath.c_str(), &findData);
+    if (path.empty() || !fs::exists(path))
+      return;
 
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-      do
-      {
-        if (strcmp(findData.cFileName, ".") == 0 ||
-            strcmp(findData.cFileName, "..") == 0)
-          continue;
-
-        std::string fullPath = path + "\\" + findData.cFileName;
-        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-          removeDirectory(fullPath);
-        }
-        else
-        {
-          DeleteFileA(fullPath.c_str());
-        }
-      } while (FindNextFileA(hFind, &findData) != 0);
-      FindClose(hFind);
-    }
-
-    RemoveDirectoryA(path.c_str());
-#else
-    DIR* dir = opendir(path.c_str());
-    if (dir)
-    {
-      struct dirent* entry;
-      while ((entry = readdir(dir)) != nullptr)
-      {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-          continue;
-
-        std::string fullPath = path + "/" + entry->d_name;
-        struct stat statbuf;
-        if (lstat(fullPath.c_str(), &statbuf) == 0)
-        {
-          if (S_ISDIR(statbuf.st_mode))
-          {
-            removeDirectory(fullPath);
-          }
-          else
-          {
-            unlink(fullPath.c_str());
-          }
-        }
-      }
-      closedir(dir);
-    }
-    rmdir(path.c_str());
-#endif
+    // Remove all files and subdirectories
+    fs::remove_all(path);
   }
 } // namespace libgit2_test
 
@@ -139,6 +46,23 @@ class LibGit2Test : public ::testing::Test
 protected:
   std::string testRepoPath;
   std::string testFilePath;
+  git_repository* repo{nullptr};
+  git_index* index{nullptr};
+
+  // Helper to safely close git resources
+  void cleanupGitResources()
+  {
+    if (index)
+    {
+      git_index_free(index);
+      index = nullptr;
+    }
+    if (repo)
+    {
+      git_repository_free(repo);
+      repo = nullptr;
+    }
+  }
 
   void SetUp() override
   {
@@ -157,20 +81,52 @@ protected:
 
   void TearDown() override
   {
-    // Cleanup libgit2
+    // Clean up any git resources first
+    cleanupGitResources();
+
+    // Shut down libgit2
     git_libgit2_shutdown();
 
-    // Remove the test directory
-    if (!testRepoPath.empty() && libgit2_test::pathExists(testRepoPath))
+    // On Windows, we need to be extra careful with file handles
+    // Try multiple times with increasing delays
+    if (!testRepoPath.empty() && fs::exists(testRepoPath))
     {
-      libgit2_test::removeDirectory(testRepoPath);
+      const int max_attempts = 5;
+      const int initial_delay_ms = 100;
+
+      for (int attempt = 0; attempt < max_attempts; ++attempt)
+      {
+        try
+        {
+          // Increase delay with each attempt (100ms, 200ms, 400ms, 800ms,
+          // 1600ms)
+          if (attempt > 0)
+          {
+            std::this_thread::sleep_for(std::chrono::milliseconds(
+              initial_delay_ms * (1 << (attempt - 1))));
+          }
+
+          // Try to remove the directory
+          libgit2_test::removeDirectory(testRepoPath);
+          return; // Success!
+        }
+        catch (const std::exception& e)
+        {
+          if (attempt == max_attempts - 1)
+          {
+            // Last attempt failed, log the error and continue
+            std::cerr << "Warning: Failed to remove directory after "
+                      << max_attempts << " attempts: " << e.what() << std::endl;
+          }
+        }
+      }
     }
   }
 
   void CreateTestRepository()
   {
-    git_repository* repo = nullptr;
-    git_index* index = nullptr;
+    // Clean up any existing resources first
+    cleanupGitResources();
     git_oid tree_id;
     int error;
 
@@ -223,9 +179,9 @@ protected:
       return;
     }
 
-    // Cleanup
-    git_index_free(index);
-    git_repository_free(repo);
+    // Store the references for later cleanup
+    this->repo = repo;
+    this->index = index;
   }
 };
 
@@ -259,7 +215,7 @@ TEST_F(LibGit2Test, RepositoryInitialization)
 
   // Check if the .git directory was created
   std::string gitDir = testRepoPath + "/.git";
-  EXPECT_TRUE(libgit2_test::pathExists(gitDir)) << ".git directory not found";
+  EXPECT_TRUE(fs::exists(gitDir)) << ".git directory not found";
 
   // Cleanup
   git_repository_free(repo);
@@ -286,7 +242,7 @@ TEST_F(LibGit2Test, BasicGitOperations)
 
   // Check if the .git directory exists
   std::string gitDir = std::string(workdir) + ".git";
-  EXPECT_TRUE(libgit2_test::pathExists(gitDir)) << ".git directory not found";
+  EXPECT_TRUE(fs::exists(gitDir)) << ".git directory not found";
 
   // Cleanup
   git_repository_free(repo);

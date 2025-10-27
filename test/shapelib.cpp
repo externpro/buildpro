@@ -4,125 +4,36 @@
 #include <string>
 #include <vector>
 
-#ifdef _WIN32
-#include <windows.h>
+#include <boost/filesystem.hpp>
 
-#include <direct.h>
-#include <io.h>
-#define ACCESS _access
-#define MKDIR(d) _mkdir(d)
-#define UNLINK _unlink
-#else
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#define ACCESS access
-#define MKDIR(d) mkdir(d, 0700)
-#define UNLINK unlink
-#endif
+namespace fs = boost::filesystem;
 
 #include <gtest/gtest.h>
 #include <shape/shapefil.h>
 
 namespace shapelib_test
 {
-  bool pathExists(const std::string& path)
-  {
-    return ACCESS(path.c_str(), 0) == 0;
-  }
-
   std::string createTempDirectory()
   {
-    std::string tempDir;
+    fs::path tempDir = fs::temp_directory_path() /
+                       fs::unique_path("shapelib_test_%%%%-%%%%-%%%%-%%%%");
 
-#ifdef _WIN32
-    char tempPath[MAX_PATH];
-    if (GetTempPathA(MAX_PATH, tempPath) == 0)
-    {
-      throw std::runtime_error("Failed to get temporary path");
-    }
-
-    char tempDirName[MAX_PATH];
-    if (GetTempFileNameA(tempPath, "shp", 0, tempDirName) == 0)
-    {
-      throw std::runtime_error("Failed to generate temporary directory name");
-    }
-
-    DeleteFileA(tempDirName);
-    if (MKDIR(tempDirName) != 0)
+    // Create the directory
+    if (!fs::create_directory(tempDir))
     {
       throw std::runtime_error("Failed to create temporary directory");
     }
-    tempDir = tempDirName;
-#else
-    char tempDirTemplate[] = "/tmp/shapelib_test_XXXXXX";
-    char* dirName = mkdtemp(tempDirTemplate);
-    if (dirName == nullptr)
-    {
-      throw std::runtime_error("Failed to create temporary directory");
-    }
-    tempDir = dirName;
-#endif
-    return tempDir;
+
+    return tempDir.string();
   }
 
   void removeDirectory(const std::string& path)
   {
-#ifdef _WIN32
-    WIN32_FIND_DATAA ffd;
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-    std::string search_path = path + "\\*";
+    if (path.empty() || !fs::exists(path))
+      return;
 
-    hFind = FindFirstFileA(search_path.c_str(), &ffd);
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-      do
-      {
-        if (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
-          continue;
-
-        std::string full_path = path + "\\" + ffd.cFileName;
-        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-          removeDirectory(full_path);
-        }
-        else
-        {
-          DeleteFileA(full_path.c_str());
-        }
-      } while (FindNextFileA(hFind, &ffd) != 0);
-      FindClose(hFind);
-    }
-    RemoveDirectoryA(path.c_str());
-#else
-    DIR* dir = opendir(path.c_str());
-    if (dir)
-    {
-      struct dirent* entry;
-      while ((entry = readdir(dir)) != nullptr)
-      {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-          continue;
-
-        std::string full_path = path + "/" + entry->d_name;
-        struct stat statbuf;
-        if (lstat(full_path.c_str(), &statbuf) == 0)
-        {
-          if (S_ISDIR(statbuf.st_mode))
-          {
-            removeDirectory(full_path);
-          }
-          else
-          {
-            UNLINK(full_path.c_str());
-          }
-        }
-      }
-      closedir(dir);
-    }
-    rmdir(path.c_str());
-#endif
+    // Remove all files and subdirectories
+    fs::remove_all(path);
   }
 } // namespace shapelib_test
 
@@ -144,13 +55,10 @@ protected:
     {
       std::cerr << "Warning: " << e.what() << std::endl;
       // Fallback if directory creation fails
-#ifdef _WIN32
-      testDir = "C:\\Temp\\shapelib_test_fallback";
-#else
-      testDir = "/tmp/shapelib_test_fallback";
-#endif
-      shapefileName = testDir + "/test_shapefile";
-      MKDIR(testDir.c_str());
+      fs::path fallback = fs::current_path() / "shapelib_test_fallback";
+      testDir = fallback.string();
+      shapefileName = (fallback / "test_shapefile").string();
+      fs::create_directories(fallback);
     }
   }
 
@@ -167,16 +75,16 @@ protected:
 
         for (const auto& ext : extensions)
         {
-          std::string filename = shapefileName + ext;
-          if (shapelib_test::pathExists(filename))
+          fs::path filename = shapefileName + ext;
+          if (fs::exists(filename))
           {
-            UNLINK(filename.c_str());
+            fs::remove(filename);
           }
         }
       }
 
       // Clean up the test directory
-      if (!testDir.empty() && shapelib_test::pathExists(testDir))
+      if (!testDir.empty() && fs::exists(testDir))
       {
         shapelib_test::removeDirectory(testDir);
       }
