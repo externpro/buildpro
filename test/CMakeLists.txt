@@ -40,6 +40,7 @@ set(pros
   wxtetris
   wxwidgets
   wxx
+  yasm
   zlib
   )
 list(APPEND pros
