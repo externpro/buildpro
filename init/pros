@@ -35,6 +35,7 @@ REPOS="
   ${GITHUB}/externpro/nodeng
   ${GITHUB}/externpro/nodexp
   ${GITHUB}/externpro/nvJPEG2000
+  ${GITHUB}/externpro/openh264
   ${GITHUB}/externpro/patch
   ${GITHUB}/externpro/rapidjson
   ${GITHUB}/externpro/spatialite-tools
