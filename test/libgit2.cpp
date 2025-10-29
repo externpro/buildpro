@@ -129,9 +129,11 @@ protected:
     cleanupGitResources();
     git_oid tree_id;
     int error;
+    git_repository* new_repo = nullptr;
+    git_index* new_index = nullptr;
 
     // Initialize a new repository
-    error = git_repository_init(&repo, testRepoPath.c_str(), 0);
+    error = git_repository_init(&new_repo, testRepoPath.c_str(), 0);
     if (error != 0)
     {
       const git_error* e = git_error_last();
@@ -142,46 +144,46 @@ protected:
     }
 
     // Get the index
-    error = git_repository_index(&index, repo);
+    error = git_repository_index(&new_index, new_repo);
     if (error != 0)
     {
       const git_error* e = git_error_last();
       std::cerr << "Failed to get repository index: "
                 << (e ? e->message : "No error") << std::endl;
-      git_repository_free(repo);
+      git_repository_free(new_repo);
       FAIL();
       return;
     }
 
     // Add the test file to the index
-    error = git_index_add_bypath(index, "test.txt");
+    error = git_index_add_bypath(new_index, "test.txt");
     if (error != 0)
     {
       const git_error* e = git_error_last();
       std::cerr << "Failed to add file to index: "
                 << (e ? e->message : "No error") << std::endl;
-      git_index_free(index);
-      git_repository_free(repo);
+      git_index_free(new_index);
+      git_repository_free(new_repo);
       FAIL();
       return;
     }
 
     // Write the index to disk
-    error = git_index_write(index);
+    error = git_index_write(new_index);
     if (error != 0)
     {
       const git_error* e = git_error_last();
       std::cerr << "Failed to write index: " << (e ? e->message : "No error")
                 << std::endl;
-      git_index_free(index);
-      git_repository_free(repo);
+      git_index_free(new_index);
+      git_repository_free(new_repo);
       FAIL();
       return;
     }
 
     // Store the references for later cleanup
-    this->repo = repo;
-    this->index = index;
+    repo = new_repo;
+    index = new_index;
   }
 };
 
