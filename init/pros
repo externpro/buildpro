@@ -45,6 +45,7 @@ REPOS="
   ${GITHUB}/smanders/wxTetris
   ${GITHUB}/externpro/wxWidgets
   ${GITHUB}/externpro/wxx
+  ${GITHUB}/externpro/yasm
   ${GITHUB}/externpro/zlib
   "
 SRCDIR=~/Code/pros
