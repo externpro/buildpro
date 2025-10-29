@@ -3,5 +3,6 @@ REPOS="
   ${GITHUB}/smanders/Dockerfile.vim
   ${GITHUB}/smanders/centrifybomb
   ${GITHUB}/externpro-archive/node
+  ${GITHUB}/smanders/praat
   "
 SRCDIR=~/Code/pros
