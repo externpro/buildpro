@@ -10,6 +10,7 @@ set(pros
   clang-format
   eigen
   fecpp
+  ffmpeg
   flatbuffers
   fmt
   geos
@@ -45,7 +46,7 @@ set(pros
   zlib
   )
 list(APPEND pros
-  # exdlpro projects on all platforms
+  # exdlpro projects
   activemqcpp
   cares
   cppzmq
@@ -62,12 +63,6 @@ list(APPEND pros
   shapelib
   zmqpp
   )
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  list(APPEND pros
-    # exdlpro projects not on macOS
-    ffmpeg
-    )
-endif()
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
