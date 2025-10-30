@@ -30,6 +30,7 @@ set(pros
   nodexp
   node-addon-api
   nvjpeg2000
+  openh264
   patch
   rapidjson
   spatialite-tools
@@ -55,7 +56,6 @@ list(APPEND pros
   libgit2
   libssh2
   lua
-  openh264
   openssl
   protobuf
   rapidxml
