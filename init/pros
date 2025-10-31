@@ -12,6 +12,7 @@ REPOS="
   ${GITHUB}/externpro/eigen
   ${GITHUB}/externpro/exdlpro
   ${GITHUB}/externpro/fecpp
+  ${GITHUB}/externpro/FFmpeg
   ${GITHUB}/externpro/flatbuffers
   ${GITHUB}/externpro/fmt
   ${GITHUB}/externpro/gdal

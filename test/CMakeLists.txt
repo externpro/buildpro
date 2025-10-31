@@ -10,6 +10,7 @@ set(pros
   clang-format
   eigen
   fecpp
+  ffmpeg
   flatbuffers
   fmt
   geos
@@ -45,7 +46,7 @@ set(pros
   zlib
   )
 list(APPEND pros
-  # exdlpro projects on all platforms
+  # exdlpro projects
   activemqcpp
   cares
   cppzmq
@@ -62,12 +63,6 @@ list(APPEND pros
   shapelib
   zmqpp
   )
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  list(APPEND pros
-    # exdlpro projects not on macOS
-    ffmpeg
-    )
-endif()
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
@@ -76,6 +71,10 @@ endif()
 set(googletest_libs xpro::gtest_main)
 set(boost_libs Boost::filesystem Boost::program_options Boost::regex)
 set(boost_compile_definitions "BOOST_NO_CXX98_FUNCTION_BASE")
+xpGetPkgVar(FFmpeg DLLS) # sets FFmpeg_DLLS
+if(DEFINED FFmpeg_DLLS)
+  set(ffmpeg_postBuildCopy ${FFmpeg_DLLS})
+endif()
 set(fmt_libs xpro::fmt)
 xpGetPkgVar(geotranz DATA_DIR) # sets GEOTRANZ_DATA_DIR
 set(geotranz_compile_definitions "GEOTRANS_DATA=\"${GEOTRANZ_DATA_DIR}\"")
@@ -112,6 +111,9 @@ foreach(pro ${pros})
       list(APPEND all_compile_definitions ${${pro}_compile_definitions})
     endif()
     add_test(NAME ${pro}_test COMMAND ${${pro}_xvfb} $<TARGET_FILE:${pro}_test>)
+    if(DEFINED ${pro}_postBuildCopy)
+      xpPostBuildCopy(${pro}_test "${${pro}_postBuildCopy}" .)
+    endif()
   endif()
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cmake)
     xpGetPkgVar(${pro} VER)
