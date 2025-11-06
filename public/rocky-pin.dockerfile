@@ -61,7 +61,7 @@ RUN export CUDA_VER=12-6 \
   && unset CUDA_DL && unset CUDA_VER
 ENV PATH=$PATH:/usr/local/cuda/bin
 # exdlpro
-ENV XP_VER=25.04
+ENV XP_VER=25.06
 RUN mkdir -p ${EXTERN_DIR} \
   && OS="$(uname -s)" \
   && ARCH="$(uname -m)" \

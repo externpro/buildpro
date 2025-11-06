@@ -9,7 +9,7 @@ ARG TARGETARCH # e.g., amd64, arm64
 ARG TARGETOS # e.g., linux
 RUN echo "Building for architecture ${TARGETARCH} on OS ${TARGETOS}"
 # exdlpro
-ENV XP_VER=25.04
+ENV XP_VER=25.06
 RUN mkdir -p ${EXTERN_DIR} \
   && OS="$(uname -s)" \
   && ARCH="$(uname -m)" \
