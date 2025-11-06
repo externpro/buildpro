@@ -39,6 +39,7 @@ REPOS="
   ${GITHUB}/externpro/openh264
   ${GITHUB}/externpro/patch
   ${GITHUB}/externpro/rapidjson
+  ${GITHUB}/externpro/shapelib
   ${GITHUB}/externpro/spatialite-tools
   ${GITHUB}/externpro/spdlog
   ${GITHUB}/externpro/SQLite3
