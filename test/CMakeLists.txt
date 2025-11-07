@@ -8,6 +8,7 @@ set(pros
   bzip2
   ceres-solver
   clang-format
+  cppzmq
   eigen
   fecpp
   ffmpeg
@@ -51,7 +52,6 @@ list(APPEND pros
   # exdlpro projects
   activemqcpp
   cares
-  cppzmq
   curl
   expat
   glew
