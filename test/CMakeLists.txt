@@ -47,6 +47,7 @@ set(pros
   wxx
   yasm
   zlib
+  zmqpp
   )
 list(APPEND pros
   # exdlpro projects
@@ -61,7 +62,6 @@ list(APPEND pros
   lua
   openssl
   protobuf
-  zmqpp
   )
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
