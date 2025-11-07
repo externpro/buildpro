@@ -20,6 +20,7 @@ REPOS="
   ${GITHUB}/externpro/geos
   ${GITHUB}/externpro/geotranz
   ${GITHUB}/externpro/.github
+  ${GITHUB}/externpro/glew
   ${GITHUB}/externpro/googletest
   ${GITHUB}/externpro/hdf5
   ${GITHUB}/externpro/jasper
