@@ -34,6 +34,7 @@ set(pros
   openh264
   patch
   rapidjson
+  shapelib
   spatialite-tools
   spdlog
   sqlite3
@@ -60,7 +61,6 @@ list(APPEND pros
   openssl
   protobuf
   rapidxml
-  shapelib
   zmqpp
   )
 find_program(XVFB_RUN_EXEC xvfb-run)
