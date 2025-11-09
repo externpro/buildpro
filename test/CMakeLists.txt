@@ -16,6 +16,7 @@ set(pros
   fmt
   geos
   geotranz
+  glew
   hdf5
   jasper
   jxrlib
@@ -55,7 +56,6 @@ list(APPEND pros
   cares
   curl
   expat
-  glew
   jpegxp
   libgit2
   libssh2
