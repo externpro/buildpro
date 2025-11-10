@@ -20,6 +20,7 @@ set(pros
   hdf5
   jasper
   jxrlib
+  libexpat
   libgeotiff
   libiconv
   librttopo
@@ -55,7 +56,6 @@ list(APPEND pros
   activemqcpp
   cares
   curl
-  expat
   jpegxp
   libgit2
   libssh2
