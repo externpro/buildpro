@@ -35,6 +35,7 @@ set(pros
   node-addon-api
   nvjpeg2000
   openh264
+  openssl
   patch
   rapidjson
   rapidxml
@@ -60,7 +61,6 @@ list(APPEND pros
   libgit2
   libssh2
   lua
-  openssl
   protobuf
   )
 find_program(XVFB_RUN_EXEC xvfb-run)

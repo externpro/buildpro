@@ -1,4 +1,6 @@
+#include <chrono>
 #include <string>
+#include <thread>
 
 #include <curl/curl.h>
 #include <gtest/gtest.h>
@@ -73,24 +75,53 @@ protected:
 
 TEST_F(CurlTest, HttpGetRequest)
 {
-  // Test HTTP GET request to a public API
-  CURLcode res = PerformRequest(
-    "http://example.com"); // Using example.com as it's more stable
+  // Use a more reliable endpoint (example.com is more stable than example.org)
+  const std::string test_url = "https://example.com";
+  const int max_retries = 3;
+  CURLcode res;
+  bool success = false;
+  std::string last_error;
 
-  // Check for errors
-  if (res != CURLE_OK)
+  // Retry logic for transient failures
+  for (int attempt = 1; attempt <= max_retries; ++attempt)
   {
-    std::cout << "Warning: HTTP request failed: " << curl_easy_strerror(res)
-              << ", " << error_buffer << std::endl;
-    std::cout << "Skipping response content verification." << std::endl;
-    GTEST_SKIP() << "Network request failed, skipping test";
-    return;
+    // Clear previous response and error
+    response.clear();
+    error_buffer[0] = '\0';
+
+    // Perform the request
+    res = PerformRequest(test_url);
+
+    if (res == CURLE_OK && !response.empty())
+    {
+      // Check for typical HTML content
+      if (response.find("<html") != std::string::npos)
+      {
+        success = true;
+        break;
+      }
+      last_error = "Response doesn't appear to be HTML";
+    }
+    else
+    {
+      last_error = std::string("HTTP request failed: ") +
+                   curl_easy_strerror(res) + ", " + error_buffer;
+    }
+
+    if (attempt < max_retries)
+    {
+      std::cout << "Attempt " << attempt << " failed: " << last_error
+                << ". Retrying... (" << (max_retries - attempt)
+                << " attempts remaining)" << std::endl;
+      // Exponential backoff (1s, 2s, 4s, etc.)
+      std::this_thread::sleep_for(std::chrono::seconds(1 << (attempt - 1)));
+    }
   }
 
-  // Check response
+  // Final assertions
+  EXPECT_TRUE(success) << "Failed after " << max_retries
+                       << " attempts. Last error: " << last_error;
   EXPECT_FALSE(response.empty()) << "Empty response received";
-
-  // Check for typical HTML content
   EXPECT_NE(response.find("<html"), std::string::npos)
     << "Response doesn't appear to be HTML";
 }
