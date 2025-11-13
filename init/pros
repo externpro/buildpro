@@ -1,5 +1,6 @@
 GITHUB="https://github.com"
 REPOS="
+  ${GITHUB}/externpro/activemq-cpp
   ${GITHUB}/externpro/apr
   ${GITHUB}/externpro/argon2
   ${GITHUB}/externpro/azmq
