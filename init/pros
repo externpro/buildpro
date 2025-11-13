@@ -32,6 +32,7 @@ REPOS="
   ${GITHUB}/externpro/librttopo
   ${GITHUB}/externpro/libsodium
   ${GITHUB}/externpro/libspatialite
+  ${GITHUB}/externpro/libssh2
   ${GITHUB}/externpro/libstrophe
   ${GITHUB}/externpro/libzmq
   ${GITHUB}/externpro/nasm
