@@ -1,6 +1,7 @@
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(pros
   googletest
+  activemq-cpp
   apr
   argon2
   azmq
@@ -54,7 +55,6 @@ set(pros
   )
 list(APPEND pros
   # exdlpro projects
-  activemqcpp
   cares
   curl
   jpegxp
