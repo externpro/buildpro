@@ -23,6 +23,7 @@ set(pros
   jxrlib
   libexpat
   libgeotiff
+  libgit2
   libiconv
   librttopo
   libsodium
@@ -59,7 +60,6 @@ list(APPEND pros
   cares
   curl
   jpegxp
-  libgit2
   lua
   protobuf
   )
