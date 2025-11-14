@@ -7,6 +7,7 @@ REPOS="
   ${GITHUB}/externpro/boost
   ${GITHUB}/externpro/buildpro
   ${GITHUB}/externpro/bzip2
+  ${GITHUB}/externpro/c-ares
   ${GITHUB}/externpro/ceres-solver
   ${GITHUB}/externpro/clang-format
   ${GITHUB}/externpro/cppzmq
