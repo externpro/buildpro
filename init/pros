@@ -28,6 +28,7 @@ REPOS="
   ${GITHUB}/externpro/jxrlib
   ${GITHUB}/externpro/libexpat
   ${GITHUB}/externpro/libgeotiff
+  ${GITHUB}/externpro/libgit2
   ${GITHUB}/externpro/libiconv
   ${GITHUB}/externpro/librttopo
   ${GITHUB}/externpro/libsodium
