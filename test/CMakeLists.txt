@@ -27,6 +27,7 @@ set(pros
   librttopo
   libsodium
   libspatialite
+  libssh2
   libstrophe
   libzmq
   nasm
@@ -59,7 +60,6 @@ list(APPEND pros
   curl
   jpegxp
   libgit2
-  libssh2
   lua
   protobuf
   )
