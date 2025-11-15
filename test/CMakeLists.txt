@@ -11,6 +11,7 @@ set(pros
   ceres-solver
   clang-format
   cppzmq
+  curl
   eigen
   fecpp
   ffmpeg
@@ -58,7 +59,6 @@ set(pros
   )
 list(APPEND pros
   # exdlpro projects
-  curl
   jpegxp
   lua
   protobuf
