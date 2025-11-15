@@ -11,6 +11,7 @@ REPOS="
   ${GITHUB}/externpro/ceres-solver
   ${GITHUB}/externpro/clang-format
   ${GITHUB}/externpro/cppzmq
+  ${GITHUB}/externpro/curl
   ${GITHUB}/externpro/duckdb
   ${GITHUB}/externpro/eigen
   ${GITHUB}/externpro/exdlpro
