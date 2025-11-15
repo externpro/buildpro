@@ -7,9 +7,11 @@ set(pros
   azmq
   boost
   bzip2
+  c-ares
   ceres-solver
   clang-format
   cppzmq
+  curl
   eigen
   fecpp
   ffmpeg
@@ -57,8 +59,6 @@ set(pros
   )
 list(APPEND pros
   # exdlpro projects
-  cares
-  curl
   jpegxp
   lua
   protobuf
