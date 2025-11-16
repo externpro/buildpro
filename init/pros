@@ -47,6 +47,7 @@ REPOS="
   ${GITHUB}/externpro/openh264
   ${GITHUB}/externpro/openssl
   ${GITHUB}/externpro/patch
+  ${GITHUB}/externpro/protobuf
   ${GITHUB}/externpro/rapidjson
   ${GITHUB}/externpro/rapidxml
   ${GITHUB}/externpro/shapelib

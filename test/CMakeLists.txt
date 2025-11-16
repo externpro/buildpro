@@ -42,6 +42,7 @@ set(pros
   openh264
   openssl
   patch
+  protobuf
   rapidjson
   rapidxml
   shapelib
@@ -61,7 +62,6 @@ list(APPEND pros
   # exdlpro projects
   jpegxp
   lua
-  protobuf
   )
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
