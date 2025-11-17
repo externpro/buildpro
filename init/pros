@@ -38,6 +38,7 @@ REPOS="
   ${GITHUB}/externpro/libssh2
   ${GITHUB}/externpro/libstrophe
   ${GITHUB}/externpro/libzmq
+  ${GITHUB}/externpro/lua
   ${GITHUB}/externpro/nasm
   ${GITHUB}/externpro/nlohmann_json
   ${GITHUB}/externpro/node-addon-api
