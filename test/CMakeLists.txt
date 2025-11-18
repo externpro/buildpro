@@ -33,6 +33,7 @@ set(pros
   libssh2
   libstrophe
   libzmq
+  lua
   nasm
   nlohmann_json
   nodeng
@@ -61,7 +62,6 @@ set(pros
 list(APPEND pros
   # exdlpro projects
   jpegxp
-  lua
   )
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
