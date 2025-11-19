@@ -27,6 +27,7 @@ REPOS="
   ${GITHUB}/externpro/googletest
   ${GITHUB}/externpro/hdf5
   ${GITHUB}/externpro/jasper
+  ${GITHUB}/externpro/jpegxp
   ${GITHUB}/externpro/jxrlib
   ${GITHUB}/externpro/libexpat
   ${GITHUB}/externpro/libgeotiff
