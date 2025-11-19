@@ -8,14 +8,6 @@ USER 0
 ARG TARGETARCH # e.g., amd64, arm64
 ARG TARGETOS # e.g., linux
 RUN echo "Building for architecture ${TARGETARCH} on OS ${TARGETOS}"
-# doxygen
-RUN export DXY_VER=1.8.13 \
-  && wget -qO- --no-check-certificate \
-  "https://downloads.sourceforge.net/project/doxygen/rel-${DXY_VER}/doxygen-${DXY_VER}.linux.bin.tar.gz" \
-  | tar --no-same-owner -xz -C /usr/local/ \
-  && mv /usr/local/doxygen-${DXY_VER}/bin/doxygen /usr/local/bin/ \
-  && rm -rf /usr/local/doxygen-${DXY_VER}/ \
-  && unset DXY_VER
 # CUDA https://developer.nvidia.com/cuda-toolkit-archive
 RUN export CUDA_VER=12-6 \
   && export CUDA_DL=https://developer.download.nvidia.com/compute/cuda/repos/rhel8/$(uname -m) \
