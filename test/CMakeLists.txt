@@ -22,6 +22,7 @@ set(pros
   glew
   hdf5
   jasper
+  jpegxp
   jxrlib
   libexpat
   libgeotiff
@@ -59,10 +60,6 @@ set(pros
   yasm
   zlib
   zmqpp
-  )
-list(APPEND pros
-  # exdlpro projects
-  jpegxp
   )
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
