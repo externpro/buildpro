@@ -34,20 +34,4 @@ RUN export CHR_VER=133.0.6943.98 \
      https://dl.google.com/${CHR_DL} \
   && ${DNF} clean all \
   && unset CHR_DL && unset CHR_VER
-# exdlpro
-ENV XP_VER=25.06
-RUN mkdir -p ${EXTERN_DIR} \
-  && OS="$(uname -s)" \
-  && ARCH="$(uname -m)" \
-  && if [ "$ARCH" = "aarch64" ]; then \
-       PKG="${OS}-arm64-devel"; \
-     else \
-       PKG="${OS}-devel"; \
-     fi \
-  && echo "Detected OS: $OS" \
-  && echo "Detected ARCH: $ARCH" \
-  && echo "PKG=${PKG}" \
-  && export XP_DL=releases/download/v${XP_VER}/exdlpro-v${XP_VER}-${GCC_VER}-64-${PKG}.tar.xz \
-  && wget -qO- "https://github.com/externpro/exdlpro/${XP_DL}" | tar --no-same-owner -xJ -C ${EXTERN_DIR} \
-  && unset XP_DL && unset PKG
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
