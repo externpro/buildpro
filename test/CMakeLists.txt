@@ -34,6 +34,7 @@ set(pros
   libstrophe
   libzmq
   lua
+  luabridge
   nasm
   nlohmann_json
   nodeng
