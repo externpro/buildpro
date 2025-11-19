@@ -22,16 +22,5 @@ RUN export CUDA_VER=12-6 \
      cuda-toolkit-${CUDA_VER} \
   && ${DNF} clean all \
   && unset CUDA_DL && unset CUDA_VER
-RUN ${DNF} clean all \
-  && ${DNF} -y install \
-  `# https://developer.nvidia.com/cudnn` \
-     cudnn \
-  `# https://developer.nvidia.com/cudss` \
-     cudss \
-  `# https://developer.nvidia.com/cutensor` \
-     libcutensor2 \
-     libcutensor-devel \
-     libcutensor-doc \
-  && ${DNF} clean all
 ENV PATH=$PATH:/usr/local/cuda/bin
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
