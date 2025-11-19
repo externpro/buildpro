@@ -42,20 +42,4 @@ RUN ${DNF} clean all \
      libcutensor-doc \
   && ${DNF} clean all
 ENV PATH=$PATH:/usr/local/cuda/bin
-# exdlpro
-ENV XP_VER=25.06
-RUN mkdir -p ${EXTERN_DIR} \
-  && OS="$(uname -s)" \
-  && ARCH="$(uname -m)" \
-  && if [ "$ARCH" = "aarch64" ]; then \
-       PKG="${OS}-arm64-devel"; \
-     else \
-       PKG="${OS}-devel"; \
-     fi \
-  && echo "Detected OS: $OS" \
-  && echo "Detected ARCH: $ARCH" \
-  && echo "PKG=${PKG}" \
-  && export XP_DL=releases/download/v${XP_VER}/exdlpro-v${XP_VER}-${GCC_VER}-64-${PKG}.tar.xz \
-  && wget -qO- "https://github.com/externpro/exdlpro/${XP_DL}" | tar --no-same-owner -xJ -C ${EXTERN_DIR} \
-  && unset XP_DL && unset PKG
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
