@@ -19,7 +19,6 @@ RUN ${DNF} -y update \
 RUN ${DNF} -y update \
   && ${DNF} clean all \
   && ${DNF} -y install ${DNFOPT} \
-     bat \
      coreutils-common \
      epel-release \
      git \
@@ -70,6 +69,7 @@ RUN ${DNF} -y update \
 RUN ${DNF} -y update \
   && ${DNF} clean all \
   && ${DNF} -y install --enablerepo=epel ${DNFOPT} \
+     bat \
      gperftools \
   && ${DNF} clean all
 # lcov
