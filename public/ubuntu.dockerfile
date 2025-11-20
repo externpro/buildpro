@@ -27,11 +27,13 @@ RUN add-apt-repository ppa:git-core/ppa -y \
      bat `#batcat` \
      build-essential \
      git \
+     less \
      libgl1-mesa-dev \
      libglu1-mesa-dev \
      libgtk-3-dev \
      ninja-build \
      openssh-client \
+     python3-dev \
      vim \
      wget \
      xz-utils \
