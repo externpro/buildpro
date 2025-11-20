@@ -24,6 +24,7 @@ RUN add-apt-repository ppa:git-core/ppa -y \
   && apt update \
   && DEBIAN_FRONTEND=noninteractive \
   apt -y --quiet --no-install-recommends install \
+     bat `#batcat` \
      build-essential \
      git \
      libgl1-mesa-dev \
