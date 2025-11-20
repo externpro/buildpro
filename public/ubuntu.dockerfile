@@ -24,7 +24,11 @@ RUN add-apt-repository ppa:git-core/ppa -y \
   && apt update \
   && DEBIAN_FRONTEND=noninteractive \
   apt -y --quiet --no-install-recommends install \
+     build-essential \
      git \
+     libgl1-mesa-dev \
+     libglu1-mesa-dev \
+     libgtk-3-dev \
      ninja-build \
      openssh-client \
      vim \
