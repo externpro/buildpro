@@ -59,7 +59,7 @@ RUN ${DNF} -y update \
      perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
      perl-Module-Load-Conditional `#lcov` \
-     xeyes \
+     xorg-x11-apps `#xeyes` \
   && ${DNF} clean all
 # EPEL Repository
 RUN ${DNF} -y update \
