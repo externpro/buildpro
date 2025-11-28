@@ -110,10 +110,8 @@ RUN export CMK_VER=3.31.6 \
 # copy from local into image
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
-# environment: gcc version, enable scl binaries
-ENV GCC_VER=gcc921 \
-    PATH="/opt/rh/gcc-toolset-9/root/usr/bin:${PATH}" \
-    EXTERN_DIR=/opt/extern \
+# environment: gcc-toolset, enable scl binaries
+ENV PATH="/opt/rh/gcc-toolset-9/root/usr/bin:${PATH}" \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \
     PROMPT_COMMAND=". /usr/local/bpbin/scl_enable"
