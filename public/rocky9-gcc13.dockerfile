@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:8
+FROM rockylinux/rockylinux:9
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -47,13 +47,13 @@ RUN ${DNF} -y update \
 RUN ${DNF} -y update \
   && ${DNF} clean all \
   && ${DNF} -y install ${DNFOPT} \
-     gcc-toolset-9-binutils \
-     gcc-toolset-9-gcc \
-     gcc-toolset-9-gcc-c++ \
-     gcc-toolset-9-gdb \
-     gcc-toolset-9-libasan-devel \
-     gcc-toolset-9-libtsan-devel \
-     gcc-toolset-9-make \
+     gcc-toolset-13-binutils \
+     gcc-toolset-13-gcc \
+     gcc-toolset-13-gcc-c++ \
+     gcc-toolset-13-gdb \
+     gcc-toolset-13-libasan-devel \
+     gcc-toolset-13-libtsan-devel \
+     gcc-toolset-13-make \
   && ${DNF} clean all
 # PowerTools Repository
 RUN ${DNF} -y update \

@@ -1,17 +1,17 @@
-name: rocky8-gcc9
+name: rocky9-gcc13
 on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky8-gcc9.dockerfile'
+      - 'public/rocky9-gcc13.dockerfile'
   pull_request:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky8-gcc9.dockerfile'
+      - 'public/rocky9-gcc13.dockerfile'
   workflow_dispatch:
 jobs:
-  rocky8-gcc9:
+  rocky9-gcc13:
     uses: ./.github/workflows/buildpro.yml
     with:
-      img: rocky8-gcc9
+      img: rocky9-gcc13
       platforms: "linux/amd64,linux/arm64"
