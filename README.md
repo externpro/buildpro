@@ -96,7 +96,7 @@ To use buildpro images
   (link to a different one to use a different buildpro image) 
   | script                                                                            | buildpro image                                                                          |
   | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-  | [compose.pro.sh](https://github.com/externpro/externpro/blob/main/compose.pro.sh) | [rocky-pro](https://github.com/externpro/buildpro/blob/dev/public/rocky-pro.dockerfile) |
+  | [compose.pro.sh](https://github.com/externpro/externpro/blob/main/compose.pro.sh) | [rocky8-gcc9](https://github.com/externpro/buildpro/blob/dev/public/rocky8-gcc9.dockerfile) |
   | [compose.bld.sh](https://github.com/externpro/externpro/blob/main/compose.bld.sh) | [rocky-mdv](https://github.com/externpro/buildpro/blob/dev/public/rocky-mdv.dockerfile) |
   | [compose.ci.sh](https://github.com/externpro/externpro/blob/main/compose.ci.sh)   | [rocky-ci](https://github.com/externpro/buildpro/blob/dev/public/rocky-ci.dockerfile)   |
   | [compose.gpu.sh](https://github.com/externpro/externpro/blob/main/compose.gpu.sh) | [rocky-pin](https://github.com/externpro/buildpro/blob/dev/public/rocky-pin.dockerfile) or [rocky-pdv](https://github.com/externpro/buildpro/blob/dev/public/rocky-pdv.dockerfile) |
