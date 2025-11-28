@@ -10,7 +10,7 @@ on:
       - 'public/rocky-pdv.dockerfile'
   workflow_dispatch:
   workflow_run:
-    workflows: ["rocky-pro"]
+    workflows: ["rocky8-gcc9"]
     types:
       - completed
 jobs:
