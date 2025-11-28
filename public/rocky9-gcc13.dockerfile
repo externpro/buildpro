@@ -50,7 +50,6 @@ RUN ${DNF} -y update \
      gcc-toolset-13-gdb \
      gcc-toolset-13-libasan-devel \
      gcc-toolset-13-libtsan-devel \
-     gcc-toolset-13-make \
   && ${DNF} clean all
 # PowerTools Repository
 RUN ${DNF} -y update \
