@@ -30,6 +30,7 @@ RUN ${DNF} -y update \
      mesa-libGLU-devel \
      perf \
      postgresql-devel \
+     python3-devel \
      rpm-build \
      rpm-sign \
      sudo \
