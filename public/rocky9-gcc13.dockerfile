@@ -30,8 +30,6 @@ RUN ${DNF} -y update \
      mesa-libGLU-devel \
      perf \
      postgresql-devel \
-     python39-devel \
-     redhat-lsb-core \
      rpm-build \
      rpm-sign \
      sudo \
@@ -41,8 +39,7 @@ RUN ${DNF} -y update \
      xorg-x11-xauth \
      Xvfb \
      xz \
-  && ${DNF} clean all \
-  && alternatives --set python3 $(command -v python3.9)
+  && ${DNF} clean all
 # gcc-toolset
 RUN ${DNF} -y update \
   && ${DNF} clean all \
