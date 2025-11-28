@@ -51,10 +51,10 @@ RUN ${DNF} -y update \
      gcc-toolset-13-libasan-devel \
      gcc-toolset-13-libtsan-devel \
   && ${DNF} clean all
-# PowerTools Repository
+# CRB (Code Ready Builder) Repository
 RUN ${DNF} -y update \
   && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=powertools ${DNFOPT} \
+  && ${DNF} -y install --enablerepo=crb ${DNFOPT} \
      cppcheck \
      perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
