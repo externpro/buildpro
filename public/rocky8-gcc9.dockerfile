@@ -84,7 +84,7 @@ RUN export LFS_VER=3.7.1 \
   && mkdir /usr/local/src/lfs \
   && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
   | tar -xz -C /usr/local/src/lfs \
-  && /usr/local/src/lfs/install.sh \
+  && /usr/local/src/lfs/git-lfs-${LFS_VER}/install.sh \
   && rm -rf /usr/local/src/lfs/ \
   && unset LFS_VER \
   && git lfs install --system
