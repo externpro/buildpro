@@ -68,14 +68,14 @@ RUN ${DNF} -y update \
      gperftools \
   && ${DNF} clean all
 # lcov
-RUN export LCOV_VER=1.16 \
+RUN export LCOV_VER=2.3.2 \
   && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
   | tar -xz -C /usr/local/src \
   && (cd /usr/local/src/lcov-${LCOV_VER} && make install > /dev/null) \
   && rm -rf /usr/local/src/lcov-${LCOV_VER} \
   && unset LCOV_VER
 # git-lfs
-RUN export LFS_VER=2.12.1 \
+RUN export LFS_VER=3.7.1 \
   && mkdir /usr/local/src/lfs \
   && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
   | tar -xz -C /usr/local/src/lfs \
@@ -90,7 +90,7 @@ RUN export DVIM_VER=21.09.06 \
   && wget -qO- "https://github.com/smanders/Dockerfile.vim/${DVIM_DL}" | tar --no-same-owner -xJ -C ${DVIM_SYS} \
   && unset DVIM_DL && unset DVIM_SYS && unset DVIM_VER
 # ninja
-RUN export NJA_VER=1.13.1 \
+RUN export NJA_VER=1.13.2 \
   && export NJA_DL=ninja-linux$([ "$(uname -m)" = "aarch64" ] && echo "-$(uname -m)").zip \
   && wget -q "https://github.com/ninja-build/ninja/releases/download/v${NJA_VER}/${NJA_DL}" -P /usr/local/src \
   && unzip /usr/local/src/${NJA_DL} -d /usr/local/bin/ \
