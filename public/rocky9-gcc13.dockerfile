@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:8
+FROM rockylinux/rockylinux:9
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -30,8 +30,7 @@ RUN ${DNF} -y update \
      mesa-libGLU-devel \
      perf \
      postgresql-devel \
-     python39-devel \
-     redhat-lsb-core \
+     python3-devel \
      rpm-build \
      rpm-sign \
      sudo \
@@ -41,29 +40,26 @@ RUN ${DNF} -y update \
      xorg-x11-xauth \
      Xvfb \
      xz \
-  && ${DNF} clean all \
-  && alternatives --set python3 $(command -v python3.9)
+  && ${DNF} clean all
 # gcc-toolset
 RUN ${DNF} -y update \
   && ${DNF} clean all \
   && ${DNF} -y install ${DNFOPT} \
-     gcc-toolset-9-binutils \
-     gcc-toolset-9-gcc \
-     gcc-toolset-9-gcc-c++ \
-     gcc-toolset-9-gdb \
-     gcc-toolset-9-libasan-devel \
-     gcc-toolset-9-libtsan-devel \
-     gcc-toolset-9-make \
+     gcc-toolset-13-binutils \
+     gcc-toolset-13-gcc \
+     gcc-toolset-13-gcc-c++ \
+     gcc-toolset-13-gdb \
+     gcc-toolset-13-libasan-devel \
+     gcc-toolset-13-libtsan-devel \
   && ${DNF} clean all
-# PowerTools Repository
+# CRB (Code Ready Builder) Repository
 RUN ${DNF} -y update \
   && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=powertools ${DNFOPT} \
+  && ${DNF} -y install --enablerepo=crb ${DNFOPT} \
      cppcheck \
      perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
      perl-Module-Load-Conditional `#lcov` \
-     xeyes \
   && ${DNF} clean all
 # EPEL Repository
 RUN ${DNF} -y update \
@@ -111,7 +107,7 @@ RUN export CMK_VER=3.31.6 \
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
 # environment: gcc-toolset, enable scl binaries
-ENV PATH="/opt/rh/gcc-toolset-9/root/usr/bin:${PATH}" \
+ENV PATH="/opt/rh/gcc-toolset-13/root/usr/bin:${PATH}" \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \
     PROMPT_COMMAND=". /usr/local/bpbin/scl_enable"

@@ -41,11 +41,11 @@ RUN add-apt-repository ppa:git-core/ppa -y \
   && apt clean autoclean \
   && rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
 # git-lfs
-RUN export LFS_VER=2.12.1 \
+RUN export LFS_VER=3.7.1 \
   && mkdir /usr/local/src/lfs \
   && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
   | tar -xz -C /usr/local/src/lfs \
-  && /usr/local/src/lfs/install.sh \
+  && /usr/local/src/lfs/git-lfs-${LFS_VER}/install.sh \
   && rm -rf /usr/local/src/lfs/ \
   && unset LFS_VER \
   && git lfs install --system
