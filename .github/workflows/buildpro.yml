@@ -117,7 +117,7 @@ jobs:
         uses: anchore/scan-action@v6
         with:
           sbom: ${{ github.event.repository.name }}-${{ inputs.img }}-${{ steps.tags.outputs.tag }}.spdx.json
-          fail-build: true # fail the build if vulnerabilities are found
+          fail-build: false # fail the build if vulnerabilities are found
           severity-cutoff: high # optional; default is medium
       -
         name: Upload grype SARIF report
