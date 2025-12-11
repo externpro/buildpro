@@ -37,9 +37,7 @@ RUN ${DNF} -y update \
      sudo \
      vim \
      wget \
-     xorg-x11-utils \
      xorg-x11-xauth \
-     Xvfb \
      xz \
   && ${DNF} clean all
 # gcc-toolset
@@ -67,6 +65,13 @@ RUN ${DNF} -y update \
   && ${DNF} -y install --enablerepo=epel ${DNFOPT} \
      bat \
      gperftools \
+  && ${DNF} clean all
+# AlmaLinux Devel Repository
+RUN ${DNF} -y --nogpgcheck \
+  --repofrompath=alma10-devel,'https://repo.almalinux.org/almalinux/10/devel/$basearch/os/' \
+  --enablerepo=alma10-devel \
+  install \
+    xorg-x11-server-Xvfb \
   && ${DNF} clean all
 # lcov
 RUN export LCOV_VER=2.3.2 \
