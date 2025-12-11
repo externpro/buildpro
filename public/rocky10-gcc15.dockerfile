@@ -21,6 +21,7 @@ RUN ${DNF} -y update \
   && ${DNF} -y install ${DNFOPT} \
      coreutils-common \
      epel-release \
+     gdb \
      git \
      graphviz \
      gtk3-devel \
@@ -48,7 +49,6 @@ RUN ${DNF} -y update \
      gcc-toolset-15-binutils \
      gcc-toolset-15-gcc \
      gcc-toolset-15-gcc-c++ \
-     gcc-toolset-15-gdb \
      gcc-toolset-15-libasan-devel \
      gcc-toolset-15-libtsan-devel \
   && ${DNF} clean all
