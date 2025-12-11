@@ -1,16 +1,16 @@
-name: rocky9-gcc13
+name: rocky10-gcc15
 on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky9-gcc13.dockerfile'
+      - 'public/rocky10-gcc15.dockerfile'
   pull_request:
     branches: [ "dev" ]
     paths:
-      - 'public/rocky9-gcc13.dockerfile'
+      - 'public/rocky10-gcc15.dockerfile'
   workflow_dispatch:
 jobs:
-  rocky9-gcc13:
+  rocky10-gcc15:
     permissions:
       contents: read
       packages: write
@@ -19,5 +19,5 @@ jobs:
       security-events: write
     uses: ./.github/workflows/buildpro.yml
     with:
-      img: rocky9-gcc13
+      img: rocky10-gcc15
       platforms: "linux/amd64,linux/arm64"

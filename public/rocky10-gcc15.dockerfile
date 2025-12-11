@@ -1,4 +1,4 @@
-FROM rockylinux/rockylinux:9
+FROM rockylinux/rockylinux:10
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -45,12 +45,12 @@ RUN ${DNF} -y update \
 RUN ${DNF} -y update \
   && ${DNF} clean all \
   && ${DNF} -y install ${DNFOPT} \
-     gcc-toolset-13-binutils \
-     gcc-toolset-13-gcc \
-     gcc-toolset-13-gcc-c++ \
-     gcc-toolset-13-gdb \
-     gcc-toolset-13-libasan-devel \
-     gcc-toolset-13-libtsan-devel \
+     gcc-toolset-15-binutils \
+     gcc-toolset-15-gcc \
+     gcc-toolset-15-gcc-c++ \
+     gcc-toolset-15-gdb \
+     gcc-toolset-15-libasan-devel \
+     gcc-toolset-15-libtsan-devel \
   && ${DNF} clean all
 # CRB (Code Ready Builder) Repository
 RUN ${DNF} -y update \
@@ -107,7 +107,7 @@ RUN export CMK_VER=3.31.6 \
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
 # environment: gcc-toolset, enable scl binaries
-ENV PATH="/opt/rh/gcc-toolset-13/root/usr/bin:${PATH}" \
+ENV PATH="/opt/rh/gcc-toolset-15/root/usr/bin:${PATH}" \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \
     PROMPT_COMMAND=". /usr/local/bpbin/scl_enable"
