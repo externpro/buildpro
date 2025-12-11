@@ -15,6 +15,12 @@ on:
       - completed
 jobs:
   rocky-pdv:
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+      security-events: write
     if: |
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'

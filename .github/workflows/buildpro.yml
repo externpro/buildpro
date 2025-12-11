@@ -17,6 +17,7 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+      security-events: write
     env:
       REGISTRY: ghcr.io
     steps:
@@ -101,11 +102,38 @@ jobs:
         run: |
           docker pull ${{ steps.tags.outputs.latest }}
           docker images
-          docker rmi ${{ steps.tags.outputs.latest }}
+      -
+        name: Create Software Bill of Materials (SBOM) using syft
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ steps.tags.outputs.latest }}
+          format: spdx-json
+          output-file: ${{ github.event.repository.name }}-${{ inputs.img }}-${{ steps.tags.outputs.tag }}.spdx.json
+          artifact-name: ${{ github.event.repository.name }}-${{ inputs.img }}-${{ steps.tags.outputs.tag }}.spdx.json
+          upload-artifact: true
+      -
+        name: Vulnerability scan from SBOM with grype
+        id: scan
+        uses: anchore/scan-action@v6
+        with:
+          sbom: ${{ github.event.repository.name }}-${{ inputs.img }}-${{ steps.tags.outputs.tag }}.spdx.json
+          fail-build: false # fail the build if vulnerabilities are found
+          severity-cutoff: high # optional; default is medium
+      -
+        name: Upload grype SARIF report
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+      -
+        name: SARIF report
+        run: |
+          cat ${{ steps.scan.outputs.sarif }}
       -
         name: Determine multi-platform package SHAs
         id: multi-arch
         run: |
+          # Remove docker image pulled during "Report after build"
+          docker rmi ${{ steps.tags.outputs.latest }}
           # Initialize an empty array to store all digests
           declare -a digests_array=()
           # Get all tags
