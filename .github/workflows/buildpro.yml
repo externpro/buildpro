@@ -32,9 +32,18 @@ jobs:
         name: Determine tags
         id: tags
         run: |
-          gtag=`git describe --tags`
-          if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then
-            gtag=latest
+          gtag=""
+          if [ "${GITHUB_EVENT_NAME:-}" = "workflow_run" ] && [ -f "${GITHUB_EVENT_PATH:-}" ]; then
+            sha=$(jq -r '.workflow_run.head_sha // empty' "${GITHUB_EVENT_PATH}")
+            if [ -n "${sha}" ]; then
+              gtag=$(git tag --points-at "${sha}" | head -n1 || true)
+            fi
+          fi
+          if [ -z "${gtag}" ]; then
+            gtag=$(git describe --tags)
+            if [ -n "$(git status --porcelain --untracked=no)" ] || [[ ${gtag} == *"-g"* ]]; then
+              gtag=latest
+            fi
           fi
           echo "tag=$gtag" >> $GITHUB_OUTPUT
           echo "latest=${{ env.REGISTRY }}/${{ github.repository }}/${{ inputs.img }}:latest" >> $GITHUB_OUTPUT
