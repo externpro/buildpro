@@ -105,16 +105,11 @@ jobs:
             echo "| ${img} | ${container_status} | ${run_cell} |" >> "${notes_file}"
           done
           #####
-          # Determine a unique release tag. If the requested tag already exists, append -1, -2, ...
+          # Refuse to create a release if one already exists for this tag.
           release_tag="${tag}"
           if gh release view "${release_tag}" >/dev/null 2>&1; then
-            echo "Release for tag ${tag} already exists; searching for a unique tag."
-            base_tag="${tag}"
-            suffix=1
-            while gh release view "${base_tag}-${suffix}" >/dev/null 2>&1; do
-              suffix=$((suffix + 1))
-            done
-            release_tag="${base_tag}-${suffix}"
+            echo "Release for tag ${release_tag} already exists; refusing to create another release for the same git tag." >&2
+            exit 1
           fi
           echo "Creating draft release with tag: ${release_tag} (for build tag ${tag})"
           gh release create "${release_tag}" \
