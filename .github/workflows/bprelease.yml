@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
       packages: read
     steps:
       -
@@ -51,10 +52,8 @@ jobs:
           #####
           notes_file="$(mktemp)"
           {
-            echo "## buildpro container images ${tag}"
-            echo
-            echo "| Image | Container package | Workflow run |"
-            echo "| ----- | ----------------- | ------------ |"
+            echo "| buildpro docker image | workflow run |"
+            echo "| --------------------- | ------------ |"
           } > "${notes_file}"
           for img in "${images[@]}"; do
             echo "Processing image: ${img}"
@@ -62,7 +61,8 @@ jobs:
             pkg_name="buildpro%2F${img}"
             base_pkg_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/versions"
             version_url="${base_pkg_url}"
-            container_status="missing tag ${tag} (see versions list)"
+            image_ref_text="ghcr.io/${repo}/${img}:${tag}"
+            image_cell="[ghcr.io/${repo}/${img} versions](${base_pkg_url}) (tag DNE?)"
             #####
             # Try to find a specific package version that has this tag
             # API: GET /orgs/{org}/packages/container/{package_name}/versions
@@ -76,9 +76,7 @@ jobs:
             fi
             if [ -n "${version_id}" ]; then
               version_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/${version_id}?tag=${tag}"
-              container_status="[link](${version_url})"
-            else
-              container_status="missing tag ${tag} ([versions](${base_pkg_url}))"
+              image_cell="[${image_ref_text}](${version_url})"
             fi
             #####
             # Determine a specific successful workflow run for this image/tag, if possible
@@ -86,24 +84,38 @@ jobs:
             run_cell="no matching run (see [workflow](${workflow_url}))"
             if [ -n "${tag_sha}" ]; then
               run_id=""
+              api_err_file="$(mktemp)"
               if ids=$(gh api \
                 -H "Accept: application/vnd.github+json" \
                 "repos/${repo}/actions/workflows/${img}.yml/runs" \
                 -f per_page=100 \
-                --jq ".workflow_runs[] | select(.head_sha == \"${tag_sha}\" and .conclusion == \"success\") | .id" 2>/dev/null); then
+                --jq ".workflow_runs[] | select(.head_sha == \"${tag_sha}\" and .conclusion == \"success\") | .id" 2>"${api_err_file}"); then
                 run_id=$(echo "${ids}" | head -n1 || true)
+              else
+                api_err=$(cat "${api_err_file}" || true)
+                run_cell="could not query runs (see [workflow](${workflow_url}))"
+                if [ -n "${api_err}" ]; then
+                  echo "Warning: failed to query workflow runs for ${img}.yml: ${api_err}" >&2
+                fi
               fi
+              rm -f "${api_err_file}"
               if [ -n "${run_id}" ]; then
                 specific_run_url="https://github.com/${repo}/actions/runs/${run_id}"
-                run_cell="[run](${specific_run_url})"
+                run_cell="[${tag} run](${specific_run_url})"
               fi
             else
               run_cell="tag ${tag} not found in git ([workflow](${workflow_url}))"
             fi
             #####
             # Append table row
-            echo "| ${img} | ${container_status} | ${run_cell} |" >> "${notes_file}"
+            echo "| ${image_cell} | ${run_cell} |" >> "${notes_file}"
           done
+          {
+            echo
+            echo "- The \`workflow run\` link includes:"
+            echo "  - links to the attestation and software bill of materials"
+            echo "  - the SBOM is in SPDX (Software Package Data Exchange) format (.spdx.json)"
+          } >> "${notes_file}"
           #####
           # Refuse to create a release if one already exists for this tag.
           release_tag="${tag}"
