@@ -5,7 +5,7 @@ on:
       images:
         description: 'Comma-separated list of buildpro images (in desired order)'
         required: false
-        default: 'rocky-pro,rocky-mdv,rocky-ci,rocky-pin,rocky-pdv,ubuntu'
+        default: 'rocky10-gcc15,rocky9-gcc13,rocky8-gcc9,rocky-mdv,rocky-ci,rocky-pin,rocky-pdv,ubuntu'
         type: string
 jobs:
   create-release:
