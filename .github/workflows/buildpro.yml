@@ -113,7 +113,9 @@ jobs:
           docker images
       -
         name: Create Software Bill of Materials (SBOM) using syft
+        id: sbom
         uses: anchore/sbom-action@v0
+        continue-on-error: true
         with:
           image: ${{ steps.tags.outputs.latest }}
           format: spdx-json
@@ -124,6 +126,8 @@ jobs:
         name: Vulnerability scan from SBOM with grype
         id: scan
         uses: anchore/scan-action@v6
+        if: ${{ steps.sbom.outcome == 'success' }}
+        continue-on-error: true
         with:
           sbom: ${{ github.event.repository.name }}-${{ inputs.img }}-${{ steps.tags.outputs.tag }}.spdx.json
           fail-build: false # fail the build if vulnerabilities are found
@@ -131,15 +135,20 @@ jobs:
       -
         name: Upload grype SARIF report
         uses: github/codeql-action/upload-sarif@v4
+        if: ${{ steps.scan.outcome == 'success' }}
+        continue-on-error: true
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
       -
         name: SARIF report
+        if: ${{ steps.scan.outcome == 'success' }}
+        continue-on-error: true
         run: |
           cat ${{ steps.scan.outputs.sarif }}
       -
         name: Determine multi-platform package SHAs
         id: multi-arch
+        if: ${{ steps.push.outcome == 'success' }}
         run: |
           # Remove docker image pulled during "Report after build"
           docker rmi ${{ steps.tags.outputs.latest }}
@@ -167,6 +176,7 @@ jobs:
       -
         name: Delete untagged images from ghcr
         uses: snok/container-retention-policy@v3.0.0
+        if: ${{ steps.push.outcome == 'success' && steps.multi-arch.outcome == 'success' }}
         with:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GITHUB_TOKEN }}
