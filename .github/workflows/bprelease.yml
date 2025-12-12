@@ -1,0 +1,124 @@
+name: buildpro release
+on:
+  workflow_dispatch:
+    inputs:
+      images:
+        description: 'Comma-separated list of buildpro images (in desired order)'
+        required: false
+        default: 'rocky-pro,rocky-mdv,rocky-ci,rocky-pin,rocky-pdv,ubuntu'
+        type: string
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      -
+        name: Create draft release with image links
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          IMAGES: ${{ github.event.inputs.images }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE:-}" != "tag" ]; then
+            echo "This workflow must be run from a git tag. Use the 'Run workflow' ref picker to select a tag." >&2
+            echo "Current ref: ${GITHUB_REF:-} (type: ${GITHUB_REF_TYPE:-unknown})" >&2
+            exit 1
+          fi
+          images_csv="${IMAGES:-}"
+          if [ -z "${images_csv}" ]; then
+            images_csv="rocky-pro,rocky-mdv,rocky-ci,rocky-pin,rocky-pdv,ubuntu"
+          fi
+          IFS=',' read -r -a images <<< "${images_csv}"
+          #####
+          owner="${GITHUB_REPOSITORY_OWNER}"
+          repo="${GITHUB_REPOSITORY}"
+          tag="${TAG}"
+          #####
+          # Resolve the commit SHA for this tag, if it exists
+          tag_sha=""
+          if tag_sha_candidate=$(git rev-list -n 1 "${tag}" 2>/dev/null || true); then
+            tag_sha="${tag_sha_candidate}"
+          fi
+          #####
+          notes_file="$(mktemp)"
+          {
+            echo "## buildpro container images ${tag}"
+            echo
+            echo "| Image | Container package | Workflow run |"
+            echo "| ----- | ----------------- | ------------ |"
+          } > "${notes_file}"
+          for img in "${images[@]}"; do
+            echo "Processing image: ${img}"
+            #####
+            pkg_name="buildpro%2F${img}"
+            base_pkg_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/versions"
+            version_url="${base_pkg_url}"
+            container_status="missing tag ${tag} (see versions list)"
+            #####
+            # Try to find a specific package version that has this tag
+            # API: GET /orgs/{org}/packages/container/{package_name}/versions
+            version_id=""
+            if ids=$(gh api \
+              -H "Accept: application/vnd.github+json" \
+              --paginate \
+              "orgs/${owner}/packages/container/${pkg_name}/versions" \
+              --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>/dev/null); then
+              version_id=$(echo "${ids}" | head -n1 || true)
+            fi
+            if [ -n "${version_id}" ]; then
+              version_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/${version_id}?tag=${tag}"
+              container_status="[link](${version_url})"
+            else
+              container_status="missing tag ${tag} ([versions](${base_pkg_url}))"
+            fi
+            #####
+            # Determine a specific successful workflow run for this image/tag, if possible
+            workflow_url="https://github.com/${repo}/actions/workflows/${img}.yml"
+            run_cell="no matching run (see [workflow](${workflow_url}))"
+            if [ -n "${tag_sha}" ]; then
+              run_id=""
+              if ids=$(gh api \
+                -H "Accept: application/vnd.github+json" \
+                "repos/${repo}/actions/workflows/${img}.yml/runs" \
+                -f per_page=100 \
+                --jq ".workflow_runs[] | select(.head_sha == \"${tag_sha}\" and .conclusion == \"success\") | .id" 2>/dev/null); then
+                run_id=$(echo "${ids}" | head -n1 || true)
+              fi
+              if [ -n "${run_id}" ]; then
+                specific_run_url="https://github.com/${repo}/actions/runs/${run_id}"
+                run_cell="[run](${specific_run_url})"
+              fi
+            else
+              run_cell="tag ${tag} not found in git ([workflow](${workflow_url}))"
+            fi
+            #####
+            # Append table row
+            echo "| ${img} | ${container_status} | ${run_cell} |" >> "${notes_file}"
+          done
+          #####
+          # Determine a unique release tag. If the requested tag already exists, append -1, -2, ...
+          release_tag="${tag}"
+          if gh release view "${release_tag}" >/dev/null 2>&1; then
+            echo "Release for tag ${tag} already exists; searching for a unique tag."
+            base_tag="${tag}"
+            suffix=1
+            while gh release view "${base_tag}-${suffix}" >/dev/null 2>&1; do
+              suffix=$((suffix + 1))
+            done
+            release_tag="${base_tag}-${suffix}"
+          fi
+          echo "Creating draft release with tag: ${release_tag} (for build tag ${tag})"
+          gh release create "${release_tag}" \
+            --title "${release_tag}" \
+            --draft \
+            --notes-file "${notes_file}"
+          rm -f "${notes_file}"

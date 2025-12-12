@@ -3,7 +3,8 @@ on:
   workflow_dispatch:  # Allows manual triggering
   schedule:
     - cron: '0 0 * * 0'  # Run weekly on Sunday at midnight UTC
-
+permissions:
+  contents: read
 jobs:
   system-info:
     name: System Information
