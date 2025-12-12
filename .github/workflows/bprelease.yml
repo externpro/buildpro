@@ -89,9 +89,10 @@ jobs:
               api_err_file="$(mktemp)"
               if ids=$(gh api \
                 -H "Accept: application/vnd.github+json" \
-                "repos/${repo}/actions/workflows/${img}.yml/runs" \
+                --paginate \
+                "repos/${repo}/actions/runs" \
                 -f per_page=100 \
-                --jq ".workflow_runs[] | select(.head_sha == \"${tag_sha}\" and .conclusion == \"success\") | .id" 2>"${api_err_file}"); then
+                --jq ".workflow_runs[] | select(.name == \"${img}\" and .head_sha == \"${tag_sha}\" and .conclusion == \"success\") | .id" 2>"${api_err_file}"); then
                 run_id=$(echo "${ids}" | head -n1 || true)
               else
                 api_err=$(cat "${api_err_file}" || true)
