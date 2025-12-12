@@ -23,7 +23,28 @@ jobs:
       security-events: write
     if: |
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'workflow_dispatch')
     uses: ./.github/workflows/buildpro.yml
     with:
       img: rocky-mdv
+
+  dispatch-downstream:
+    needs: rocky-mdv
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_type == 'tag' }}
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      -
+        name: Dispatch dependent workflows for tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          wf="rocky-ci.yml"
+          echo "Dispatching ${wf} at ref ${REF}"
+          gh api -X POST "repos/${REPO}/actions/workflows/${wf}/dispatches" \
+            -f ref="${REF}"

@@ -21,3 +21,24 @@ jobs:
     with:
       img: rocky8-gcc9
       platforms: "linux/amd64,linux/arm64"
+  dispatch-downstream:
+    needs: rocky8-gcc9
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_type == 'tag' }}
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      -
+        name: Dispatch dependent workflows for tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          for wf in rocky-mdv.yml rocky-pin.yml rocky-pdv.yml; do
+            echo "Dispatching ${wf} at ref ${REF}"
+            gh api -X POST "repos/${REPO}/actions/workflows/${wf}/dispatches" \
+              -f ref="${REF}"
+          done

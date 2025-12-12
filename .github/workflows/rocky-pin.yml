@@ -23,7 +23,7 @@ jobs:
       security-events: write
     if: |
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'workflow_dispatch')
     uses: ./.github/workflows/buildpro.yml
     with:
       img: rocky-pin
