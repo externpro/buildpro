@@ -52,12 +52,14 @@ jobs:
           #####
           notes_file="$(mktemp)"
           {
-            echo "| buildpro docker image | workflow run |"
-            echo "| --------------------- | ------------ |"
+            echo "| docker image | buildpro packages | workflow run |"
+            echo "| ------------ | ----------------- | ------------ |"
           } > "${notes_file}"
           for img in "${images[@]}"; do
             echo "Processing image: ${img}"
             #####
+            dockerfile_url="https://github.com/${repo}/blob/${tag}/public/${img}.dockerfile"
+            dockerfile_cell="[${img}](${dockerfile_url})"
             pkg_name="buildpro%2F${img}"
             base_pkg_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/versions"
             version_url="${base_pkg_url}"
@@ -108,7 +110,7 @@ jobs:
             fi
             #####
             # Append table row
-            echo "| ${image_cell} | ${run_cell} |" >> "${notes_file}"
+            echo "| ${dockerfile_cell} | ${image_cell} | ${run_cell} |" >> "${notes_file}"
           done
           {
             echo
