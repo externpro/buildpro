@@ -13,6 +13,7 @@ jobs:
       contents: write
       actions: write
     env:
+      GH_TOKEN: ${{ secrets.BPWORKFLOW_TOKEN != '' && secrets.BPWORKFLOW_TOKEN || secrets.GITHUB_TOKEN }}
       WORKFLOWS_LAUNCH: |
         rocky8-gcc9
         rocky9-gcc13
@@ -53,7 +54,6 @@ jobs:
       -
         name: Dispatch base image builds on tag
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           TAG: ${{ github.event.inputs.tag }}
         run: |
@@ -148,7 +148,6 @@ jobs:
       -
         name: Dispatch bprelease on tag
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           TAG: ${{ github.event.inputs.tag }}
         run: |
