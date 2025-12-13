@@ -23,6 +23,9 @@ jobs:
         rocky-ci
         rocky-pdv
         rocky-pin
+      INITIAL_WAIT_SECONDS: "600"
+      POLL_INTERVAL_SECONDS: "30"
+      POLL_INTERVAL_MAX_SECONDS: "300"
     steps:
       -
         name: Checkout dev
@@ -65,13 +68,20 @@ jobs:
       -
         name: Wait for base + downstream workflows
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           TAG: ${{ github.event.inputs.tag }}
         run: |
           set -euo pipefail
           sha=$(git rev-list -n 1 "${TAG}")
           echo "Waiting for workflows at tag ${TAG} (sha ${sha})"
+          #####
+          initial_wait="${INITIAL_WAIT_SECONDS}"
+          poll_interval="${POLL_INTERVAL_SECONDS}"
+          poll_interval_max="${POLL_INTERVAL_MAX_SECONDS}"
+          if [ -n "${initial_wait}" ] && [ "${initial_wait}" -gt 0 ] 2>/dev/null; then
+            echo "Initial wait: ${initial_wait}s before first status check"
+            sleep "${initial_wait}"
+          fi
           mapfile -t workflows_launch < <(printf '%s\n' "${WORKFLOWS_LAUNCH}" | sed '/^\s*$/d')
           mapfile -t workflows_downstream < <(printf '%s\n' "${WORKFLOWS_DOWNSTREAM}" | sed '/^\s*$/d')
           required_names=("${workflows_launch[@]}" "${workflows_downstream[@]}")
@@ -83,6 +93,7 @@ jobs:
               exit 1
             fi
             all_ok=true
+            pending_count=0
             for name in "${required_names[@]}"; do
               api_err_file="$(mktemp)"
               conclusions=""
@@ -105,6 +116,7 @@ jobs:
               if [ -z "${conclusions}" ] || [ "${conclusions}" = "null" ]; then
                 echo "${name}: pending"
                 all_ok=false
+                pending_count=$((pending_count + 1))
                 continue
               fi
               if [ "${conclusions}" != "success" ]; then
@@ -117,7 +129,21 @@ jobs:
               echo "All required workflows succeeded for tag ${TAG}"
               break
             fi
-            sleep 30
+            if [ "${pending_count}" -gt 0 ]; then
+              next_sleep="${poll_interval}"
+              if [ "${pending_count}" -ge 4 ]; then
+                next_sleep=120
+              elif [ "${pending_count}" -ge 2 ]; then
+                next_sleep=60
+              fi
+              if [ "${next_sleep}" -gt "${poll_interval_max}" ]; then
+                next_sleep="${poll_interval_max}"
+              fi
+              echo "Pending workflows: ${pending_count}. Next check in ${next_sleep}s"
+              sleep "${next_sleep}"
+            else
+              sleep "${poll_interval}"
+            fi
           done
       -
         name: Dispatch bprelease on tag
