@@ -1,12 +1,6 @@
 name: buildpro release
 on:
   workflow_dispatch:
-    inputs:
-      images:
-        description: 'Comma-separated list of buildpro images (in desired order)'
-        required: false
-        default: 'rocky10-gcc15,rocky9-gcc13,rocky8-gcc9,rocky-mdv,rocky-ci,rocky-pin,rocky-pdv,ubuntu'
-        type: string
 jobs:
   create-release:
     runs-on: ubuntu-latest
@@ -14,6 +8,16 @@ jobs:
       contents: write
       actions: read
       packages: read
+    env:
+      IMAGES: |
+        rocky10-gcc15
+        rocky9-gcc13
+        rocky8-gcc9
+        rocky-mdv
+        rocky-ci
+        rocky-pin
+        rocky-pdv
+        ubuntu
     steps:
       -
         name: Checkout repository
@@ -26,7 +30,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
-          IMAGES: ${{ github.event.inputs.images }}
         run: |
           set -euo pipefail
           if [ "${GITHUB_REF_TYPE:-}" != "tag" ]; then
@@ -34,11 +37,7 @@ jobs:
             echo "Current ref: ${GITHUB_REF:-} (type: ${GITHUB_REF_TYPE:-unknown})" >&2
             exit 1
           fi
-          images_csv="${IMAGES:-}"
-          if [ -z "${images_csv}" ]; then
-            images_csv="rocky-pro,rocky-mdv,rocky-ci,rocky-pin,rocky-pdv,ubuntu"
-          fi
-          IFS=',' read -r -a images <<< "${images_csv}"
+          mapfile -t images < <(printf '%s\n' "${IMAGES}" | sed '/^\s*$/d')
           #####
           owner="${GITHUB_REPOSITORY_OWNER}"
           repo="${GITHUB_REPOSITORY}"
