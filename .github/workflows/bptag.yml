@@ -84,13 +84,24 @@ jobs:
             fi
             all_ok=true
             for name in "${required_names[@]}"; do
-              conclusions=$(gh api \
+              api_err_file="$(mktemp)"
+              conclusions=""
+              if out=$(gh api \
                 -H "Accept: application/vnd.github+json" \
                 --paginate \
                 "repos/${REPO}/actions/runs" \
                 -f per_page=100 \
                 --jq ".workflow_runs[] | select(.name == \"${name}\" and .head_sha == \"${sha}\") | .conclusion" \
-                | head -n1 || true)
+                2>"${api_err_file}"); then
+                conclusions=$(printf '%s\n' "${out}" | head -n1 || true)
+              else
+                api_err=$(cat "${api_err_file}" || true)
+                echo "Warning: failed to query Actions runs while waiting for ${name}: ${api_err}" >&2
+                all_ok=false
+                rm -f "${api_err_file}"
+                continue
+              fi
+              rm -f "${api_err_file}"
               if [ -z "${conclusions}" ] || [ "${conclusions}" = "null" ]; then
                 echo "${name}: pending"
                 all_ok=false
