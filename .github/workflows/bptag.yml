@@ -1,0 +1,122 @@
+name: buildpro tag + release
+'on':
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create on HEAD of dev (e.g. 25.06.3)'
+        required: true
+        type: string
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    env:
+      WORKFLOWS_LAUNCH: |
+        rocky8-gcc9
+        rocky9-gcc13
+        rocky10-gcc15
+        ubuntu
+      WORKFLOWS_DOWNSTREAM: |
+        rocky-mdv
+        rocky-ci
+        rocky-pdv
+        rocky-pin
+    steps:
+      -
+        name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+          fetch-tags: true
+      -
+        name: Create and push annotated tag
+        env:
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          sha=$(git rev-parse HEAD)
+          echo "Tagging dev HEAD: ${sha} with tag ${TAG}"
+          if git rev-parse "${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists; refusing to overwrite." >&2
+            exit 1
+          fi
+          git tag -a "${TAG}" -m "${TAG} tag" "${sha}"
+          git push origin "refs/tags/${TAG}"
+      -
+        name: Dispatch base image builds on tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -euo pipefail
+          mapfile -t workflows_launch < <(printf '%s\n' "${WORKFLOWS_LAUNCH}" | sed '/^\s*$/d')
+          for wf in "${workflows_launch[@]}"; do
+            wf_file="${wf}.yml"
+            echo "Dispatching ${wf_file} at ref ${TAG}"
+            gh api -X POST "repos/${REPO}/actions/workflows/${wf_file}/dispatches" \
+              -f ref="${TAG}"
+          done
+      -
+        name: Wait for base + downstream workflows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -euo pipefail
+          sha=$(git rev-list -n 1 "${TAG}")
+          echo "Waiting for workflows at tag ${TAG} (sha ${sha})"
+          mapfile -t workflows_launch < <(printf '%s\n' "${WORKFLOWS_LAUNCH}" | sed '/^\s*$/d')
+          mapfile -t workflows_downstream < <(printf '%s\n' "${WORKFLOWS_DOWNSTREAM}" | sed '/^\s*$/d')
+          required_names=("${workflows_launch[@]}" "${workflows_downstream[@]}")
+          deadline=$(( $(date +%s) + 7200 ))
+          while :; do
+            now=$(date +%s)
+            if [ "${now}" -ge "${deadline}" ]; then
+              echo "Timed out waiting for workflows for tag ${TAG}" >&2
+              exit 1
+            fi
+            all_ok=true
+            for name in "${required_names[@]}"; do
+              conclusions=$(gh api \
+                -H "Accept: application/vnd.github+json" \
+                --paginate \
+                "repos/${REPO}/actions/runs" \
+                -f per_page=100 \
+                --jq ".workflow_runs[] | select(.name == \"${name}\" and .head_sha == \"${sha}\") | .conclusion" \
+                | head -n1 || true)
+              if [ -z "${conclusions}" ] || [ "${conclusions}" = "null" ]; then
+                echo "${name}: pending"
+                all_ok=false
+                continue
+              fi
+              if [ "${conclusions}" != "success" ]; then
+                echo "${name}: ${conclusions} (failing)" >&2
+                exit 1
+              fi
+              echo "${name}: success"
+            done
+            if [ "${all_ok}" = "true" ]; then
+              echo "All required workflows succeeded for tag ${TAG}"
+              break
+            fi
+            sleep 30
+          done
+      -
+        name: Dispatch bprelease on tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -euo pipefail
+          wf="bprelease.yml"
+          echo "Dispatching ${wf} at ref ${TAG}"
+          gh api -X POST "repos/${REPO}/actions/workflows/${wf}/dispatches" \
+            -f ref="${TAG}"
