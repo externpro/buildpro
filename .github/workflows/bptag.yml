@@ -75,6 +75,16 @@ jobs:
           sha=$(git rev-list -n 1 "${TAG}")
           echo "Waiting for workflows at tag ${TAG} (sha ${sha})"
           #####
+          api_err_file="$(mktemp)"
+          if ! gh api -H "Accept: application/vnd.github+json" "repos/${REPO}/actions/runs" -f per_page=1 2>"${api_err_file}" >/dev/null; then
+            api_err=$(cat "${api_err_file}" || true)
+            rm -f "${api_err_file}"
+            echo "Error: cannot query Actions runs via GitHub API (${api_err})." >&2
+            echo "This workflow needs a PAT stored as the Actions secret BPWORKFLOW_TOKEN with repo + workflow scopes." >&2
+            exit 1
+          fi
+          rm -f "${api_err_file}"
+          #####
           initial_wait="${INITIAL_WAIT_SECONDS}"
           poll_interval="${POLL_INTERVAL_SECONDS}"
           poll_interval_max="${POLL_INTERVAL_MAX_SECONDS}"
@@ -94,6 +104,7 @@ jobs:
             fi
             all_ok=true
             pending_count=0
+            api_failures=0
             for name in "${required_names[@]}"; do
               api_err_file="$(mktemp)"
               conclusions=""
@@ -107,7 +118,7 @@ jobs:
                 conclusions=$(printf '%s\n' "${out}" | head -n1 || true)
               else
                 api_err=$(cat "${api_err_file}" || true)
-                echo "Warning: failed to query Actions runs while waiting for ${name}: ${api_err}" >&2
+                api_failures=$((api_failures + 1))
                 all_ok=false
                 rm -f "${api_err_file}"
                 continue
@@ -128,6 +139,13 @@ jobs:
             if [ "${all_ok}" = "true" ]; then
               echo "All required workflows succeeded for tag ${TAG}"
               break
+            fi
+            if [ "${api_failures}" -gt 3 ]; then
+              echo "Failed to query Actions runs for 4 or more workflows; exiting." >&2
+              exit 1
+            fi
+            if [ "${api_failures}" -gt 0 ]; then
+              echo "Warning: failed to query Actions runs (${api_failures} workflows) during this poll iteration; will retry." >&2
             fi
             if [ "${pending_count}" -gt 0 ]; then
               next_sleep="${poll_interval}"

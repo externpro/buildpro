@@ -30,8 +30,16 @@ jobs:
         name: Create draft release with image links
         env:
           TAG: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          gh_login=""
+          if gh_login_json=$(gh api -H "Accept: application/vnd.github+json" user --jq .login 2>/dev/null); then
+            gh_login="${gh_login_json}"
+          fi
+          if [ -n "${gh_login}" ]; then
+            echo "gh authenticated as: ${gh_login}"
+          fi
           if [ "${GITHUB_REF_TYPE:-}" != "tag" ]; then
             echo "This workflow must be run from a git tag. Use the 'Run workflow' ref picker to select a tag." >&2
             echo "Current ref: ${GITHUB_REF:-} (type: ${GITHUB_REF_TYPE:-unknown})" >&2
@@ -68,13 +76,34 @@ jobs:
             # Try to find a specific package version that has this tag
             # API: GET /orgs/{org}/packages/container/{package_name}/versions
             version_id=""
-            if ids=$(gh api \
+            api_err_file="$(mktemp)"
+            ids=""
+            if out=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
               -H "Accept: application/vnd.github+json" \
               --paginate \
               "orgs/${owner}/packages/container/${pkg_name}/versions" \
-              --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>/dev/null); then
-              version_id=$(echo "${ids}" | head -n1 || true)
+              --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>"${api_err_file}"); then
+              ids="${out}"
+            else
+              api_err=$(cat "${api_err_file}" || true)
+              if [ -n "${api_err}" ]; then
+                echo "Warning: failed to query org package versions for ${img}: ${api_err}" >&2
+              fi
+              if out2=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
+                -H "Accept: application/vnd.github+json" \
+                --paginate \
+                "users/${owner}/packages/container/${pkg_name}/versions" \
+                --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>>"${api_err_file}"); then
+                ids="${out2}"
+              else
+                api_err2=$(tail -n 20 "${api_err_file}" || true)
+                if [ -n "${api_err2}" ]; then
+                  echo "Warning: failed to query user package versions for ${img}: ${api_err2}" >&2
+                fi
+              fi
             fi
+            rm -f "${api_err_file}"
+            version_id=$(printf '%s\n' "${ids}" | head -n1 || true)
             if [ -n "${version_id}" ]; then
               version_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/${version_id}?tag=${tag}"
               image_cell="[${image_ref_text}](${version_url})"
