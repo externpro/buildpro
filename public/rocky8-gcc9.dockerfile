@@ -88,9 +88,12 @@ RUN dnf_retry update \
 RUN dnf_retry update \
   && dnf_retry install --enablerepo=powertools ${DNFOPT} \
      cppcheck \
+     perl-Capture-Tiny `#lcov` \
+     perl-DateTime `#lcov` \
      perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
      perl-Module-Load-Conditional `#lcov` \
+     perl-Time-HiRes `#lcov` \
      xeyes \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf

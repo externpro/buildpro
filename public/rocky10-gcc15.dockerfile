@@ -83,9 +83,12 @@ RUN dnf_retry update \
 RUN dnf_retry update \
   && dnf_retry install --enablerepo=crb ${DNFOPT} \
      cppcheck \
+     perl-Capture-Tiny `#lcov` \
+     perl-DateTime `#lcov` \
      perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
      perl-Module-Load-Conditional `#lcov` \
+     perl-Time-HiRes `#lcov` \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
 # EPEL Repository
