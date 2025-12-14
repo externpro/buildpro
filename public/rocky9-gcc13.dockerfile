@@ -102,10 +102,10 @@ RUN dnf_retry update \
   && rm -rf /var/cache/dnf
 # lcov
 RUN export LCOV_VER=2.3.2 \
-  && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
-  | tar -xz -C /usr/local/src \
-  && (cd /usr/local/src/lcov-${LCOV_VER} && make install > /dev/null) \
-  && rm -rf /usr/local/src/lcov-${LCOV_VER} \
+  && rm -rf /usr/local/src/lcov \
+  && git clone -q --depth 1 --branch "v${LCOV_VER}" https://github.com/linux-test-project/lcov.git /usr/local/src/lcov \
+  && (cd /usr/local/src/lcov && make install > /dev/null) \
+  && rm -rf /usr/local/src/lcov \
   && unset LCOV_VER
 # git-lfs
 RUN export LFS_VER=3.7.1 \
