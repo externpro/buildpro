@@ -11,14 +11,42 @@ RUN echo "Building for architecture ${TARGETARCH} on OS ${TARGETOS}"
 # dnf/microdnf (see https://github.com/externpro/buildpro/issues/107#issuecomment-2770817750)
 ENV DNF=dnf
 ENV DNFOPT="--setopt=tsflags=nodocs --setopt=install_weak_deps=0"
+ARG ROCKY_BASEURL_PREFIX="https://dl.rockylinux.org"
+RUN shopt -s nullglob \
+  && repo_files=(/etc/yum.repos.d/*.repo) \
+  && [ "${#repo_files[@]}" -gt 0 ] \
+  && tail='/$contentdir/$releasever' \
+  && case "${ROCKY_BASEURL_PREFIX}" in *"/vault/rocky/"*) tail='' ;; esac \
+  && sed -i \
+     -e 's/^mirrorlist=/#mirrorlist=/g' \
+     -e 's|^#baseurl=http://dl\.rockylinux\.org/\$contentdir/\$releasever|baseurl='"${ROCKY_BASEURL_PREFIX}${tail}"'|g' \
+     -e 's|^#baseurl=https://dl\.rockylinux\.org/\$contentdir/\$releasever|baseurl='"${ROCKY_BASEURL_PREFIX}${tail}"'|g' \
+     -e 's|^#baseurl=http://download\.rockylinux\.org/\$contentdir/\$releasever|baseurl='"${ROCKY_BASEURL_PREFIX}${tail}"'|g' \
+     -e 's|^#baseurl=https://download\.rockylinux\.org/\$contentdir/\$releasever|baseurl='"${ROCKY_BASEURL_PREFIX}${tail}"'|g' \
+     "${repo_files[@]}"
+RUN cat > /usr/local/bin/dnf_retry <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+dnf_bin="${DNF:-dnf}"
+for i in 1 2 3 4 5; do
+  "${dnf_bin}" clean all || true
+  rm -rf /var/cache/dnf
+  if "${dnf_bin}" -y "$@"; then
+    exit 0
+  fi
+  if [ "${i}" -eq 5 ]; then
+    exit 1
+  fi
+  sleep $((i * 5))
+done
+EOF
+RUN chmod +x /usr/local/bin/dnf_retry
 # initial dnf update
-RUN ${DNF} -y update \
-  && ${DNF} clean all
+RUN dnf_retry update
 # dnf repositories
 # https://rockylinux.pkgs.org https://rhel.pkgs.org
-RUN ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install ${DNFOPT} \
+RUN dnf_retry update \
+  && dnf_retry install ${DNFOPT} \
      coreutils-common \
      epel-release \
      git \
@@ -42,11 +70,11 @@ RUN ${DNF} -y update \
      Xvfb \
      xz \
   && ${DNF} clean all \
+  && rm -rf /var/cache/dnf \
   && alternatives --set python3 $(command -v python3.9)
 # gcc-toolset
-RUN ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install ${DNFOPT} \
+RUN dnf_retry update \
+  && dnf_retry install ${DNFOPT} \
      gcc-toolset-9-binutils \
      gcc-toolset-9-gcc \
      gcc-toolset-9-gcc-c++ \
@@ -54,24 +82,25 @@ RUN ${DNF} -y update \
      gcc-toolset-9-libasan-devel \
      gcc-toolset-9-libtsan-devel \
      gcc-toolset-9-make \
-  && ${DNF} clean all
-# PowerTools Repository
-RUN ${DNF} -y update \
   && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=powertools ${DNFOPT} \
+  && rm -rf /var/cache/dnf
+# PowerTools Repository
+RUN dnf_retry update \
+  && dnf_retry install --enablerepo=powertools ${DNFOPT} \
      cppcheck \
      perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
      perl-Module-Load-Conditional `#lcov` \
      xeyes \
-  && ${DNF} clean all
-# EPEL Repository
-RUN ${DNF} -y update \
   && ${DNF} clean all \
-  && ${DNF} -y install --enablerepo=epel ${DNFOPT} \
+  && rm -rf /var/cache/dnf
+# EPEL Repository
+RUN dnf_retry update \
+  && dnf_retry install --enablerepo=epel ${DNFOPT} \
      bat \
      gperftools \
-  && ${DNF} clean all
+  && ${DNF} clean all \
+  && rm -rf /var/cache/dnf
 # lcov
 RUN export LCOV_VER=2.3.2 \
   && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
