@@ -27,7 +27,6 @@ jobs:
     uses: ./.github/workflows/buildpro.yml
     with:
       img: rocky-mdv
-
   dispatch-downstream:
     needs: rocky-mdv
     runs-on: ubuntu-latest

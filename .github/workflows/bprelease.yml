@@ -6,10 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: read
       packages: read
     env:
-      GH_TOKEN: ${{ secrets.BPWORKFLOW_TOKEN != '' && secrets.BPWORKFLOW_TOKEN || secrets.GITHUB_TOKEN }}
       IMAGES: |
         rocky10-gcc15
         rocky9-gcc13
@@ -33,13 +31,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gh_login=""
-          if gh_login_json=$(gh api -H "Accept: application/vnd.github+json" user --jq .login 2>/dev/null); then
-            gh_login="${gh_login_json}"
-          fi
-          if [ -n "${gh_login}" ]; then
-            echo "gh authenticated as: ${gh_login}"
-          fi
           if [ "${GITHUB_REF_TYPE:-}" != "tag" ]; then
             echo "This workflow must be run from a git tag. Use the 'Run workflow' ref picker to select a tag." >&2
             echo "Current ref: ${GITHUB_REF:-} (type: ${GITHUB_REF_TYPE:-unknown})" >&2
@@ -50,12 +41,6 @@ jobs:
           owner="${GITHUB_REPOSITORY_OWNER}"
           repo="${GITHUB_REPOSITORY}"
           tag="${TAG}"
-          #####
-          # Resolve the commit SHA for this tag, if it exists
-          tag_sha=""
-          if tag_sha_candidate=$(git rev-list -n 1 "${tag}" 2>/dev/null || true); then
-            tag_sha="${tag_sha_candidate}"
-          fi
           #####
           notes_file="$(mktemp)"
           {
@@ -71,79 +56,80 @@ jobs:
             base_pkg_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/versions"
             version_url="${base_pkg_url}"
             image_ref_text="ghcr.io/${repo}/${img}:${tag}"
-            image_cell="[ghcr.io/${repo}/${img} versions](${base_pkg_url}) (tag DNE?)"
+            image_cell="[ghcr.io/${repo}/${img} versions](${base_pkg_url}) (tag not found yet)"
             #####
             # Try to find a specific package version that has this tag
             # API: GET /orgs/{org}/packages/container/{package_name}/versions
             version_id=""
-            api_err_file="$(mktemp)"
-            ids=""
-            if out=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
-              -H "Accept: application/vnd.github+json" \
-              --paginate \
-              "orgs/${owner}/packages/container/${pkg_name}/versions" \
-              --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>"${api_err_file}"); then
-              ids="${out}"
-            else
-              api_err=$(cat "${api_err_file}" || true)
-              if [ -n "${api_err}" ]; then
-                echo "Warning: failed to query org package versions for ${img}: ${api_err}" >&2
+            any_success="false"
+            sleep_s=5
+            deadline=$(( $(date +%s) + 300 ))
+            while :; do
+              now=$(date +%s)
+              if [ "${now}" -ge "${deadline}" ]; then
+                break
               fi
-              if out2=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
-                -H "Accept: application/vnd.github+json" \
-                --paginate \
-                "users/${owner}/packages/container/${pkg_name}/versions" \
-                --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>>"${api_err_file}"); then
-                ids="${out2}"
-              else
-                api_err2=$(tail -n 20 "${api_err_file}" || true)
-                if [ -n "${api_err2}" ]; then
-                  echo "Warning: failed to query user package versions for ${img}: ${api_err2}" >&2
-                fi
-              fi
-            fi
-            rm -f "${api_err_file}"
-            version_id=$(printf '%s\n' "${ids}" | head -n1 || true)
-            if [ -n "${version_id}" ]; then
-              version_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/${version_id}?tag=${tag}"
-              image_cell="[${image_ref_text}](${version_url})"
-            fi
-            #####
-            # Determine a specific successful workflow run for this image/tag, if possible
-            workflow_url="https://github.com/${repo}/actions/workflows/${img}.yml"
-            run_cell="no matching run (see [workflow](${workflow_url}))"
-            if [ -n "${tag_sha}" ]; then
-              run_id=""
+              ids=""
               api_err_file="$(mktemp)"
-              if ids=$(gh api \
+              if out=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
                 -H "Accept: application/vnd.github+json" \
                 --paginate \
-                "repos/${repo}/actions/runs" \
-                -f per_page=100 \
-                --jq ".workflow_runs[] | select(.name == \"${img}\" and .head_sha == \"${tag_sha}\" and .conclusion == \"success\") | .id" 2>"${api_err_file}"); then
-                run_id=$(echo "${ids}" | head -n1 || true)
+                "orgs/${owner}/packages/container/${pkg_name}/versions" \
+                --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>"${api_err_file}"); then
+                any_success="true"
+                ids="${out}"
               else
                 api_err=$(cat "${api_err_file}" || true)
-                run_cell="could not query runs (see [workflow](${workflow_url}))"
                 if [ -n "${api_err}" ]; then
-                  echo "Warning: failed to query workflow runs for ${img}.yml: ${api_err}" >&2
+                  echo "Warning: failed to query org package versions for ${img}: ${api_err}" >&2
+                fi
+                if out2=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
+                  -H "Accept: application/vnd.github+json" \
+                  --paginate \
+                  "users/${owner}/packages/container/${pkg_name}/versions" \
+                  --jq ".[] | select(.metadata.container.tags[]? == \"${tag}\") | .id" 2>>"${api_err_file}"); then
+                  any_success="true"
+                  ids="${out2}"
+                else
+                  api_err2=$(tail -n 20 "${api_err_file}" || true)
+                  if [ -n "${api_err2}" ]; then
+                    echo "Warning: failed to query user package versions for ${img}: ${api_err2}" >&2
+                  fi
                 fi
               fi
               rm -f "${api_err_file}"
-              if [ -n "${run_id}" ]; then
-                specific_run_url="https://github.com/${repo}/actions/runs/${run_id}"
-                run_cell="[${tag} run](${specific_run_url})"
+              version_id=$(printf '%s\n' "${ids}" | head -n1 || true)
+              if [ -n "${version_id}" ]; then
+                break
               fi
+              sleep "${sleep_s}"
+              if [ "${sleep_s}" -lt 60 ]; then
+                sleep_s=$((sleep_s * 2))
+                if [ "${sleep_s}" -gt 60 ]; then
+                  sleep_s=60
+                fi
+              fi
+            done
+            if [ -n "${version_id}" ]; then
+              version_url="https://github.com/${owner}/buildpro/pkgs/container/${pkg_name}/${version_id}?tag=${tag}"
+              image_cell="[${image_ref_text}](${version_url})"
             else
-              run_cell="tag ${tag} not found in git ([workflow](${workflow_url}))"
+              if [ "${any_success}" != "true" ]; then
+                image_cell="[ghcr.io/${repo}/${img} versions](${base_pkg_url}) (package query failed)"
+              fi
             fi
+            #####
+            runs_query="workflow%3A${img}+branch%3A${tag}"
+            filtered_runs_url="https://github.com/${repo}/actions?query=${runs_query}"
+            run_cell="[${tag} runs](${filtered_runs_url})"
             #####
             # Append table row
             echo "| ${dockerfile_cell} | ${image_cell} | ${run_cell} |" >> "${notes_file}"
           done
           {
             echo
-            echo "- The \`workflow run\` link includes:"
+            echo "- The \`workflow run\` link goes to a filtered Actions view for the workflow and tag."
+            echo "- Following the \`workflow run\` link will lead you to the run page, which includes:"
             echo "  - links to the attestation and software bill of materials"
             echo "  - the SBOM is in SPDX (Software Package Data Exchange) format (.spdx.json)"
           } >> "${notes_file}"

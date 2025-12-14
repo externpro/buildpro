@@ -3,7 +3,7 @@ name: buildpro tag + release
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to create on HEAD of dev (e.g. 25.06.3)'
+        description: 'Tag to create on HEAD of dev (e.g. 26.01)'
         required: true
         type: string
 jobs:
@@ -12,8 +12,9 @@ jobs:
     permissions:
       contents: write
       actions: write
+      packages: read
     env:
-      GH_TOKEN: ${{ secrets.BPWORKFLOW_TOKEN != '' && secrets.BPWORKFLOW_TOKEN || secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       WORKFLOWS_LAUNCH: |
         rocky8-gcc9
         rocky9-gcc13
@@ -37,6 +38,7 @@ jobs:
           fetch-tags: true
       -
         name: Create and push annotated tag
+        id: create_tag
         env:
           TAG: ${{ github.event.inputs.tag }}
         run: |
@@ -51,6 +53,7 @@ jobs:
           fi
           git tag -a "${TAG}" -m "${TAG} tag" "${sha}"
           git push origin "refs/tags/${TAG}"
+          echo "tag_created=true" >> "$GITHUB_OUTPUT"
       -
         name: Dispatch base image builds on tag
         env:
@@ -66,24 +69,14 @@ jobs:
               -f ref="${TAG}"
           done
       -
-        name: Wait for base + downstream workflows
+        name: Wait for GHCR tags for all images
         env:
-          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
           TAG: ${{ github.event.inputs.tag }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          sha=$(git rev-list -n 1 "${TAG}")
-          echo "Waiting for workflows at tag ${TAG} (sha ${sha})"
-          #####
-          api_err_file="$(mktemp)"
-          if ! gh api -H "Accept: application/vnd.github+json" "repos/${REPO}/actions/runs" -f per_page=1 2>"${api_err_file}" >/dev/null; then
-            api_err=$(cat "${api_err_file}" || true)
-            rm -f "${api_err_file}"
-            echo "Error: cannot query Actions runs via GitHub API (${api_err})." >&2
-            echo "This workflow needs a PAT stored as the Actions secret BPWORKFLOW_TOKEN with repo + workflow scopes." >&2
-            exit 1
-          fi
-          rm -f "${api_err_file}"
+          echo "Waiting for GHCR package tags for ${TAG}"
           #####
           initial_wait="${INITIAL_WAIT_SECONDS}"
           poll_interval="${POLL_INTERVAL_SECONDS}"
@@ -94,58 +87,44 @@ jobs:
           fi
           mapfile -t workflows_launch < <(printf '%s\n' "${WORKFLOWS_LAUNCH}" | sed '/^\s*$/d')
           mapfile -t workflows_downstream < <(printf '%s\n' "${WORKFLOWS_DOWNSTREAM}" | sed '/^\s*$/d')
-          required_names=("${workflows_launch[@]}" "${workflows_downstream[@]}")
+          required_images=("${workflows_launch[@]}" "${workflows_downstream[@]}")
           deadline=$(( $(date +%s) + 7200 ))
           while :; do
             now=$(date +%s)
             if [ "${now}" -ge "${deadline}" ]; then
-              echo "Timed out waiting for workflows for tag ${TAG}" >&2
+              echo "Timed out waiting for GHCR tags for ${TAG}" >&2
               exit 1
             fi
             all_ok=true
             pending_count=0
-            api_failures=0
-            for name in "${required_names[@]}"; do
+            for img in "${required_images[@]}"; do
+              pkg_name="buildpro%2F${img}"
               api_err_file="$(mktemp)"
-              conclusions=""
-              if out=$(gh api \
+              version_id=""
+              if out=$(GH_TOKEN="${GITHUB_TOKEN}" gh api \
                 -H "Accept: application/vnd.github+json" \
                 --paginate \
-                "repos/${REPO}/actions/runs" \
-                -f per_page=100 \
-                --jq ".workflow_runs[] | select(.name == \"${name}\" and .head_sha == \"${sha}\") | .conclusion" \
-                2>"${api_err_file}"); then
-                conclusions=$(printf '%s\n' "${out}" | head -n1 || true)
+                "orgs/${OWNER}/packages/container/${pkg_name}/versions" \
+                --jq ".[] | select(.metadata.container.tags[]? == \"${TAG}\") | .id" 2>"${api_err_file}"); then
+                version_id=$(printf '%s\n' "${out}" | head -n1 || true)
               else
                 api_err=$(cat "${api_err_file}" || true)
-                api_failures=$((api_failures + 1))
-                all_ok=false
-                rm -f "${api_err_file}"
-                continue
+                if [ -n "${api_err}" ]; then
+                  echo "Warning: failed to query package versions for ${img}: ${api_err}" >&2
+                fi
               fi
               rm -f "${api_err_file}"
-              if [ -z "${conclusions}" ] || [ "${conclusions}" = "null" ]; then
-                echo "${name}: pending"
+              if [ -z "${version_id}" ]; then
+                echo "${img}: pending"
                 all_ok=false
                 pending_count=$((pending_count + 1))
-                continue
+              else
+                echo "${img}: tagged"
               fi
-              if [ "${conclusions}" != "success" ]; then
-                echo "${name}: ${conclusions} (failing)" >&2
-                exit 1
-              fi
-              echo "${name}: success"
             done
             if [ "${all_ok}" = "true" ]; then
-              echo "All required workflows succeeded for tag ${TAG}"
+              echo "All required images are tagged ${TAG} in GHCR"
               break
-            fi
-            if [ "${api_failures}" -gt 3 ]; then
-              echo "Failed to query Actions runs for 4 or more workflows; exiting." >&2
-              exit 1
-            fi
-            if [ "${api_failures}" -gt 0 ]; then
-              echo "Warning: failed to query Actions runs (${api_failures} workflows) during this poll iteration; will retry." >&2
             fi
             if [ "${pending_count}" -gt 0 ]; then
               next_sleep="${poll_interval}"
@@ -174,3 +153,12 @@ jobs:
           echo "Dispatching ${wf} at ref ${TAG}"
           gh api -X POST "repos/${REPO}/actions/workflows/${wf}/dispatches" \
             -f ref="${TAG}"
+      -
+        name: Cleanup tag on failure
+        if: ${{ always() && steps.create_tag.outputs.tag_created == 'true' && (failure() || cancelled()) }}
+        env:
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          set -euo pipefail
+          echo "Deleting remote tag ${TAG} due to failure/cancelled run"
+          git push origin --delete "${TAG}"
