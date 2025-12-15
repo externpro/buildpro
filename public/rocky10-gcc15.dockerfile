@@ -85,6 +85,7 @@ RUN dnf_retry update \
 RUN dnf_retry update \
   && dnf_retry install --enablerepo=crb ${DNFOPT} \
      cppcheck \
+     ninja-build \
      perl-Capture-Tiny `#lcov` \
      perl-DateTime `#lcov` \
      perl-IO-Compress `#lcov` \
@@ -121,13 +122,6 @@ RUN export DVIM_VER=21.09.06 \
   && export DVIM_DL=releases/download/${DVIM_VER}/Dockerfile.vim-${DVIM_VER}.tar.xz \
   && wget -qO- "https://github.com/smanders/Dockerfile.vim/${DVIM_DL}" | tar --no-same-owner -xJ -C ${DVIM_SYS} \
   && unset DVIM_DL && unset DVIM_SYS && unset DVIM_VER
-# ninja
-RUN export NJA_VER=1.13.2 \
-  && export NJA_DL=ninja-linux$([ "$(uname -m)" = "aarch64" ] && echo "-$(uname -m)").zip \
-  && wget -q "https://github.com/ninja-build/ninja/releases/download/v${NJA_VER}/${NJA_DL}" -P /usr/local/src \
-  && unzip /usr/local/src/${NJA_DL} -d /usr/local/bin/ \
-  && rm /usr/local/src/${NJA_DL} \
-  && unset NJA_DL && unset NJA_VER
 # cmake
 RUN export CMK_VER=3.31.6 \
   && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-$(uname -s)-$(uname -m).tar.gz \
