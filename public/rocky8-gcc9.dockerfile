@@ -1,4 +1,5 @@
 FROM rockylinux/rockylinux:8
+ENV GTS=gcc-toolset-9
 LABEL maintainer="smanders"
 LABEL org.opencontainers.image.source=https://github.com/externpro/buildpro
 SHELL ["/bin/bash", "-c"]
@@ -74,16 +75,16 @@ RUN dnf_retry update \
   && git lfs install --system \
   && alternatives --set python3 $(command -v python3.9) \
   && rm -rf /var/cache/dnf
-# gcc-toolset
+# gcc-toolset (aka GTS)
 RUN dnf_retry update \
   && dnf_retry install ${DNFOPT} \
-     gcc-toolset-9-binutils \
-     gcc-toolset-9-gcc \
-     gcc-toolset-9-gcc-c++ \
-     gcc-toolset-9-gdb \
-     gcc-toolset-9-libasan-devel \
-     gcc-toolset-9-libtsan-devel \
-     gcc-toolset-9-make \
+     ${GTS}-binutils \
+     ${GTS}-gcc \
+     ${GTS}-gcc-c++ \
+     ${GTS}-gdb \
+     ${GTS}-libasan-devel \
+     ${GTS}-libtsan-devel \
+     ${GTS}-make \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
 # PowerTools Repository
@@ -136,7 +137,7 @@ RUN export CMK_VER=3.31.6 \
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
 # environment: gcc-toolset, enable scl binaries
-ENV PATH="/opt/rh/gcc-toolset-9/root/usr/bin:${PATH}" \
+ENV PATH="/opt/rh/${GTS}/root/usr/bin:${PATH}" \
     BASH_ENV="/usr/local/bpbin/scl_enable" \
     ENV="/usr/local/bpbin/scl_enable" \
     PROMPT_COMMAND=". /usr/local/bpbin/scl_enable"
