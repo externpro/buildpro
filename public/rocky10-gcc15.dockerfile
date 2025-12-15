@@ -102,10 +102,9 @@ RUN dnf_retry update \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
 # AlmaLinux Devel Repository
-RUN dnf_retry --nogpgcheck \
+RUN dnf_retry install \
   --repofrompath=alma10-devel,'https://repo.almalinux.org/almalinux/10/devel/$basearch/os/' \
-  --enablerepo=alma10-devel \
-  install \
+  --enablerepo=alma10-devel --nogpgcheck ${DNFOPT} \
     xorg-x11-server-Xvfb \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
