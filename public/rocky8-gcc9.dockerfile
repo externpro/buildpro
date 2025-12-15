@@ -50,6 +50,7 @@ RUN dnf_retry update \
      coreutils-common \
      epel-release \
      git \
+     git-lfs \
      graphviz \
      gtk3-devel \
      iproute \
@@ -70,8 +71,9 @@ RUN dnf_retry update \
      Xvfb \
      xz \
   && ${DNF} clean all \
-  && rm -rf /var/cache/dnf \
-  && alternatives --set python3 $(command -v python3.9)
+  && git lfs install --system \
+  && alternatives --set python3 $(command -v python3.9) \
+  && rm -rf /var/cache/dnf
 # gcc-toolset
 RUN dnf_retry update \
   && dnf_retry install ${DNFOPT} \
@@ -111,15 +113,6 @@ RUN export LCOV_VER=2.3.2 \
   && (cd /usr/local/src/lcov-${LCOV_VER} && make install > /dev/null) \
   && rm -rf /usr/local/src/lcov-${LCOV_VER} \
   && unset LCOV_VER
-# git-lfs
-RUN export LFS_VER=3.7.1 \
-  && mkdir /usr/local/src/lfs \
-  && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
-  | tar -xz -C /usr/local/src/lfs \
-  && /usr/local/src/lfs/git-lfs-${LFS_VER}/install.sh \
-  && rm -rf /usr/local/src/lfs/ \
-  && unset LFS_VER \
-  && git lfs install --system
 # Dockerfile.vim
 RUN export DVIM_VER=21.09.06 \
   && export DVIM_SYS=/usr/share/vim/vimfiles \

@@ -27,6 +27,7 @@ RUN add-apt-repository ppa:git-core/ppa -y \
      bat `#batcat` \
      build-essential \
      git \
+     git-lfs \
      less \
      libgl1-mesa-dev \
      libglu1-mesa-dev \
@@ -39,16 +40,8 @@ RUN add-apt-repository ppa:git-core/ppa -y \
      xz-utils \
   && apt -y autoremove \
   && apt clean autoclean \
+  && git lfs install --system \
   && rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
-# git-lfs
-RUN export LFS_VER=3.7.1 \
-  && mkdir /usr/local/src/lfs \
-  && wget -qO- "https://github.com/git-lfs/git-lfs/releases/download/v${LFS_VER}/git-lfs-${TARGETOS}-${TARGETARCH}-v${LFS_VER}.tar.gz" \
-  | tar -xz -C /usr/local/src/lfs \
-  && /usr/local/src/lfs/git-lfs-${LFS_VER}/install.sh \
-  && rm -rf /usr/local/src/lfs/ \
-  && unset LFS_VER \
-  && git lfs install --system
 # cmake
 RUN export CMK_VER=3.31.6 \
   && export CMK_DL=releases/download/v${CMK_VER}/cmake-${CMK_VER}-$(uname -s)-$(uname -m).tar.gz \
