@@ -89,10 +89,8 @@ RUN dnf_retry update \
      ninja-build \
      perl-Capture-Tiny `#lcov` \
      perl-DateTime `#lcov` \
-     perl-IO-Compress `#lcov` \
      perl-JSON-XS `#lcov` \
      perl-Module-Load-Conditional `#lcov` \
-     perl-Time-HiRes `#lcov` \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
 # EPEL Repository
@@ -100,6 +98,7 @@ RUN dnf_retry update \
   && dnf_retry install --enablerepo=epel ${DNFOPT} \
      bat \
      gperftools \
+     lcov \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
 # AlmaLinux Devel Repository
@@ -110,13 +109,6 @@ RUN dnf_retry --nogpgcheck \
     xorg-x11-server-Xvfb \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
-# lcov
-RUN export LCOV_VER=2.3.2 \
-  && wget -qO- "https://github.com/linux-test-project/lcov/releases/download/v${LCOV_VER}/lcov-${LCOV_VER}.tar.gz" \
-  | tar -xz -C /usr/local/src \
-  && (cd /usr/local/src/lcov-${LCOV_VER} && make install > /dev/null) \
-  && rm -rf /usr/local/src/lcov-${LCOV_VER} \
-  && unset LCOV_VER
 # Dockerfile.vim
 RUN export DVIM_VER=21.09.06 \
   && export DVIM_SYS=/usr/share/vim/vimfiles \
