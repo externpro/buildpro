@@ -42,14 +42,6 @@ RUN add-apt-repository ppa:git-core/ppa -y \
   && apt clean autoclean \
   && git lfs install --system \
   && rm -rf /var/lib/apt/lists/{apt,dpkg,cache,log} /tmp/* /var/tmp/*
-# cmake
-RUN export CMK_VER=3.31.6 \
-  && export CMK_SH=cmake-${CMK_VER}-$(uname -s)-$(uname -m).sh \
-  && export CMK_DL=releases/download/v${CMK_VER}/${CMK_SH} \
-  && wget -q "https://github.com/Kitware/CMake/${CMK_DL}" \
-  && sh ./${CMK_SH} --skip-license --prefix=/usr/local/ \
-  && rm -f ./${CMK_SH} \
-  && unset CMK_DL && unset CMK_SH && unset CMK_VER
 # Dockerfile.vim
 RUN export DVIM_VER=21.09.06.1 \
   && export DVIM_SYS=/usr/share/vim/vimfiles \
@@ -60,6 +52,14 @@ RUN export DVIM_VER=21.09.06.1 \
   && sh ./${DVIM_SH} --skip-license --prefix=${DVIM_SYS} \
   && rm -f ./${DVIM_SH} \
   && unset DVIM_DL && unset DVIM_SH && unset DVIM_SYS && unset DVIM_VER
+# cmake
+RUN export CMK_VER=3.31.6 \
+  && export CMK_SH=cmake-${CMK_VER}-$(uname -s)-$(uname -m).sh \
+  && export CMK_DL=releases/download/v${CMK_VER}/${CMK_SH} \
+  && wget -q "https://github.com/Kitware/CMake/${CMK_DL}" \
+  && sh ./${CMK_SH} --skip-license --prefix=/usr/local/ \
+  && rm -f ./${CMK_SH} \
+  && unset CMK_DL && unset CMK_SH && unset CMK_VER
 # copy from local into image
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /usr/local/bpbin/
