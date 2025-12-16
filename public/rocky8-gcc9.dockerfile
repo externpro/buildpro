@@ -111,11 +111,15 @@ RUN export LCOV_VER=2.0 && export LCOV_REL=1 \
   && rm -f ./${LCOV_RPM} \
   && unset LCOV_RPM && unset LCOV_REL && unset LCOV_VER
 # Dockerfile.vim
-RUN export DVIM_VER=21.09.06 \
+RUN export DVIM_VER=21.09.06.1 \
   && export DVIM_SYS=/usr/share/vim/vimfiles \
-  && export DVIM_DL=releases/download/${DVIM_VER}/Dockerfile.vim-${DVIM_VER}.tar.xz \
-  && wget -qO- "https://github.com/smanders/Dockerfile.vim/${DVIM_DL}" | tar --no-same-owner -xJ -C ${DVIM_SYS} \
-  && unset DVIM_DL && unset DVIM_SYS && unset DVIM_VER
+  && export DVIM_SH=Dockerfile.vim-v${DVIM_VER}.sh \
+  && export DVIM_DL=releases/download/v${DVIM_VER}/${DVIM_SH} \
+  && mkdir -p ${DVIM_SYS} \
+  && wget -q "https://github.com/smanders/Dockerfile.vim/${DVIM_DL}" \
+  && sh ./${DVIM_SH} --skip-license --prefix=${DVIM_SYS} \
+  && rm -f ./${DVIM_SH} \
+  && unset DVIM_DL && unset DVIM_SH && unset DVIM_SYS && unset DVIM_VER
 # ninja
 RUN export NJA_VER=1.13.2 \
   && export NJA_DL=ninja-linux$([ "$(uname -m)" = "aarch64" ] && echo "-$(uname -m)").zip \
