@@ -60,6 +60,7 @@ jobs:
             docker pull ${{ steps.tags.outputs.latest }}
             docker images
             docker rmi ${{ steps.tags.outputs.latest }}
+            docker system prune
           else
             echo "latest tag does not exist, skipping docker commands"
           fi
