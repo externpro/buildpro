@@ -10,6 +10,7 @@ REPOS="
   ${GITHUB}/externpro/c-ares
   ${GITHUB}/externpro/ceres-solver
   ${GITHUB}/externpro/clang-format
+  ${GITHUB}/externpro/cmake-pkg
   ${GITHUB}/externpro/cppzmq
   ${GITHUB}/externpro/curl
   ${GITHUB}/externpro/duckdb
