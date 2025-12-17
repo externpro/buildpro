@@ -116,12 +116,11 @@ RUN export DVIM_VER=21.09.06.2 \
   && unset DVIM_RPM && unset DVIM_VER
 # cmake
 RUN export CMK_VER=3.31.6 \
-  && export CMK_SH=cmake-${CMK_VER}-$(uname -s)-$(uname -m).sh \
-  && export CMK_DL=releases/download/v${CMK_VER}/${CMK_SH} \
-  && wget -q "https://github.com/Kitware/CMake/${CMK_DL}" \
-  && sh ./${CMK_SH} --skip-license --prefix=/usr/local/ \
-  && rm -f ./${CMK_SH} \
-  && unset CMK_DL && unset CMK_SH && unset CMK_VER
+  && export CMK_RPM=cmake-pkg-v${CMK_VER}-$(uname -s)-$(uname -m).rpm \
+  && wget -q "https://github.com/externpro/cmake-pkg/releases/download/v${CMK_VER}/${CMK_RPM}" \
+  && dnf_retry install ./${CMK_RPM} \
+  && rm -f ./${CMK_RPM} \
+  && unset CMK_RPM && unset CMK_VER
 # copy from local into image
 COPY scripts/ /usr/local/bpbin
 COPY git-prompt.sh /etc/profile.d/
