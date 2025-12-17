@@ -153,12 +153,3 @@ jobs:
           echo "Dispatching ${wf} at ref ${TAG}"
           gh api -X POST "repos/${REPO}/actions/workflows/${wf}/dispatches" \
             -f ref="${TAG}"
-      -
-        name: Cleanup tag on failure
-        if: ${{ always() && steps.create_tag.outputs.tag_created == 'true' && (failure() || cancelled()) }}
-        env:
-          TAG: ${{ github.event.inputs.tag }}
-        run: |
-          set -euo pipefail
-          echo "Deleting remote tag ${TAG} due to failure/cancelled run"
-          git push origin --delete "${TAG}"
