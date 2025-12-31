@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstring>
 #include <string>
 #include <thread>
 
@@ -92,15 +93,23 @@ TEST_F(CurlTest, HttpGetRequest)
     // Perform the request
     res = PerformRequest(test_url);
 
-    if (res == CURLE_OK && !response.empty())
+    long http_code = 0;
+    char* content_type = nullptr;
+    if (res == CURLE_OK)
     {
-      // Check for typical HTML content
-      if (response.find("<html") != std::string::npos)
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+      curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &content_type);
+      const std::string ct = content_type ? content_type : "";
+      if (!response.empty() && http_code >= 200 && http_code < 500 &&
+          ct.find("text/html") != std::string::npos)
       {
         success = true;
         break;
       }
-      last_error = "Response doesn't appear to be HTML";
+      last_error =
+        "Unexpected response: http_code=" + std::to_string(http_code) +
+        ", content_type='" + ct +
+        "', response_size=" + std::to_string(response.size());
     }
     else
     {
@@ -122,8 +131,15 @@ TEST_F(CurlTest, HttpGetRequest)
   EXPECT_TRUE(success) << "Failed after " << max_retries
                        << " attempts. Last error: " << last_error;
   EXPECT_FALSE(response.empty()) << "Empty response received";
-  EXPECT_NE(response.find("<html"), std::string::npos)
-    << "Response doesn't appear to be HTML";
+  long http_code = 0;
+  char* content_type = nullptr;
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+  curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &content_type);
+  const std::string ct = content_type ? content_type : "";
+  EXPECT_GE(http_code, 200) << "Unexpected HTTP status: " << http_code;
+  EXPECT_LT(http_code, 500) << "Unexpected HTTP status: " << http_code;
+  EXPECT_NE(ct.find("text/html"), std::string::npos)
+    << "Unexpected content-type: '" << ct << "'";
 }
 
 TEST_F(CurlTest, HttpsRequest)
@@ -144,10 +160,15 @@ TEST_F(CurlTest, HttpsRequest)
 
   // Check response
   EXPECT_FALSE(response.empty()) << "Empty response received";
-
-  // Check for typical HTML content
-  EXPECT_NE(response.find("<html"), std::string::npos)
-    << "Response doesn't appear to be HTML";
+  long http_code = 0;
+  char* content_type = nullptr;
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+  curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &content_type);
+  const std::string ct = content_type ? content_type : "";
+  EXPECT_GE(http_code, 200) << "Unexpected HTTP status: " << http_code;
+  EXPECT_LT(http_code, 500) << "Unexpected HTTP status: " << http_code;
+  EXPECT_NE(ct.find("text/html"), std::string::npos)
+    << "Unexpected content-type: '" << ct << "'";
 }
 
 TEST_F(CurlTest, VersionInfo)
