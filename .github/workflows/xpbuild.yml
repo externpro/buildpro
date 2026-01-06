@@ -14,13 +14,13 @@ jobs:
       contents: read
       pull-requests: write
       packages: write
-    uses: externpro/externpro/.github/workflows/build-linux.yml@main
+    uses: externpro/externpro/.github/workflows/build-linux.yml@25.07.1
     with:
       buildpro-images: '["rocky8-gcc9"]'
     secrets: inherit
   macos:
-    uses: externpro/externpro/.github/workflows/build-macos.yml@main
+    uses: externpro/externpro/.github/workflows/build-macos.yml@25.07.1
     secrets: inherit
   windows:
-    uses: externpro/externpro/.github/workflows/build-windows.yml@main
+    uses: externpro/externpro/.github/workflows/build-windows.yml@25.07.1
     secrets: inherit
