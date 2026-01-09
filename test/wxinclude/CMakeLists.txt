@@ -1,10 +1,15 @@
 set(tgt wxinc_hrc_test)
-xpCreateHeaderResource(hrcList
-  ${CMAKE_SOURCE_DIR}/.devcontainer/cmake/deps.png
-  ${CMAKE_SOURCE_DIR}/.devcontainer/graph/graph.png
-  )
+set(depsSvg ${CMAKE_SOURCE_DIR}/.devcontainer/cmake/deps.svg)
+set(graphPng ${CMAKE_SOURCE_DIR}/.devcontainer/graph/graph.png)
+if(NOT EXISTS ${depsSvg})
+  message(FATAL_ERROR "deps.svg not found: ${depsSvg}")
+endif()
+if(NOT EXISTS ${graphPng})
+  message(FATAL_ERROR "graph.png not found: ${graphPng}")
+endif()
+xpCreateHeaderResource(hrcList ${depsSvg} ${graphPng})
 add_executable(${tgt} hrc.cpp ${hrcList})
 target_include_directories(${tgt} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_compile_definitions(${tgt} PRIVATE CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+target_compile_definitions(${tgt} PRIVATE DEPS_SVG_PATH="${depsSvg}" GRAPH_PNG_PATH="${graphPng}")
 target_link_libraries(${tgt} PRIVATE xpro::gtest_main)
 add_test(NAME ${tgt} COMMAND ${tgt})
