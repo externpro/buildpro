@@ -176,22 +176,20 @@ protected:
 
 // NOTE: CMAKE_SOURCE_DIR is defined via CMake
 
-TEST_F(HeaderResourceTest, DepsPngMatch)
+TEST_F(HeaderResourceTest, DepsSvgMatch)
 {
-  // Path to the original PNG file
-  std::string pngPath =
-    std::string(CMAKE_SOURCE_DIR) + "/.devcontainer/cmake/deps.png";
+  // Path to the original SVG file
+  std::string svgPath = DEPS_SVG_PATH;
 
   // Compare the original file with the embedded resource
   EXPECT_TRUE(
-    compareFileWithResource(pngPath, deps_png, sizeof(deps_png), "deps.png"));
+    compareFileWithResource(svgPath, deps_svg, sizeof(deps_svg), "deps.svg"));
 }
 
 TEST_F(HeaderResourceTest, GraphPngMatch)
 {
   // Path to the original PNG file
-  std::string pngPath =
-    std::string(CMAKE_SOURCE_DIR) + "/.devcontainer/graph/graph.png";
+  std::string pngPath = GRAPH_PNG_PATH;
 
   // Compare the original file with the embedded resource
   EXPECT_TRUE(compareFileWithResource(
@@ -205,26 +203,21 @@ TEST_F(HeaderResourceTest, VerifyHeaderStructure)
 {
   // Check that the arrays have valid addresses (will always be true, but kept
   // for documentation)
-  EXPECT_NE(reinterpret_cast<const void*>(deps_png), nullptr)
-    << "deps_png array is not defined";
+  EXPECT_NE(reinterpret_cast<const void*>(deps_svg), nullptr)
+    << "deps_svg array is not defined";
   EXPECT_NE(reinterpret_cast<const void*>(graph_png), nullptr)
     << "graph_png array is not defined";
 
-  // Check that the arrays have reasonable sizes (PNG files should be at least
-  // 100 bytes)
-  EXPECT_GT(sizeof(deps_png), 100u) << "deps_png array is too small";
+  // Check that the arrays have reasonable sizes
+  EXPECT_GT(sizeof(deps_svg), 100u) << "deps_svg array is too small";
   EXPECT_GT(sizeof(graph_png), 100u) << "graph_png array is too small";
+
+  // Check SVG header
+  EXPECT_EQ(deps_svg[0], '<') << "deps.svg does not look like SVG/XML (byte 0)";
 
   // Check PNG file signature (first 8 bytes of a PNG file)
   const unsigned char pngSignature[] = {
     0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
-
-  // Check deps.png signature
-  for (size_t i = 0; i < 8; ++i)
-  {
-    EXPECT_EQ(deps_png[i], pngSignature[i])
-      << "deps_png does not have a valid PNG signature at byte " << i;
-  }
 
   // Check graph.png signature
   for (size_t i = 0; i < 8; ++i)
@@ -244,28 +237,13 @@ TEST_F(HeaderResourceTest, VerifyPngStructure)
   // Each chunk has: length (4 bytes) + type (4 bytes) + data (length bytes) +
   // CRC (4 bytes) The first chunk should be IHDR (Image Header)
 
-  // First, check deps.png
+  // Now check graph.png
   // Skip the 8-byte signature
-  const unsigned char* chunk = deps_png + 8;
+  const unsigned char* chunk = graph_png + 8;
 
   // Get the chunk length (big-endian)
   uint32_t length =
     (chunk[0] << 24) | (chunk[1] << 16) | (chunk[2] << 8) | chunk[3];
-
-  // Check that the length is reasonable (IHDR is 13 bytes)
-  EXPECT_EQ(length, 13u) << "deps.png IHDR chunk has unexpected length";
-
-  // Check the chunk type (should be "IHDR")
-  EXPECT_EQ(chunk[4], 'I') << "deps.png first chunk is not IHDR (byte 0)";
-  EXPECT_EQ(chunk[5], 'H') << "deps.png first chunk is not IHDR (byte 1)";
-  EXPECT_EQ(chunk[6], 'D') << "deps.png first chunk is not IHDR (byte 2)";
-  EXPECT_EQ(chunk[7], 'R') << "deps.png first chunk is not IHDR (byte 3)";
-
-  // Now check graph.png
-  chunk = graph_png + 8;
-
-  // Get the chunk length (big-endian)
-  length = (chunk[0] << 24) | (chunk[1] << 16) | (chunk[2] << 8) | chunk[3];
 
   // Check that the length is reasonable (IHDR is 13 bytes)
   EXPECT_EQ(length, 13u) << "graph.png IHDR chunk has unexpected length";
