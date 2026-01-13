@@ -61,6 +61,12 @@ set(pros
   zlib
   zmqpp
   )
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT DEFINED ENV{CI})
+  # local (non-CI) Linux builds can fail to link ceres-solver tests with:
+  # collect2: fatal error: ld terminated with signal 9 [Killed]
+  # compilation terminated.
+  list(REMOVE_ITEM pros ceres-solver)
+endif()
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
