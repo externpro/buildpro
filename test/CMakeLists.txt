@@ -61,6 +61,12 @@ set(pros
   zlib
   zmqpp
   )
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT DEFINED ENV{CI})
+  # local (non-CI) Linux builds can fail to link ceres-solver tests with:
+  # collect2: fatal error: ld terminated with signal 9 [Killed]
+  # compilation terminated.
+  list(REMOVE_ITEM pros ceres-solver)
+endif()
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
@@ -108,7 +114,17 @@ foreach(pro ${pros})
       target_compile_definitions(${pro}_test PRIVATE ${${pro}_compile_definitions})
       list(APPEND all_compile_definitions ${${pro}_compile_definitions})
     endif()
-    add_test(NAME ${pro}_test COMMAND ${${pro}_xvfb} $<TARGET_FILE:${pro}_test>)
+    if(pro STREQUAL "wxx" AND XVFB_RUN_EXEC)
+      add_test(NAME ${pro}_test COMMAND ${XVFB_RUN_EXEC} -a
+        --server-args=-screen\ 0\ 1920x1080x24\ -nolisten\ tcp
+        $<TARGET_FILE:${pro}_test>
+        )
+      set_tests_properties(${pro}_test PROPERTIES
+        ENVIRONMENT "GDK_BACKEND=x11;GTK_A11Y=none;NO_AT_BRIDGE=1;LIBGL_ALWAYS_SOFTWARE=1"
+        )
+    else()
+      add_test(NAME ${pro}_test COMMAND ${${pro}_xvfb} $<TARGET_FILE:${pro}_test>)
+    endif()
     if(DEFINED ${pro}_postBuildCopy)
       xpPostBuildCopy(${pro}_test "${${pro}_postBuildCopy}" .)
     endif()
