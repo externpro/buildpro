@@ -1,72 +1,10 @@
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
-set(pros
-  googletest
-  activemq-cpp
-  apr
-  argon2
-  azmq
-  boost
-  bzip2
-  c-ares
-  ceres-solver
-  clang-format
-  cppzmq
-  curl
-  eigen
-  fecpp
-  ffmpeg
-  flatbuffers
-  fmt
-  geos
-  geotranz
-  glew
-  hdf5
-  jasper
-  jpegxp
-  jxrlib
-  libexpat
-  libgeotiff
-  libgit2
-  libiconv
-  librttopo
-  libsodium
-  libspatialite
-  libssh2
-  libstrophe
-  libzmq
-  lua
-  luabridge
-  nasm
-  nlohmann_json
-  nodeng
-  nodexp
-  node-addon-api
-  nvjpeg2000
-  openh264
-  openssl
-  patch
-  protobuf
-  rapidjson
-  rapidxml
-  shapelib
-  spatialite-tools
-  spdlog
-  sqlite3
-  wirehair
-  wxinclude
-  wxtetris
-  wxwidgets
-  wxx
-  yasm
-  zlib
-  zmqpp
-  )
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT DEFINED ENV{CI})
-  # local (non-CI) Linux builds can fail to link ceres-solver tests with:
-  # collect2: fatal error: ld terminated with signal 9 [Killed]
-  # compilation terminated.
-  list(REMOVE_ITEM pros ceres-solver)
-endif()
+get_cmake_property(pros VARIABLES)
+# xp_ variables from pros.cmake, included by xproinc.cmake
+list(FILTER pros INCLUDE REGEX "^xp_")
+list(SORT pros)
+list(REMOVE_ITEM pros xp_googletest)
+list(PREPEND pros xp_googletest) # make googetest be first
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
@@ -75,13 +13,7 @@ endif()
 set(googletest_libs xpro::gtest_main)
 set(boost_libs Boost::filesystem Boost::program_options Boost::regex)
 set(boost_compile_definitions "BOOST_NO_CXX98_FUNCTION_BASE")
-xpGetPkgVar(FFmpeg DLLS) # sets FFmpeg_DLLS
-if(DEFINED FFmpeg_DLLS)
-  set(ffmpeg_postBuildCopy ${FFmpeg_DLLS})
-endif()
 set(fmt_libs xpro::fmt)
-xpGetPkgVar(geotranz DATA_DIR) # sets GEOTRANZ_DATA_DIR
-set(geotranz_compile_definitions "GEOTRANS_DATA=\"${GEOTRANZ_DATA_DIR}\"")
 set(hdf5_libs xpro::hdf5_cpp-static)
 set(libgeotiff_libs xpro::libgeotiff Boost::filesystem)
 set(libgit2_libs xpro::git2 Boost::filesystem)
@@ -94,7 +26,24 @@ set(spdlog_compile_features cxx_std_17)
 set(wxwidgets_libs wx::base wx::core)
 set(wxx_xvfb ${xvfb_cmd})
 foreach(pro ${pros})
+  string(REGEX REPLACE "^xp_" "" pro ${pro})
   find_package(${pro})
+  if(pro STREQUAL "ceres-solver" AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT DEFINED ENV{CI})
+    # local (non-CI) Linux builds can fail to link ceres-solver tests with:
+    # collect2: fatal error: ld terminated with signal 9 [Killed]
+    # compilation terminated.
+    continue()
+  endif()
+  if(pro STREQUAL ffmpeg)
+    xpGetPkgVar(FFmpeg DLLS) # sets FFmpeg_DLLS
+    if(DEFINED FFmpeg_DLLS)
+      set(ffmpeg_postBuildCopy ${FFmpeg_DLLS})
+    endif()
+  endif()
+  if(pro STREQUAL geotranz)
+    xpGetPkgVar(geotranz DATA_DIR) # sets GEOTRANZ_DATA_DIR
+    set(geotranz_compile_definitions "GEOTRANS_DATA=\"${GEOTRANZ_DATA_DIR}\"")
+  endif()
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cpp)
     add_executable(${pro}_test ${pro}.cpp)
     list(APPEND all_srcs ${pro}.cpp)
