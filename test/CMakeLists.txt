@@ -1,66 +1,10 @@
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
-set(pros
-  googletest
-  activemq-cpp
-  apr
-  argon2
-  azmq
-  boost
-  bzip2
-  c-ares
-  ceres-solver
-  clang-format
-  cppzmq
-  curl
-  eigen
-  fecpp
-  ffmpeg
-  flatbuffers
-  fmt
-  geos
-  geotranz
-  glew
-  hdf5
-  jasper
-  jpegxp
-  jxrlib
-  libexpat
-  libgeotiff
-  libgit2
-  libiconv
-  librttopo
-  libsodium
-  libspatialite
-  libssh2
-  libstrophe
-  libzmq
-  lua
-  luabridge
-  nasm
-  nlohmann_json
-  nodeng
-  nodexp
-  node-addon-api
-  nvjpeg2000
-  openh264
-  openssl
-  patch
-  protobuf
-  rapidjson
-  rapidxml
-  shapelib
-  spatialite-tools
-  spdlog
-  sqlite3
-  wirehair
-  wxinclude
-  wxtetris
-  wxwidgets
-  wxx
-  yasm
-  zlib
-  zmqpp
-  )
+get_cmake_property(pros VARIABLES)
+# xp_ variables from pros.cmake, included by xproinc.cmake
+list(FILTER pros INCLUDE REGEX "^xp_")
+list(SORT pros)
+list(REMOVE_ITEM pros xp_googletest)
+list(PREPEND pros xp_googletest) # make googetest be first
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT DEFINED ENV{CI})
   # local (non-CI) Linux builds can fail to link ceres-solver tests with:
   # collect2: fatal error: ld terminated with signal 9 [Killed]
@@ -94,6 +38,7 @@ set(spdlog_compile_features cxx_std_17)
 set(wxwidgets_libs wx::base wx::core)
 set(wxx_xvfb ${xvfb_cmd})
 foreach(pro ${pros})
+  string(REGEX REPLACE "^xp_" "" pro ${pro})
   find_package(${pro})
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${pro}.cpp)
     add_executable(${pro}_test ${pro}.cpp)
