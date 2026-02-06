@@ -8,7 +8,5 @@ on:
 jobs:
   update:
     uses: externpro/externpro/.github/workflows/update-externpro.yml@25.07.5
-    with:
-      create_missing_workflows: false
     secrets:
       workflow_write_token: ${{ secrets.XPUPDATE_TOKEN }}
