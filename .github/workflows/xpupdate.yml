@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 jobs:
   update:
-    uses: externpro/externpro/.github/workflows/update-externpro.yml@main
-    with:
-      create_missing_workflows: false
+    uses: externpro/externpro/.github/workflows/update-externpro.yml@25.07.6
     secrets:
       workflow_write_token: ${{ secrets.XPUPDATE_TOKEN }}
+    with:
+      create_missing_workflows: false
