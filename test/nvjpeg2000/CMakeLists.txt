@@ -1,10 +1,10 @@
 set(pro nvjpeg2000)
 xpGetPkgVar(${pro} VER)
 # parse the version string into major, minor, and patch
-string(REGEX MATCH "^v([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)" ${pro}_VER ${${pro}_VER})
-set(VERSION_MAJOR ${CMAKE_MATCH_1})
-set(VERSION_MINOR ${CMAKE_MATCH_2})
-set(VERSION_PATCH ${CMAKE_MATCH_3})
+string(REGEX MATCH "^(xpv|v)([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)" ${pro}_VER ${${pro}_VER})
+set(VERSION_MAJOR ${CMAKE_MATCH_2})
+set(VERSION_MINOR ${CMAKE_MATCH_3})
+set(VERSION_PATCH ${CMAKE_MATCH_4})
 configure_file(nvjpeg2000.in.cpp nvjpeg2000.cpp @ONLY)
 # nvjpeg2000 is not available on macOS
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
