@@ -125,7 +125,7 @@ RUN export NJA_VER=1.13.2 \
   && rm /usr/local/src/${NJA_DL} \
   && unset NJA_DL && unset NJA_VER
 # cmake
-RUN export CMK_VER=3.31.6 \
+RUN export CMK_VER=4.2.3 \
   && export CMK_RPM=cmake-pkg-v${CMK_VER}-$(uname -s)-$(uname -m).rpm \
   && wget -q "https://github.com/externpro/cmake-pkg/releases/download/v${CMK_VER}/${CMK_RPM}" \
   && dnf_retry install ./${CMK_RPM} \
