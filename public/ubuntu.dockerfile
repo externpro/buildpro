@@ -37,6 +37,7 @@ RUN add-apt-repository ppa:git-core/ppa -y \
      python3-dev \
      vim \
      wget \
+     xvfb \
      xz-utils \
   && apt -y autoremove \
   && apt clean autoclean \
