@@ -3,7 +3,7 @@ name: buildpro tag + release
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to create on HEAD of dev (e.g. 26.01)'
+        description: 'Tag to create on HEAD of xpro (e.g. 26.01)'
         required: true
         type: string
 jobs:
@@ -30,10 +30,10 @@ jobs:
       POLL_INTERVAL_MAX_SECONDS: "300"
     steps:
       -
-        name: Checkout dev
+        name: Checkout xpro
         uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: xpro
           fetch-depth: 0
           fetch-tags: true
       -
@@ -46,7 +46,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           sha=$(git rev-parse HEAD)
-          echo "Tagging dev HEAD: ${sha} with tag ${TAG}"
+          echo "Tagging xpro HEAD: ${sha} with tag ${TAG}"
           if git rev-parse "${TAG}" >/dev/null 2>&1; then
             echo "Tag ${TAG} already exists; refusing to overwrite." >&2
             exit 1
