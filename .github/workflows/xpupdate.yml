@@ -10,5 +10,3 @@ jobs:
     uses: externpro/externpro/.github/workflows/update-externpro.yml@main
     secrets:
       automation_token: ${{ secrets.XPRO_TOKEN }}
-    with:
-      create_missing_workflows: false
