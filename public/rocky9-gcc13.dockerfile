@@ -115,9 +115,9 @@ RUN export DVIM_VER=21.09.06.2 \
   && rm -f ./${DVIM_RPM} \
   && unset DVIM_RPM && unset DVIM_VER
 # cmake
-RUN export CMK_VER=4.2.3 \
-  && export CMK_RPM=cmake-pkg-v${CMK_VER}-$(uname -s)-$(uname -m).rpm \
-  && wget -q "https://github.com/externpro/cmake-pkg/releases/download/v${CMK_VER}/${CMK_RPM}" \
+RUN export CMK_VER=3.31.6.4 \
+  && export CMK_RPM=cmake-pkg-xpv${CMK_VER}-$(uname -s)-$(uname -m).rpm \
+  && wget -q "https://github.com/externpro/cmake-pkg/releases/download/xpv${CMK_VER}/${CMK_RPM}" \
   && dnf_retry install ./${CMK_RPM} \
   && rm -f ./${CMK_RPM} \
   && unset CMK_RPM && unset CMK_VER
