@@ -109,9 +109,9 @@ RUN dnf_retry install \
   && ${DNF} clean all \
   && rm -rf /var/cache/dnf
 # Dockerfile.vim
-RUN export DVIM_VER=21.09.06.2 \
-  && export DVIM_RPM=Dockerfile.vim-v${DVIM_VER}.rpm \
-  && wget -q "https://github.com/smanders/Dockerfile.vim/releases/download/v${DVIM_VER}/${DVIM_RPM}" \
+RUN export DVIM_VER=21.09.06.4 \
+  && export DVIM_RPM=Dockerfile.vim-xpv${DVIM_VER}.rpm \
+  && wget -q "https://github.com/smanders/Dockerfile.vim/releases/download/xpv${DVIM_VER}/${DVIM_RPM}" \
   && dnf_retry install ./${DVIM_RPM} \
   && rm -f ./${DVIM_RPM} \
   && unset DVIM_RPM && unset DVIM_VER
