@@ -25,13 +25,13 @@ RUN rpm -Uvh https://packages.microsoft.com/config/rocky/8/packages-microsoft-pr
   && ${DNF} clean all
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
 # minimum chrome
-RUN export CHR_VER=133.0.6943.98 \
-  && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
-  && echo "repo_add_once=false" > /etc/default/google-chrome \
-  && ${DNF} -y update \
-  && ${DNF} clean all \
-  && ${DNF} -y install ${DNFOPT} \
-     https://dl.google.com/${CHR_DL} \
-  && ${DNF} clean all \
-  && unset CHR_DL && unset CHR_VER
+#RUN export CHR_VER=133.0.6943.98 \
+#  && export CHR_DL=linux/chrome/rpm/stable/$(uname -m)/google-chrome-stable-${CHR_VER}-1.$(uname -m).rpm \
+#  && echo "repo_add_once=false" > /etc/default/google-chrome \
+#  && ${DNF} -y update \
+#  && ${DNF} clean all \
+#  && ${DNF} -y install ${DNFOPT} \
+#     https://dl.google.com/${CHR_DL} \
+#  && ${DNF} clean all \
+#  && unset CHR_DL && unset CHR_VER
 ENTRYPOINT ["/bin/bash", "/usr/local/bpbin/entry.sh"]
