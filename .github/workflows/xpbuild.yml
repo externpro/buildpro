@@ -14,14 +14,14 @@ jobs:
       contents: read
       pull-requests: write
       packages: write
-    uses: externpro/externpro/.github/workflows/build-linux.yml@25.07.12
-    secrets:
-      automation_token: ${{ secrets.GHCR_TOKEN }}
+    uses: externpro/externpro/.github/workflows/build-linux.yml@25.07.13
     with:
       buildpro_images: '["rocky8-gcc9","rocky9-gcc13","rocky10-gcc15","ubuntu"]'
+    secrets:
+      automation_token: ${{ secrets.GHCR_TOKEN }}
   macos:
-    uses: externpro/externpro/.github/workflows/build-macos.yml@25.07.12
+    uses: externpro/externpro/.github/workflows/build-macos.yml@25.07.13
     secrets: inherit
   windows:
-    uses: externpro/externpro/.github/workflows/build-windows.yml@25.07.12
+    uses: externpro/externpro/.github/workflows/build-windows.yml@25.07.13
     secrets: inherit
