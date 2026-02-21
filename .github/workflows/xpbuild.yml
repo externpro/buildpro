@@ -17,6 +17,8 @@ jobs:
     uses: externpro/externpro/.github/workflows/build-linux.yml@25.07.12
     secrets:
       automation_token: ${{ secrets.GHCR_TOKEN }}
+    with:
+      buildpro_images: '["rocky8-gcc9","rocky9-gcc13","rocky10-gcc15","ubuntu"]'
   macos:
     uses: externpro/externpro/.github/workflows/build-macos.yml@25.07.12
     secrets: inherit
