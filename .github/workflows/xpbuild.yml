@@ -23,5 +23,7 @@ jobs:
     uses: externpro/externpro/.github/workflows/build-macos.yml@25.07.13
     secrets: inherit
   windows:
-    uses: externpro/externpro/.github/workflows/build-windows.yml@25.07.13
+    uses: externpro/externpro/.github/workflows/build-windows.yml@25.07.15
     secrets: inherit
+    with:
+      vs_compilers: '["Vs2022"]'
