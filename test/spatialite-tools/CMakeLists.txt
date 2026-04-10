@@ -19,7 +19,7 @@ foreach(tool ${tools})
 endforeach()
 # spatialite_spatial_query test
 find_program(SPATIALITE_TOOL spatialite
-  PATHS "${xpuse-spatialite-tools_DIR}/../../bin"
+  PATHS "${spatialite-tools_DIR}/../../bin"
   NO_DEFAULT_PATH
   )
 if(NOT SPATIALITE_TOOL)
