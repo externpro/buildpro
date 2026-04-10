@@ -1,4 +1,4 @@
-set(pro wxinclude)
+set(pro wxInclude)
 set(cmd "${${pro}_EXE} --version")
 execute_process(COMMAND bash -c "${cmd} 2>&1 | head -n 3"
   ERROR_VARIABLE ${pro}_err ERROR_STRIP_TRAILING_WHITESPACE
