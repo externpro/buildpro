@@ -1,4 +1,4 @@
-set(pro nvjpeg2000)
+set(pro nvJPEG2000)
 xpGetPkgVar(${pro} VER)
 # parse the version string into major, minor, and patch
 string(REGEX MATCH "^(xpv|v)([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)" ${pro}_VER ${${pro}_VER})
