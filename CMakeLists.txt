@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.31)
-set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES .devcontainer/cmake/xproinc.cmake)
 project(buildpro VERSION 25.06)
 xpProDeps()
 include(CTest)
