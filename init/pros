@@ -57,6 +57,7 @@ REPOS="
   ${GITHUB}/externpro/spatialite-tools
   ${GITHUB}/externpro/spdlog
   ${GITHUB}/externpro/SQLite3
+  ${GITHUB}/externpro/Threads
   ${GITHUB}/externpro/tutorial
   ${GITHUB}/externpro/wirehair
   ${GITHUB}/externpro/wxInclude
