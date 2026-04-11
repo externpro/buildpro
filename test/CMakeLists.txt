@@ -34,10 +34,10 @@ foreach(pro ${pros})
     # compilation terminated.
     continue()
   endif()
-  if(pro STREQUAL ffmpeg)
+  if(pro STREQUAL FFmpeg)
     xpGetPkgVar(FFmpeg DLLS) # sets FFmpeg_DLLS
     if(DEFINED FFmpeg_DLLS)
-      set(ffmpeg_postBuildCopy ${FFmpeg_DLLS})
+      set(FFmpeg_postBuildCopy ${FFmpeg_DLLS})
     endif()
   endif()
   if(pro STREQUAL geotranz)
