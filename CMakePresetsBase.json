@@ -6,7 +6,7 @@
       "hidden": true,
       "binaryDir": "${sourceDir}/_bld-${presetName}",
       "cacheVariables": {
-        "FIND_PACKAGE_CMAKE_SCRIPT": "ON"
+        "FIND_PACKAGE_CMAKE_SCRIPT": "OFF"
       }
     }
   ],
