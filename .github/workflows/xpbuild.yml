@@ -26,5 +26,4 @@ jobs:
   windows:
     uses: externpro/externpro/.github/workflows/build-windows.yml@26.01
     secrets: inherit
-    with:
-      vs_compilers: '["Vs2022"]'
+    with: {}
