@@ -4,10 +4,7 @@
     {
       "name": "config-base",
       "hidden": true,
-      "binaryDir": "${sourceDir}/_bld-${presetName}",
-      "cacheVariables": {
-        "FIND_PACKAGE_CMAKE_SCRIPT": "ON"
-      }
+      "binaryDir": "${sourceDir}/_bld-${presetName}"
     }
   ],
   "buildPresets": [
