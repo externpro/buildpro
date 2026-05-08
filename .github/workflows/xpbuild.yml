@@ -24,7 +24,7 @@ jobs:
     secrets: inherit
     with: {}
   windows:
-    uses: externpro/externpro/.github/workflows/build-windows.yml@26.01
+    uses: externpro/externpro/.github/workflows/build-windows.yml@main
     secrets: inherit
     with:
       enable_tmate: true
