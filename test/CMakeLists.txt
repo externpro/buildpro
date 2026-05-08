@@ -76,7 +76,9 @@ foreach(pro ${pros})
       target_compile_definitions(${pro}_test PRIVATE ${${pro}_compile_definitions})
       list(APPEND all_compile_definitions ${${pro}_compile_definitions})
     endif()
-    if(pro STREQUAL "wxx" AND XVFB_RUN_EXEC)
+    if(pro STREQUAL "wxx" AND MSVC_VERSION VERSION_EQUAL 1950)
+      message(STATUS "Skipping wxx_test on VS2026 (MSVC_VERSION 1950) due to known hang issue")
+    elseif(pro STREQUAL "wxx" AND XVFB_RUN_EXEC)
       add_test(NAME ${pro}_test COMMAND ${XVFB_RUN_EXEC} -a
         --server-args=-screen\ 0\ 1920x1080x24\ -nolisten\ tcp
         $<TARGET_FILE:${pro}_test>
