@@ -1,7 +1,7 @@
 xpGetPkgVar(spatialite-tools VER)
-xpFindPkg(PKGS libspatialite sqlite3)
+xpFindPkg(PKGS libspatialite SQLite3)
 xpGetPkgVar(libspatialite VER)
-xpGetPkgVar(sqlite3 VER)
+xpGetPkgVar(SQLite3 VER)
 set(tools
   spatialite
   spatialite_convert
