@@ -3,8 +3,8 @@ get_cmake_property(pros VARIABLES)
 # xp_ variables from pros.cmake, included by xproinc.cmake
 list(FILTER pros INCLUDE REGEX "^xp_")
 list(SORT pros)
-list(REMOVE_ITEM pros xp_googletest xp_Threads)
-list(PREPEND pros xp_Threads xp_googletest) # make Threads and googletest first
+list(REMOVE_ITEM pros xp_googletest)
+list(PREPEND pros xp_googletest) # make googletest first
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
