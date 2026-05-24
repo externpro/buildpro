@@ -5,13 +5,13 @@ list(FILTER pros INCLUDE REGEX "^xp_")
 list(SORT pros)
 list(REMOVE_ITEM pros xp_googletest)
 list(PREPEND pros xp_googletest) # make googletest first
+list(REMOVE_ITEM pros xp_azmq) # TODO: azmq has issues with boost 1.91.0
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
 endif()
 # NOTE: set ${pro}_libs if ${PRJ}_LIBRARIES isn't sufficient
 set(boost_libs Boost::filesystem Boost::program_options Boost::regex)
-set(boost_compile_definitions "BOOST_NO_CXX98_FUNCTION_BASE")
 set(hdf5_libs xpro::hdf5_cpp-static)
 set(libgeotiff_libs xpro::libgeotiff Boost::filesystem)
 set(libgit2_libs xpro::git2 Boost::filesystem)
