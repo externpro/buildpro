@@ -5,6 +5,7 @@ list(FILTER pros INCLUDE REGEX "^xp_")
 list(SORT pros)
 list(REMOVE_ITEM pros xp_googletest)
 list(PREPEND pros xp_googletest) # make googletest first
+list(REMOVE_ITEM pros xp_azmq) # TODO: azmq has issues with boost 1.91.0
 find_program(XVFB_RUN_EXEC xvfb-run)
 if(XVFB_RUN_EXEC)
   set(xvfb_cmd ${XVFB_RUN_EXEC})
