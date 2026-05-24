@@ -11,7 +11,6 @@ if(XVFB_RUN_EXEC)
 endif()
 # NOTE: set ${pro}_libs if ${PRJ}_LIBRARIES isn't sufficient
 set(boost_libs Boost::filesystem Boost::program_options Boost::regex)
-set(boost_compile_definitions "BOOST_NO_CXX98_FUNCTION_BASE")
 set(hdf5_libs xpro::hdf5_cpp-static)
 set(libgeotiff_libs xpro::libgeotiff Boost::filesystem)
 set(libgit2_libs xpro::git2 Boost::filesystem)
