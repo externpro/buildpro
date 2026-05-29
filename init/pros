@@ -18,6 +18,7 @@ REPOS="
   ${GITHUB}/externpro/curl
   ${GITHUB}/externpro/duckdb
   ${GITHUB}/externpro/eigen
+  ${GITHUB}/externpro/externpro.wiki
   ${GITHUB}/externpro/fecpp
   ${GITHUB}/externpro/FFmpeg
   ${GITHUB}/externpro/flatbuffers
