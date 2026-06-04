@@ -59,33 +59,38 @@ using namespace std::chrono_literals;
 class AzmqTest : public ::testing::Test
 {
 protected:
-  AzmqTest()
-    : ios_(std::make_shared<asio::io_service>()),
-      work_(*ios_),
-      deadline_(*ios_),
-      port_(get_random_port())
+  void SetUp() override
   {
-    // Start the io_service in a separate thread
-    worker_ = std::thread([this] { ios_->run(); });
+    ioc_ = std::make_shared<asio::io_context>();
+    work_ = std::make_unique<
+      boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>(
+      boost::asio::make_work_guard(*ioc_));
+    deadline_ = std::make_unique<asio::steady_timer>(*ioc_);
+    port_ = get_random_port();
+
+    // Start the io_context in a separate thread
+    worker_ = std::thread([this] { ioc_->run(); });
 
     // Set up deadline timer for test timeouts
     set_test_timeout(TEST_TIMEOUT);
   }
 
-  ~AzmqTest() override
+  void TearDown() override
   {
-    // Stop the io_service and wait for the thread to finish
-    ios_->stop();
+    // Stop the io_context and wait for the thread to finish
+    ioc_->stop();
     if (worker_.joinable())
     {
       worker_.join();
     }
+    work_.reset();
+    deadline_.reset();
   }
 
   void set_test_timeout(std::chrono::milliseconds timeout)
   {
-    deadline_.expires_from_now(timeout);
-    deadline_.async_wait(
+    deadline_->expires_after(timeout);
+    deadline_->async_wait(
       [this](const boost::system::error_code& ec)
       {
         if (!ec)
@@ -93,7 +98,7 @@ protected:
           // Timeout occurred
           std::cerr << "Test timed out after " << TEST_TIMEOUT.count()
                     << "ms\n";
-          ios_->stop();
+          ioc_->stop();
           FAIL() << "Test timed out";
         }
       });
@@ -119,10 +124,12 @@ protected:
     return false;
   }
 
-  std::shared_ptr<asio::io_service> ios_;
-  asio::io_service::work work_;
+  std::shared_ptr<asio::io_context> ioc_;
+  std::unique_ptr<
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>
+    work_;
   std::thread worker_;
-  asio::steady_timer deadline_;
+  std::unique_ptr<asio::steady_timer> deadline_;
   std::atomic<uint16_t> port_;
 };
 
@@ -130,14 +137,14 @@ TEST_F(AzmqTest, SocketCreation)
 {
   // Test basic socket creation
   ASSERT_NO_THROW({
-    azmq::socket socket(*ios_, ZMQ_REP);
+    azmq::socket socket(*ioc_, ZMQ_REP);
     socket.set_option(
       azmq::socket::linger(static_cast<int>(SOCKET_LINGER.count())));
   });
 
   // Test socket options
   ASSERT_NO_THROW({
-    azmq::socket socket(*ios_, ZMQ_SUB);
+    azmq::socket socket(*ioc_, ZMQ_SUB);
     socket.set_option(azmq::socket::subscribe("TOPIC"));
     socket.set_option(
       azmq::socket::linger(static_cast<int>(SOCKET_LINGER.count())));
@@ -153,19 +160,19 @@ TEST_F(AzmqTest, SocketCreation)
 TEST_F(AzmqTest, ReqRepPattern)
 {
   // Create REP socket with random port
-  azmq::rep_socket rep_socket(*ios_);
+  azmq::rep_socket rep_socket(*ioc_);
   rep_socket.set_option(
     azmq::socket::linger(static_cast<int>(SOCKET_LINGER.count())));
 
   // Bind with retry logic
-  ASSERT_TRUE(bind_with_retry(rep_socket))
+  ASSERT_TRUE(this->bind_with_retry(rep_socket))
     << "Failed to bind REP socket after multiple attempts";
 
-  const auto endpoint = get_endpoint();
+  const auto endpoint = this->get_endpoint();
   std::cout << "REP socket bound to: " << endpoint << std::endl;
 
   // Create REQ socket
-  azmq::req_socket req_socket(*ios_);
+  azmq::req_socket req_socket(*ioc_);
   req_socket.set_option(
     azmq::socket::linger(static_cast<int>(SOCKET_LINGER.count())));
 
@@ -307,14 +314,14 @@ TEST_F(AzmqTest, ReqRepPattern)
 TEST_F(AzmqTest, PubSubPattern)
 {
   // Create and bind PUB socket
-  azmq::pub_socket pub_socket(*ios_);
+  azmq::pub_socket pub_socket(*ioc_);
   pub_socket.set_option(
     azmq::socket::linger(static_cast<int>(SOCKET_LINGER.count())));
-  ASSERT_TRUE(bind_with_retry(pub_socket)) << "Failed to bind PUB socket";
-  const auto pub_endpoint = get_endpoint();
+  ASSERT_TRUE(this->bind_with_retry(pub_socket)) << "Failed to bind PUB socket";
+  const auto pub_endpoint = this->get_endpoint();
 
   // Create SUB socket with options
-  azmq::sub_socket sub_socket(*ios_);
+  azmq::sub_socket sub_socket(*ioc_);
   sub_socket.set_option(
     azmq::socket::linger(static_cast<int>(SOCKET_LINGER.count())));
   sub_socket.set_option(
@@ -359,7 +366,7 @@ TEST_F(AzmqTest, PubSubPattern)
   // Try to receive the message with a timeout
   std::array<char, 256> buffer;
   boost::system::error_code ec;
-  asio::steady_timer timer(*ios_, std::chrono::seconds(2));
+  asio::steady_timer timer(*ioc_, std::chrono::seconds(2));
   bool received = false;
 
   // Set up timer to cancel the receive on timeout
@@ -406,8 +413,8 @@ TEST_F(AzmqTest, ExampleCode)
     {
       try
       {
-        asio::io_service ios;
-        azmq::pub_socket publisher(ios);
+        asio::io_context ioc;
+        azmq::pub_socket publisher(ioc);
 
         // Set socket options
         publisher.set_option(
@@ -444,8 +451,8 @@ TEST_F(AzmqTest, ExampleCode)
   try
   {
     // Create subscriber socket
-    asio::io_service ios;
-    azmq::sub_socket subscriber(ios);
+    asio::io_context ioc;
+    azmq::sub_socket subscriber(ioc);
 
     // Set socket options
     subscriber.set_option(
@@ -500,7 +507,7 @@ TEST_F(AzmqTest, ExampleCode)
 TEST_F(AzmqTest, SocketOptions)
 {
   // Create a socket with the test's io_service
-  azmq::socket socket(*ios_, ZMQ_DEALER);
+  azmq::socket socket(*ioc_, ZMQ_DEALER);
 
   // Test setting and getting linger option
   const int test_linger_ms = 1500; // 1.5 seconds
