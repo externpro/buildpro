@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.31)
-project(buildpro VERSION 25.06)
+cmake_minimum_required(VERSION 4.3)
+project(buildpro)
 xpProDeps()
 include(CTest)
 add_subdirectory(test)
