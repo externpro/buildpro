@@ -6,4 +6,4 @@ REPOS="
   ${GITHUB}/smanders/praat
   ${GITHUB}/smanders/godric
   "
-SRCDIR=~/Code/pros
+SRCDIR=~/Code/smanders
