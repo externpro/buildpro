@@ -2,7 +2,6 @@ GITHUB="https://github.com"
 REPOS="
   ${GITHUB}/smanders/Dockerfile.vim
   ${GITHUB}/smanders/centrifybomb
-  ${GITHUB}/externpro-archive/node
   ${GITHUB}/smanders/praat
   ${GITHUB}/smanders/godric
   "
