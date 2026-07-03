@@ -4,5 +4,6 @@ REPOS="
   ${GITHUB}/smanders/centrifybomb
   ${GITHUB}/externpro-archive/node
   ${GITHUB}/smanders/praat
+  ${GITHUB}/smanders/godric
   "
 SRCDIR=~/Code/pros
