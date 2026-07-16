@@ -8,11 +8,11 @@
 class GEOSHandle
 {
 public:
-  GEOSHandle() : handle(initGEOS_r(nullptr, nullptr)) { }
+  GEOSHandle() : handle(GEOS_init_r()) { }
   ~GEOSHandle()
   {
     if (handle)
-      finishGEOS_r(handle);
+      GEOS_finish_r(handle);
   }
   GEOSContextHandle_t get() const { return handle; }
 
