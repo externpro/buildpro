@@ -11,7 +11,7 @@ set(tools
   exif_loader
   )
 foreach(tool ${tools})
-  set(tool_EXE $<TARGET_FILE:xpro::${tool}>)
+  set(tool_EXE $<TARGET_FILE:spatialite-tools::${tool}>)
   set(tool_CMAKE ${CMAKE_CURRENT_BINARY_DIR}/${tool}.cmake)
   configure_file(tool.in.cmake ${tool_CMAKE} @ONLY)
   file(GENERATE OUTPUT ${tool_CMAKE} INPUT ${tool_CMAKE})
