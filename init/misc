@@ -1,8 +1,0 @@
-GITHUB="https://github.com"
-REPOS="
-  ${GITHUB}/smanders/Dockerfile.vim
-  ${GITHUB}/smanders/centrifybomb
-  ${GITHUB}/smanders/praat
-  ${GITHUB}/smanders/godric
-  "
-SRCDIR=~/Code/smanders
