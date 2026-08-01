@@ -1,0 +1,12 @@
+GITHUB="https://github.com"
+REPOS="
+  ${GITHUB}/smanders/Dockerfile.vim
+  ${GITHUB}/smanders/binskripte
+  ${GITHUB}/smanders/centrifybomb
+  ${GITHUB}/smanders/cobwebnfo
+  ${GITHUB}/smanders/godric
+  ${GITHUB}/smanders/nvidia-ants
+  ${GITHUB}/smanders/praat
+  ${GITHUB}/smanders/smanders.github.io
+  "
+SRCDIR=~/Code/smanders
