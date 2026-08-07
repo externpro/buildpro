@@ -1,7 +1,7 @@
 set(pro nodexp)
 set(tgt ${pro}_test)
 add_library(${tgt} SHARED ${pro}.cpp)
-target_link_libraries(${tgt} PRIVATE xpro::node googletest)
+target_link_libraries(${tgt} PRIVATE nodexp::node googletest)
 set_target_properties(${tgt} PROPERTIES OUTPUT_NAME "${tgt}" PREFIX "" SUFFIX ".node")
 if(APPLE)
   target_link_options(${tgt} PUBLIC -undefined dynamic_lookup)
