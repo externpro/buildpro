@@ -21,6 +21,7 @@ set(nlohmann_json_compile_features cxx_std_17)
 set(shapelib_libs shapelib Boost::filesystem)
 set(spdlog_compile_features cxx_std_17)
 set(wxWidgets_libs wx::base wx::core)
+set(wxx_libs wxx::plotctrl wxx::tlc)
 set(wxx_xvfb ${xvfb_cmd})
 # Build lists of all files and subdirectories to track unprocessed items
 file(GLOB all_cpp_files "*.cpp")
