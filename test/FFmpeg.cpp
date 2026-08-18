@@ -24,9 +24,13 @@ protected:
   static void SetUpTestSuite()
   {
     // Initialize FFmpeg libraries once before any tests run
+#if LIBAVFORMAT_VERSION_MAJOR < 58
     av_register_all();
+#endif
     avformat_network_init();
+#if LIBAVFILTER_VERSION_MAJOR < 7
     avfilter_register_all();
+#endif
     avdevice_register_all();
   }
 
@@ -68,8 +72,14 @@ TEST_F(FFmpegTest, CodecSupport)
 // Test case for AVFormat functionality
 TEST_F(FFmpegTest, FormatSupport)
 {
-  // Check format support using the older API
+  // Check format support using the appropriate API for this FFmpeg version
+#if LIBAVFORMAT_VERSION_MAJOR < 58
   AVInputFormat* input_format = av_iformat_next(nullptr);
+#else
+  const AVInputFormat* input_format = nullptr;
+  void* iter = nullptr;
+  input_format = av_demuxer_iterate(&iter);
+#endif
   EXPECT_NE(input_format, nullptr) << "No input formats found";
 
   // Check if common formats are supported
@@ -80,8 +90,10 @@ TEST_F(FFmpegTest, FormatSupport)
 // Test case for AVFilter functionality
 TEST_F(FFmpegTest, FilterSupport)
 {
-  // Initialize filter system
+  // Initialize filter system if required by this FFmpeg version
+#if LIBAVFILTER_VERSION_MAJOR < 7
   avfilter_register_all();
+#endif
 
   // Check if common filters are available
   const AVFilter* scale_filter = avfilter_get_by_name("scale");
