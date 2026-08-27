@@ -10,23 +10,25 @@
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
-// Windows doesn't define these error codes
-#ifndef EINVAL
-#define EINVAL WSAEINVAL
 #endif
-#else
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#endif
+
+#include "network_detection.h"
 
 class CaresTest : public ::testing::Test
 {
 protected:
   ares_channel channel;
+  bool initialized = false;
 
   void SetUp() override
   {
+    // Skip all c-ares tests when offline since DNS resolution requires network
+    if (!isNetworkAvailable())
+    {
+      GTEST_SKIP()
+        << "Skipping c-ares tests - offline mode (DNS requires network)";
+    }
+
 #ifdef _WIN32
     // Initialize Winsock on Windows
     WSADATA wsaData;
@@ -47,18 +49,24 @@ protected:
 
     status = ares_init_options(&channel, &options, optmask);
     ASSERT_EQ(ARES_SUCCESS, status) << "Failed to initialize c-ares channel";
+
+    initialized = true;
   }
 
   void TearDown() override
   {
-    // Clean up
-    ares_destroy(channel);
-    ares_library_cleanup();
+    // Only cleanup if we actually initialized the resources
+    if (initialized)
+    {
+      // Clean up
+      ares_destroy(channel);
+      ares_library_cleanup();
 
 #ifdef _WIN32
-    // Clean up Winsock on Windows
-    WSACleanup();
+      // Clean up Winsock on Windows
+      WSACleanup();
 #endif
+    }
   }
 
   static void callback(void* arg,
