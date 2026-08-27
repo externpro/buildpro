@@ -18,9 +18,18 @@
 inline bool isNetworkAvailable()
 {
 #ifdef _WIN32
+  // Initialize Winsock
+  WSADATA wsaData;
+  int wsaResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+  if (wsaResult != 0)
+  {
+    return false;
+  }
+
   SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (sock == INVALID_SOCKET)
   {
+    WSACleanup();
     return false;
   }
 
@@ -35,6 +44,7 @@ inline bool isNetworkAvailable()
 
   int result = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
 
+  bool networkAvailable = false;
   if (result == SOCKET_ERROR)
   {
     int error = WSAGetLastError();
@@ -48,6 +58,7 @@ inline bool isNetworkAvailable()
       timeout.tv_sec = 0;
       timeout.tv_usec = 500000; // 500ms
 
+      // On Windows, first parameter to select is ignored but should be 0
       int selectResult = select(0, nullptr, &writefds, nullptr, &timeout);
 
       if (selectResult > 0)
@@ -56,17 +67,18 @@ inline bool isNetworkAvailable()
         int error = 0;
         int len = sizeof(error);
         getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
-        closesocket(sock);
-        return (error == 0);
+        networkAvailable = (error == 0);
       }
-
-      closesocket(sock);
-      return false;
     }
+  }
+  else
+  {
+    networkAvailable = true;
   }
 
   closesocket(sock);
-  return true;
+  WSACleanup();
+  return networkAvailable;
 #else
   int sock = socket(AF_INET, SOCK_STREAM, 0);
   if (sock < 0)

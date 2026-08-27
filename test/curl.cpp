@@ -26,6 +26,7 @@ protected:
   CURL* curl;
   std::string response;
   char error_buffer[CURL_ERROR_SIZE];
+  bool initialized = false;
 
   void SetUp() override
   {
@@ -63,16 +64,22 @@ protected:
     // Set timeout and other options
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L); // Set to 1L for debugging
+
+    initialized = true;
   }
 
   void TearDown() override
   {
-    // Cleanup
-    if (curl)
+    // Only cleanup if we actually initialized the resources
+    if (initialized)
     {
-      curl_easy_cleanup(curl);
+      // Cleanup
+      if (curl)
+      {
+        curl_easy_cleanup(curl);
+      }
+      curl_global_cleanup();
     }
-    curl_global_cleanup();
   }
 
   CURLcode PerformRequest(const std::string& url)

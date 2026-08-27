@@ -18,6 +18,7 @@ class CaresTest : public ::testing::Test
 {
 protected:
   ares_channel channel;
+  bool initialized = false;
 
   void SetUp() override
   {
@@ -48,18 +49,24 @@ protected:
 
     status = ares_init_options(&channel, &options, optmask);
     ASSERT_EQ(ARES_SUCCESS, status) << "Failed to initialize c-ares channel";
+
+    initialized = true;
   }
 
   void TearDown() override
   {
-    // Clean up
-    ares_destroy(channel);
-    ares_library_cleanup();
+    // Only cleanup if we actually initialized the resources
+    if (initialized)
+    {
+      // Clean up
+      ares_destroy(channel);
+      ares_library_cleanup();
 
 #ifdef _WIN32
-    // Clean up Winsock on Windows
-    WSACleanup();
+      // Clean up Winsock on Windows
+      WSACleanup();
 #endif
+    }
   }
 
   static void callback(void* arg,
