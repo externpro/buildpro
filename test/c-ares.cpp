@@ -10,15 +10,9 @@
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
-// Windows doesn't define these error codes
-#ifndef EINVAL
-#define EINVAL WSAEINVAL
 #endif
-#else
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#endif
+
+#include "network_detection.h"
 
 class CaresTest : public ::testing::Test
 {
@@ -27,6 +21,13 @@ protected:
 
   void SetUp() override
   {
+    // Skip all c-ares tests when offline since DNS resolution requires network
+    if (!isNetworkAvailable())
+    {
+      GTEST_SKIP()
+        << "Skipping c-ares tests - offline mode (DNS requires network)";
+    }
+
 #ifdef _WIN32
     // Initialize Winsock on Windows
     WSADATA wsaData;
