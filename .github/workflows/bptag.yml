@@ -31,7 +31,7 @@ jobs:
     steps:
       -
         name: Checkout xpro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: xpro
           fetch-depth: 0
