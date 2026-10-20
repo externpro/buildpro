@@ -1,9 +1,1 @@
-{
-  "version": 8,
-  "include": [
-    ".externpro/cmake/presets/xpLinuxNinja.json",
-    ".externpro/cmake/presets/xpDarwinNinja.json",
-    ".externpro/cmake/presets/xpMswVs2022.json",
-    ".externpro/cmake/presets/xpMswVs2026.json"
-  ]
-}
+.externpro/cmake/presets/xpPresets.json
