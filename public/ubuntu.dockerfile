@@ -35,6 +35,7 @@ RUN add-apt-repository ppa:git-core/ppa -y \
      ninja-build \
      openssh-client \
      python3-dev \
+     python3-venv `#ssrobins/install-cmake` \
      vim \
      wget \
      xvfb \
@@ -54,7 +55,7 @@ RUN export DVIM_VER=21.09.06.1 \
   && rm -f ./${DVIM_SH} \
   && unset DVIM_DL && unset DVIM_SH && unset DVIM_SYS && unset DVIM_VER
 # cmake
-RUN export CMK_VER=4.5.0-rc1 \
+RUN export CMK_VER=4.5.0-rc2 \
   && export CMK_SH=cmake-${CMK_VER}-$(uname -s)-$(uname -m).sh \
   && export CMK_DL=releases/download/v${CMK_VER}/${CMK_SH} \
   && wget -q "https://github.com/Kitware/CMake/${CMK_DL}" \
