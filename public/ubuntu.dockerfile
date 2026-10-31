@@ -35,6 +35,7 @@ RUN add-apt-repository ppa:git-core/ppa -y \
      ninja-build \
      openssh-client \
      python3-dev \
+     python3-venv `#ssrobins/install-cmake` \
      vim \
      wget \
      xvfb \
