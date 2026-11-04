@@ -1,6 +1,5 @@
 GITHUB="https://github.com"
 REPOS="
-  ${GITHUB}/smanders/Dockerfile.vim
   ${GITHUB}/smanders/binskripte
   ${GITHUB}/smanders/centrifybomb
   ${GITHUB}/smanders/cobwebnfo
