@@ -50,7 +50,7 @@ RUN export DVIM_VER=21.09.06.1 \
   && export DVIM_SH=Dockerfile.vim-v${DVIM_VER}.sh \
   && export DVIM_DL=releases/download/v${DVIM_VER}/${DVIM_SH} \
   && mkdir -p ${DVIM_SYS} \
-  && wget -q "https://github.com/smanders/Dockerfile.vim/${DVIM_DL}" \
+  && wget -q "https://github.com/externpro/Dockerfile.vim/${DVIM_DL}" \
   && sh ./${DVIM_SH} --skip-license --prefix=${DVIM_SYS} \
   && rm -f ./${DVIM_SH} \
   && unset DVIM_DL && unset DVIM_SH && unset DVIM_SYS && unset DVIM_VER

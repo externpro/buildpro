@@ -110,7 +110,7 @@ RUN export LCOV_VER=2.0 && export LCOV_REL=1 \
 # Dockerfile.vim
 RUN export DVIM_VER=21.09.06.5 \
   && export DVIM_RPM=Dockerfile.vim-xpv${DVIM_VER}.rpm \
-  && wget -q "https://github.com/smanders/Dockerfile.vim/releases/download/xpv${DVIM_VER}/${DVIM_RPM}" \
+  && wget -q "https://github.com/externpro/Dockerfile.vim/releases/download/xpv${DVIM_VER}/${DVIM_RPM}" \
   && dnf_retry install ./${DVIM_RPM} \
   && rm -f ./${DVIM_RPM} \
   && unset DVIM_RPM && unset DVIM_VER
